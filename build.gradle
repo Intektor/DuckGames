@@ -4,6 +4,9 @@ buildscript {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
+        flatDir {
+            dirs: 'libs'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
