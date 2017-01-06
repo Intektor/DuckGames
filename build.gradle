@@ -4,9 +4,6 @@ buildscript {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
-        flatDir {
-            dirs: 'libs'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
@@ -85,9 +82,9 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        compile "de.intektor:tag:1.0.0"
-        compile "de.intektor:network:1.0.0"
+        compile fileTree(dir: 'libs', include: '*.jar')
         compile group: 'javax.vecmath', name: 'vecmath', version: '1.5.2'
+        compile group: 'com.google.guava', name: 'guava', version: '19.0'
     }
 }
 

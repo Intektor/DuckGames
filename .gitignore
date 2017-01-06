@@ -91,3 +91,4 @@ core/src/de/intektor/duckgames/client/net/handler/
 !/android/libs/armeabi-v7a/
 !/android/libs/x86/
 !/android/libs/x86_64/
+!/android/assets/shader/
