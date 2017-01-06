@@ -37,7 +37,7 @@ public class GuiScrollBar extends GuiComponent {
     }
 
     @Override
-    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB) {
+    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
         sR.begin();
         sR.set(ShapeRenderer.ShapeType.Filled);
         sR.setColor(Color.LIGHT_GRAY);

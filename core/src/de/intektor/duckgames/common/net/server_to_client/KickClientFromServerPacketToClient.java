@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.DuckGamesClient;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class KickClientFromServerPacketToClient implements IPacket {
 
-    String kickMessage;
+    public String kickMessage;
 
     public KickClientFromServerPacketToClient() {
     }
@@ -37,13 +37,7 @@ public class KickClientFromServerPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(KickClientFromServerPacketToClient packet, Socket socketFrom) {
-            final DuckGamesClient dg = DuckGamesClient.getDuckGames();
-            dg.addScheduledTask(new Runnable() {
-                @Override
-                public void run() {
-                    dg.disconnect();
-                }
-            });
+            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

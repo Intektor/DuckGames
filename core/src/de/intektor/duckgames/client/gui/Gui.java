@@ -58,34 +58,34 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
 
     /**
      * Renders this Gui, called by {@link DuckGamesClient#renderGame()}. Receives the unscaled mouse amounts directly from {@link Gdx#input} <br>
-     * Calls {@link Gui#renderGui(int, int, OrthographicCamera)} with scaled mouse amounts.
+     * Calls {@link Gui#renderGui(int, int, OrthographicCamera, float)} with scaled mouse amounts.
      *
      * @see Gui#scaleMouseX(int)
      * @see Gui#scaleMouseY(int)
      */
-    public final void render(int mouseX, int mouseY, OrthographicCamera camera) {
-        renderGui(scaleMouseX(mouseX), scaleMouseY(mouseY), camera);
+    public final void render(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
+        renderGui(scaleMouseX(mouseX), scaleMouseY(mouseY), camera, partialTicks);
 
     }
 
     /**
-     * Called by {@link Gui#render(int, int, OrthographicCamera)} with scaled mouse amounts. <br>
+     * Called by {@link Gui#render(int, int, OrthographicCamera, float)} with scaled mouse amounts. <br>
      * This method should be overwritten if individual rendering is needed
      *
      * @see Gui#scaleMouseX(int)
      * @see Gui#scaleMouseY(int)
      */
-    protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera) {
-        renderGuiComponents(mouseX, mouseY, camera);
+    protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
+        renderGuiComponents(mouseX, mouseY, camera, partialTicks);
     }
 
     /**
-     * Renders the gui components of this gui, default called by {@link Gui#renderGui(int, int, OrthographicCamera)}
+     * Renders the gui components of this gui, default called by {@link Gui#renderGui(int, int, OrthographicCamera, float)}
      */
-    protected void renderGuiComponents(int mouseX, int mouseY, OrthographicCamera camera) {
+    protected void renderGuiComponents(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
         for (GuiComponent guiComponent : componentList) {
             if (guiComponent.isShown()) {
-                guiComponent.renderComponent(mouseX, mouseY, camera, shapeRenderer, spriteBatch);
+                guiComponent.renderComponent(mouseX, mouseY, camera, shapeRenderer, spriteBatch, partialTicks);
             }
         }
     }
@@ -211,7 +211,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
     }
 
     /**
-     * Called by {@link Gui#touchDown(int, int, int, int)} when the user clicked the screen, used scaled mouse amounts
+     * Called by {@link Gui#touchDown(int, int, int, int)} when the user clicked the screen, uses scaled mouse amounts
      *
      * @see Gui#scaleMouseX(int)
      * @see Gui#scaleMouseY(int)
@@ -230,16 +230,16 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
                 component.clickUp(mouseX, mouseY, pointer, button);
             }
         }
+        pointerUp(mouseX, mouseY, pointer, button);
         return false;
     }
 
     /**
-     * Called by {@link Gui#touchUp(int, int, int, int)} when the user released his pointer from the screen, used scaled mouse amounts
+     * Called by {@link Gui#touchUp(int, int, int, int)} when the user released his pointer from the screen, uses scaled mouse amounts
      *
      * @see Gui#scaleMouseX(int)
      * @see Gui#scaleMouseY(int)
      */
-
     protected void pointerUp(int mouseX, int mouseY, int pointer, int button) {
 
     }

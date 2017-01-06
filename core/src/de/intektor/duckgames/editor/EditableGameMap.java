@@ -2,12 +2,12 @@ package de.intektor.duckgames.editor;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.block.Block;
-import de.intektor.duckgames.block.BlockRegistry;
 import de.intektor.duckgames.block.Blocks;
-import de.intektor.duckgames.collision.CollisionRect;
+import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.GameRegistry;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.files.Serializable;
 import de.intektor.duckgames.world.WorldServer;
 import de.intektor.tag.TagCompound;
@@ -62,8 +62,8 @@ public class EditableGameMap implements Serializable {
         return height;
     }
 
-    public boolean isCollisionInWorldBounds(CollisionRect rect) {
-        return rect.x >= 0 && rect.x + rect.width <= width + 1 && rect.y >= 0 && rect.y + rect.height <= height + 1;
+    public boolean isCollisionInWorldBounds(Collision2D rect) {
+        return rect.x >= 0 && rect.x + rect.getWidth() <= width + 1 && rect.y >= 0 && rect.y + rect.getHeight() <= height + 1;
     }
 
     public boolean doesEntitySpawnCollideWithSpawns(EntitySpawn spawn, List<EntitySpawn> spawnList) {
@@ -75,9 +75,39 @@ public class EditableGameMap implements Serializable {
         return false;
     }
 
+    public boolean collisionCollidesWithBlocks(Collision2D collision) {
+        for (Table.Cell<Integer, Integer, Block> cell : blockTable.cellSet()) {
+            if (cell.getValue() != null && cell.getValue().isSolidBlock()) {
+                @SuppressWarnings("ConstantConditions") Collision2D bC = new Collision2D(cell.getRowKey(), cell.getColumnKey(), 1, 1);
+                if (bC.collidesWith(collision))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean collisionCollidesWithEntitySpawns(Collision2D collision) {
+        for (EntitySpawn entitySpawn : entitySpawnList) {
+            if (entitySpawn.getCollision().collidesWith(collision)) return true;
+        }
+        return false;
+    }
+
+    public List<EntitySpawn> getEntitySpawnsInRegion(Collision2D collision) {
+        List<EntitySpawn> list = new ArrayList<EntitySpawn>();
+        for (EntitySpawn entitySpawn : entitySpawnList) {
+            if (entitySpawn.getCollision().collidesWith(collision)) list.add(entitySpawn);
+        }
+        return list;
+    }
+
+    public void removeEntitySpawns(List<EntitySpawn> list) {
+        entitySpawnList.removeAll(list);
+    }
+
     @Override
     public void writeToTag(TagCompound tag) {
-        BlockRegistry blockRegistry = DuckGamesClient.getDuckGames().getBlockRegistry();
+        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
         tag.setInteger("w", width);
         tag.setInteger("h", height);
         TagCompound blocksTag = new TagCompound();
@@ -86,7 +116,7 @@ public class EditableGameMap implements Serializable {
             for (int y = 0; y < height; y++) {
                 Block block = getBlock(x, y);
                 TagCompound blockTag = new TagCompound();
-                blockTag.setByte("t", blockRegistry.getID(block));
+                blockTag.setByte("t", gameRegistry.getBlockID(block));
                 blockTag.setInteger("x", x);
                 blockTag.setInteger("y", y);
                 blocksTag.setTag("" + blockNumber++, blockTag);
@@ -99,14 +129,14 @@ public class EditableGameMap implements Serializable {
     public void readFromTag(TagCompound tag) {
         width = tag.getInteger("w");
         height = tag.getInteger("h");
-        BlockRegistry blockRegistry = DuckGamesClient.getDuckGames().getBlockRegistry();
+        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
         int amtOfB = width * height;
         TagCompound blocksTag = tag.getTag("b");
         for (int i = 0; i < amtOfB; i++) {
             TagCompound blockTag = blocksTag.getTag("" + i);
             int x = blockTag.getInteger("x");
             int y = blockTag.getInteger("y");
-            Block b = blockRegistry.getBlock(blockTag.getByte("t"));
+            Block b = gameRegistry.getBlock(blockTag.getByte("t"));
             blockTable.put(x, y, b);
         }
     }

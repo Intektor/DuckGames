@@ -1,6 +1,6 @@
 package de.intektor.duckgames.editor.spawns;
 
-import de.intektor.duckgames.collision.CollisionRect;
+import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.editor.EntitySpawn;
 
 /**
@@ -19,11 +19,11 @@ public class PlayerSpawn extends EntitySpawn {
 
     @Override
     public float getHeight() {
-        return 3.8f;
+        return 3f;
     }
 
     @Override
-    public CollisionRect getCollision() {
-        return new CollisionRect(x, y, getWidth(), getHeight());
+    public Collision2D getCollision() {
+        return new Collision2D(x, y, getWidth(), getHeight());
     }
 }

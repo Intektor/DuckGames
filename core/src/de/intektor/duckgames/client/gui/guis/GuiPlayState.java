@@ -1,13 +1,25 @@
 package de.intektor.duckgames.client.gui.guis;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
-import de.intektor.duckgames.client.renderer.WorldRenderer;
+import de.intektor.duckgames.client.gui.util.GuiUtils;
+import de.intektor.duckgames.client.gui.util.MousePos;
+import de.intektor.duckgames.client.rendering.WorldRenderer;
+import de.intektor.duckgames.common.Status;
+import de.intektor.duckgames.common.net.client_to_server.JumpPacketToServer;
+import de.intektor.duckgames.common.net.client_to_server.PlayerAttackWithItemPacketToServer;
+import de.intektor.duckgames.common.net.client_to_server.PlayerDropItemPacketToServer;
+import de.intektor.duckgames.common.net.client_to_server.PlayerMovementPacketToServer;
+import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.util.EnumDirection;
 import de.intektor.duckgames.world.World;
+
+import java.io.IOException;
 
 /**
  * @author Intektor
@@ -20,41 +32,87 @@ public class GuiPlayState extends Gui {
     private ShapeRenderer worldShapeRenderer;
     private SpriteBatch worldSpriteBatch;
 
+    private float lastAttackPosX, lastAttackPosY;
+
     public GuiPlayState() {
-        World world = dg.theWorld;
-        worldCamera = new OrthographicCamera(world.getWidth(), world.getHeight());
-        worldCamera.position.set(world.getWidth() / 2, world.getHeight() / 2, 0);
+        worldCamera = new OrthographicCamera(width, height);
+        worldCamera.position.set(width / 2, height / 2, 0);
         worldShapeRenderer = new ShapeRenderer();
         worldShapeRenderer.setAutoShapeType(true);
         worldSpriteBatch = new SpriteBatch();
+        dg.theWorld.updateWorld();
     }
 
     @Override
-    protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera) {
+    protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
-        worldCamera.update();
-        worldShapeRenderer.setProjectionMatrix(worldCamera.combined);
-        worldSpriteBatch.setProjectionMatrix(worldCamera.combined);
-        worldRenderer.renderWorld(world, worldCamera, worldShapeRenderer, worldSpriteBatch, player);
-        super.renderGui(mouseX, mouseY, camera);
+        worldRenderer.renderWorld(world, worldCamera, worldShapeRenderer, worldSpriteBatch, player, partialTicks);
+        super.renderGui(mouseX, mouseY, camera, partialTicks);
     }
 
     @Override
     protected void updateGui(int mouseX, int mouseY) {
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
+        world.updateWorld();
+
+        if (input.isTouched()) {
+            MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
+            if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null && (mP.x != lastAttackPosX || mP.y != lastAttackPosY)) {
+                dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.UPDATE));
+            }
+        }
 
         super.updateGui(mouseX, mouseY);
     }
 
     @Override
     public void keyPushed(int keyCode, int mouseX, int mouseY) {
-
+        switch (keyCode) {
+            case Keys.A:
+                dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.LEFT));
+                dg.thePlayer.move(EnumDirection.LEFT, true);
+                break;
+            case Keys.D:
+                dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.RIGHT));
+                dg.thePlayer.move(EnumDirection.RIGHT, true);
+                break;
+            case Keys.SPACE:
+                dg.sendPacketToServer(new JumpPacketToServer(true));
+                break;
+            case Keys.ESCAPE:
+                try {
+                    dg.disconnect();
+                    dg.getDedicatedServer().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                dg.showGui(new GuiLevelEditor(dg.getDedicatedServer().getMainServerThread().getBackup()));
+                break;
+            case Keys.Q:
+                if (dg.thePlayer.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null) {
+                    dg.sendPacketToServer(new PlayerDropItemPacketToServer(EntityEquipmentSlot.MAIN_HAND));
+                }
+                break;
+        }
     }
 
     @Override
     public void keyReleased(int keyCode, int mouseX, int mouseY) {
+        switch (keyCode) {
+            case Keys.A:
+                dg.sendPacketToServer(new PlayerMovementPacketToServer(false, EnumDirection.LEFT));
+                dg.thePlayer.move(EnumDirection.LEFT, false);
+                break;
+            case Keys.D:
+                dg.sendPacketToServer(new PlayerMovementPacketToServer(false, EnumDirection.RIGHT));
+                dg.thePlayer.move(EnumDirection.RIGHT, false);
+                break;
+            case Keys.SPACE:
+                dg.sendPacketToServer(new JumpPacketToServer(false));
+                break;
+        }
     }
 
     @Override
@@ -65,21 +123,55 @@ public class GuiPlayState extends Gui {
     @Override
     protected void pointerDown(int mouseX, int mouseY, int pointer, int button) {
         super.pointerDown(mouseX, mouseY, pointer, button);
+        EntityPlayer player = dg.thePlayer;
+        World world = dg.theWorld;
+        MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
+        switch (button) {
+            case 0:
+                if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null) {
+                    dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.START));
+                    lastAttackPosX = mP.x;
+                    lastAttackPosY = mP.y;
+                }
+                break;
+            case 1:
+
+                break;
+        }
     }
 
     @Override
     protected void pointerUp(int mouseX, int mouseY, int pointer, int button) {
         super.pointerUp(mouseX, mouseY, pointer, button);
+        EntityPlayer player = dg.thePlayer;
+        World world = dg.theWorld;
+        MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
+        switch (button) {
+            case 0:
+                if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null) {
+                    dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.END));
+                    lastAttackPosX = mP.x;
+                    lastAttackPosY = mP.y;
+                }
+                break;
+            case 1:
+
+                break;
+        }
     }
 
     @Override
     protected void pointerDragged(int mouseX, int mouseY, int prevMouseX, int prevMouseY, int pointer) {
         super.pointerDragged(mouseX, mouseY, prevMouseX, prevMouseY, pointer);
+        EntityPlayer player = dg.thePlayer;
+        World world = dg.theWorld;
     }
 
     @Override
     protected void pointerMoved(int mouseX, int mouseY, int prevMouseX, int prevMouseY) {
         super.pointerMoved(mouseX, mouseY, prevMouseX, prevMouseY);
+        EntityPlayer player = dg.thePlayer;
+        World world = dg.theWorld;
     }
 
     @Override

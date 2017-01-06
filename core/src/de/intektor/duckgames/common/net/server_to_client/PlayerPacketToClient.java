@@ -1,8 +1,7 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.DuckGamesClient;
-import de.intektor.duckgames.common.net.NetworkHelper;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -17,7 +16,7 @@ import java.util.UUID;
  */
 public class PlayerPacketToClient implements IPacket {
 
-    private UUID playerUUID;
+    public UUID playerUUID;
 
     public PlayerPacketToClient(UUID playerUUID) {
         this.playerUUID = playerUUID;
@@ -28,25 +27,19 @@ public class PlayerPacketToClient implements IPacket {
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        NetworkHelper.writeUUID(out, playerUUID);
+        NetworkUtils.writeUUID(out, playerUUID);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        playerUUID = NetworkHelper.readUUID(in);
+        playerUUID = NetworkUtils.readUUID(in);
     }
 
     public static class Handler implements IPacketHandler<PlayerPacketToClient> {
 
         @Override
         public void handlePacket(final PlayerPacketToClient packet, Socket socketFrom) {
-            final DuckGamesClient duckGames = DuckGamesClient.getDuckGames();
-            duckGames.addScheduledTask(new Runnable() {
-                @Override
-                public void run() {
-                    duckGames.thePlayer = (EntityPlayer) duckGames.theWorld.getEntityByUUID(packet.playerUUID);
-                }
-            });
+            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

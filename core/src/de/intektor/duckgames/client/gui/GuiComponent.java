@@ -23,14 +23,14 @@ public class GuiComponent {
     }
 
     /**
-     * Gets called every render tick, used to render the component
+     * Gets called every renderInEditor tick, used to renderInEditor the component
      */
-    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB) {
+    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
 
     }
 
     /**
-     * Gets called every update tick, used to update the component
+     * Gets called every updateWorld tick, used to updateWorld the component
      */
     protected void updateComponent(int mouseX, int mouseY) {
 
@@ -118,7 +118,7 @@ public class GuiComponent {
      * @return whether the component is hovered with the mouse
      */
     public boolean isHovered(int mouseX, int mouseY) {
-        return GuiUtils.isPointInRegion(x, y, width, height, mouseX, mouseY);
+        return GuiUtils.isPointInRegion(x, y, width, height, mouseX, mouseY) && isShown();
     }
 
     public boolean isShown() {

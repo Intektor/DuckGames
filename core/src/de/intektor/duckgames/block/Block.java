@@ -11,6 +11,14 @@ public class Block {
         this.unlocalizedName = unlocalizedName;
     }
 
+    /**
+     * @return whether an entity can collide with this block or not
+     */
+    public boolean isSolidBlock() {
+        return true;
+    }
+
+
     public String getUnlocalizedName() {
         return unlocalizedName;
     }

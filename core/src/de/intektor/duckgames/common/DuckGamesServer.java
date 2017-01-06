@@ -1,7 +1,7 @@
 package de.intektor.duckgames.common;
 
+import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.common.net.server_to_client.FinishedWorldTransmissionPacketToClient;
-import de.intektor.duckgames.common.net.server_to_client.KickClientFromServerPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.WorldPacketToClient;
 import de.intektor.duckgames.editor.EditableGameMap;
 import de.intektor.duckgames.world.WorldServer;
@@ -15,9 +15,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static de.intektor.duckgames.common.GamePacketCombination.packetHelper;
+import static de.intektor.duckgames.common.SharedGameRegistries.packetHelper;
 
 /**
  * @author Intektor
@@ -32,7 +33,7 @@ public class DuckGamesServer implements Closeable {
 
     private volatile List<Socket> socketList = Collections.synchronizedList(new ArrayList<Socket>());
 
-    private ServerState serverState;
+    private volatile ServerState serverState;
 
     private MainServerThread mainServerThread;
 
@@ -75,7 +76,7 @@ public class DuckGamesServer implements Closeable {
                     DataInputStream in = new DataInputStream(clientSocket.getInputStream());
                     while (serverRunning && !clientSocket.isClosed()) {
                         IPacket packet = packetHelper.readPacket(in, Side.SERVER);
-                        GamePacketCombination.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
+                        SharedGameRegistries.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
                     }
                 } catch (PacketOnWrongSideException e) {
                     System.out.println("Client sent a server-to-client packet the server! Kicking client!");
@@ -85,7 +86,7 @@ public class DuckGamesServer implements Closeable {
                 }
             }
         }.start();
-
+        SharedGameRegistries.packetHelper.sendPacket(new RequestIdentificationPacketToClient(), clientSocket);
     }
 
     public void kickClient(Socket socket) {
@@ -121,17 +122,30 @@ public class DuckGamesServer implements Closeable {
 
         private volatile Queue<Runnable> scheduledTasks = new LinkedBlockingQueue<Runnable>();
 
-        private Map<Socket, PlayerProfile> profileMap = new HashMap<Socket, PlayerProfile>();
+        private Map<Socket, PlayerProfile> profileMap = new ConcurrentHashMap<Socket, PlayerProfile>();
 
         MainServerThread(DuckGamesServer server) {
             super("Main Server Thread");
         }
 
+        private volatile long lastTimeTick;
+
+        WorldServer world;
+        EditableGameMap backup;
+
         @Override
         public void run() {
-            Runnable task;
-            while ((task = scheduledTasks.poll()) != null) {
-                task.run();
+            while (serverRunning) {
+                if (System.currentTimeMillis() - lastTimeTick >= 15.625D) {
+                    lastTimeTick = System.currentTimeMillis();
+                    Runnable task;
+                    while ((task = scheduledTasks.poll()) != null) {
+                        task.run();
+                    }
+                    if (world != null) {
+                        world.updateWorld();
+                    }
+                }
             }
         }
 
@@ -143,6 +157,7 @@ public class DuckGamesServer implements Closeable {
             if (serverState == ServerState.CONNECT_STATE) {
                 PlayerProfile profile = new PlayerProfile(username, socket);
                 profileMap.put(socket, profile);
+                packetHelper.sendPacket(new IdentificationSuccessfulPacketToClient(), socket);
             } else {
                 packetHelper.sendPacket(new KickClientFromServerPacketToClient("Can't join while game is running!"), socket);
                 socketList.remove(socket);
@@ -154,10 +169,16 @@ public class DuckGamesServer implements Closeable {
         }
 
         public void launchGame(EditableGameMap map) {
-            WorldServer world = map.convertToWorld(DuckGamesServer.this);
+            backup = map;
+            world = map.convertToWorld(DuckGamesServer.this);
             messageEveryone(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
             world.spawnPlayers();
+            world.spawnEntities();
             messageEveryone(new FinishedWorldTransmissionPacketToClient());
+        }
+
+        public EditableGameMap getBackup() {
+            return backup;
         }
     }
 }

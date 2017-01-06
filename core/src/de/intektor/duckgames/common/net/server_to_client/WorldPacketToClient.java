@@ -2,11 +2,10 @@ package de.intektor.duckgames.common.net.server_to_client;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.block.Block;
-import de.intektor.duckgames.block.BlockRegistry;
-import de.intektor.duckgames.client.gui.guis.GuiDownloadingMap;
-import de.intektor.duckgames.world.WorldClient;
+import de.intektor.duckgames.client.ClientProxy;
+import de.intektor.duckgames.common.GameRegistry;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -20,9 +19,9 @@ import java.net.Socket;
  */
 public class WorldPacketToClient implements IPacket {
 
-    private int width;
-    private int height;
-    private Table<Integer, Integer, Block> blockTable;
+    public int width;
+    public int height;
+    public Table<Integer, Integer, Block> blockTable;
 
     public WorldPacketToClient() {
         blockTable = HashBasedTable.create();
@@ -36,12 +35,12 @@ public class WorldPacketToClient implements IPacket {
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        BlockRegistry blockRegistry = DuckGamesClient.getDuckGames().getBlockRegistry();
+        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
         out.writeInt(width);
         out.writeInt(height);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                out.writeByte(blockRegistry.getID(blockTable.get(x, y)));
+                out.writeByte(gameRegistry.getBlockID(blockTable.get(x, y)));
             }
         }
     }
@@ -50,9 +49,10 @@ public class WorldPacketToClient implements IPacket {
     public void read(DataInputStream in) throws IOException {
         width = in.readInt();
         height = in.readInt();
+        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                Block block = DuckGamesClient.getDuckGames().getBlockRegistry().getBlock(in.readByte());
+                Block block = gameRegistry.getBlock(in.readByte());
                 blockTable.put(x, y, block);
             }
         }
@@ -62,14 +62,7 @@ public class WorldPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final WorldPacketToClient packet, Socket socketFrom) {
-            final DuckGamesClient duckGames = DuckGamesClient.getDuckGames();
-            duckGames.addScheduledTask(new Runnable() {
-                @Override
-                public void run() {
-                    duckGames.showGui(new GuiDownloadingMap());
-                    duckGames.theWorld = new WorldClient(packet.blockTable, packet.width, packet.height);
-                }
-            });
+            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

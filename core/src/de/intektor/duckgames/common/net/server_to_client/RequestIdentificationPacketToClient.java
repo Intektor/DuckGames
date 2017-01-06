@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.DuckGamesClient;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -28,12 +28,7 @@ public class RequestIdentificationPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(RequestIdentificationPacketToClient packet, Socket socketFrom) {
-            DuckGamesClient.getDuckGames().addScheduledTask(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
+            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

@@ -1,6 +1,6 @@
 package de.intektor.duckgames.client.net;
 
-import de.intektor.duckgames.common.GamePacketCombination;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.network.IPacket;
 import de.intektor.network.PacketOnWrongSideException;
 import de.intektor.network.Side;
@@ -17,6 +17,7 @@ public class DuckGamesClientConnection implements Closeable {
 
     private volatile Socket clientSocket;
     private volatile boolean running;
+    private boolean identificationSuccessful;
 
     public void connect(final String ip, final int port) {
         running = true;
@@ -27,8 +28,8 @@ public class DuckGamesClientConnection implements Closeable {
                     clientSocket = new Socket(ip, port);
                     DataInputStream in = new DataInputStream(clientSocket.getInputStream());
                     while (running && !clientSocket.isClosed()) {
-                        IPacket packet = GamePacketCombination.packetHelper.readPacket(in, Side.CLIENT);
-                        GamePacketCombination.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
+                        IPacket packet = SharedGameRegistries.packetHelper.readPacket(in, Side.CLIENT);
+                        SharedGameRegistries.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
                     }
                 } catch (PacketOnWrongSideException e) {
                     System.out.println("Server sent a client-to-server packet! Disconnecting!");
@@ -46,6 +47,18 @@ public class DuckGamesClientConnection implements Closeable {
 
     public boolean isConnected() {
         return clientSocket != null && clientSocket.isConnected();
+    }
+
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    public void setIdentificationSuccessful(boolean identificationSuccessful) {
+        this.identificationSuccessful = identificationSuccessful;
+    }
+
+    public boolean isIdentificationSuccessful() {
+        return identificationSuccessful;
     }
 
     @Override

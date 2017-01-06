@@ -54,8 +54,8 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
     }
 
     @Override
-    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB) {
-        super.renderComponent(mouseX, mouseY, camera, sR, sB);
+    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
+        super.renderComponent(mouseX, mouseY, camera, sR, sB, partialTicks);
         sR.identity();
         sR.begin();
         sR.set(ShapeRenderer.ShapeType.Filled);
@@ -78,7 +78,7 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
             int y = this.y + height - (offsetY + entryHeight * currentRow + entryHeight);
             boolean highlighted = GuiUtils.isPointInRegion(x, y, entryWidth, entryHeight, mouseX, mouseY);
             entryList.get(i).
-                    render(camera, sR, sB, x, y, entryWidth, entryHeight, highlighted);
+                    render(camera, sR, sB, x, y, entryWidth, entryHeight, highlighted, partialTicks);
             if (currentColumn + 1 == entryColumns) {
                 currentColumn = -1;
                 currentRow++;
@@ -165,7 +165,7 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
     }
 
     public interface ScrollToolEntry {
-        void render(OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float x, float y, float width, float height, boolean highlighted);
+        void render(OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float x, float y, float width, float height, boolean highlighted, float partialTicks);
     }
 
     public interface ScrollToolCallback {

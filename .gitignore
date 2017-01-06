@@ -68,3 +68,15 @@ build/
 ## OS Specific
 .DS_Store
 Thumbs.db
+/.idea/
+android/assets/duck.png
+android/assets/iron_sword.png
+android/assets/level_editor/
+android/assets/shader/
+android/res/
+core/src/de/intektor/duckgames/client/net/handler/
+/android/build/
+/core/build/
+/desktop/build/
+/.gradle/
+/local.properties

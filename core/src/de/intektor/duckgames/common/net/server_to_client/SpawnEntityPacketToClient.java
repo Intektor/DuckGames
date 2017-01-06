@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.DuckGamesClient;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
@@ -15,7 +15,7 @@ import java.net.Socket;
  */
 public class SpawnEntityPacketToClient implements IPacket {
 
-    private Entity entity;
+    public Entity entity;
 
     public SpawnEntityPacketToClient(Entity entity) {
         this.entity = entity;
@@ -38,13 +38,7 @@ public class SpawnEntityPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final SpawnEntityPacketToClient packet, Socket socketFrom) {
-            final DuckGamesClient duckGames = DuckGamesClient.getDuckGames();
-            duckGames.addScheduledTask(new Runnable() {
-                @Override
-                public void run() {
-                    duckGames.theWorld.spawnEntityInWorld(packet.entity);
-                }
-            });
+            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

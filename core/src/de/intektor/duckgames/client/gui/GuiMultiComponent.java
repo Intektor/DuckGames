@@ -23,10 +23,10 @@ public class GuiMultiComponent extends GuiComponent implements GuiButton.GuiButt
     }
 
     @Override
-    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB) {
-        super.renderComponent(mouseX, mouseY, camera, sR, sB);
+    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
+        super.renderComponent(mouseX, mouseY, camera, sR, sB, partialTicks);
         for (GuiComponent guiComponent : componentList) {
-            guiComponent.renderComponent(mouseX, mouseY, camera, sR, sB);
+            guiComponent.renderComponent(mouseX, mouseY, camera, sR, sB, partialTicks);
         }
     }
 

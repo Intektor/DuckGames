@@ -2,10 +2,12 @@ package de.intektor.duckgames.block;
 
 import com.badlogic.gdx.graphics.Color;
 import de.intektor.duckgames.DuckGamesClient;
-import de.intektor.duckgames.client.renderer.block.AirBlockBlockRenderer;
-import de.intektor.duckgames.client.renderer.block.BlockRendererRegistry;
-import de.intektor.duckgames.client.renderer.block.DefaultColorBlockRenderer;
-import de.intektor.duckgames.client.renderer.block.DefaultTextureBlockRenderer;
+import de.intektor.duckgames.client.rendering.block.AirBlockBlockRenderer;
+import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
+import de.intektor.duckgames.client.rendering.block.DefaultColorBlockRenderer;
+import de.intektor.duckgames.client.rendering.block.DefaultTextureBlockRenderer;
+import de.intektor.duckgames.common.GameRegistry;
+import de.intektor.duckgames.common.SharedGameRegistries;
 
 /**
  * @author Intektor
@@ -25,11 +27,11 @@ public class Blocks {
         ICE = new Block("ice");
         STONE_BRICK = new Block("stone_brick");
         CLAY_BRICK = new Block("clay_brick");
-        AIR = new Block("air");
+        AIR = new BlockAir("air");
     }
 
-    public static void initUniversal() {
-        BlockRegistry registry = DuckGamesClient.getDuckGames().getBlockRegistry();
+    public static void initCommon() {
+        GameRegistry registry = SharedGameRegistries.gameRegistry;
         registry.registerBlock(DIRT);
         registry.registerBlock(GRASS);
         registry.registerBlock(ICE);

@@ -1,7 +1,8 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.block.Block;
+import de.intektor.duckgames.client.ClientProxy;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -15,8 +16,8 @@ import java.net.Socket;
  */
 public class PlaceBlockPacketToClient implements IPacket {
 
-    private Block block;
-    private int x, y;
+    public Block block;
+    public int x, y;
 
     public PlaceBlockPacketToClient() {
     }
@@ -31,27 +32,21 @@ public class PlaceBlockPacketToClient implements IPacket {
     public void write(DataOutputStream out) throws IOException {
         out.writeInt(x);
         out.writeInt(y);
-        out.writeByte(DuckGamesClient.getDuckGames().getBlockRegistry().getID(block));
+        out.writeByte(SharedGameRegistries.gameRegistry.getBlockID(block));
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
         x = in.readInt();
         y = in.readInt();
-        block = DuckGamesClient.getDuckGames().getBlockRegistry().getBlock(in.readByte());
+        block = SharedGameRegistries.gameRegistry.getBlock(in.readByte());
     }
 
     public static class Handler implements IPacketHandler<PlaceBlockPacketToClient> {
 
         @Override
         public void handlePacket(final PlaceBlockPacketToClient packet, Socket socketFrom) {
-            final DuckGamesClient duckGames = DuckGamesClient.getDuckGames();
-            duckGames.addScheduledTask(new Runnable() {
-                @Override
-                public void run() {
-                    duckGames.theWorld.setBlock(packet.x, packet.y, packet.block);
-                }
-            });
+            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

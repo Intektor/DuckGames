@@ -10,11 +10,12 @@ import de.intektor.duckgames.entity.Entity;
 public class WorldClient extends World {
 
     public WorldClient(Table<Integer, Integer, Block> blockTable, int width, int height) {
-        super(blockTable, width, height);
+        super(blockTable, width, height, true);
     }
 
     @Override
     public void spawnEntityInWorld(Entity entity) {
-
+        entity.worldObj = this;
+        super.spawnEntityInWorld(entity);
     }
 }

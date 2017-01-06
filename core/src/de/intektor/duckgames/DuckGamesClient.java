@@ -4,22 +4,28 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import de.intektor.duckgames.block.BlockRegistry;
 import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.guis.GuiLevelEditor;
 import de.intektor.duckgames.client.net.DuckGamesClientConnection;
-import de.intektor.duckgames.client.renderer.block.BlockRendererRegistry;
-import de.intektor.duckgames.client.renderer.entity.EntityRendererRegistry;
+import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
+import de.intektor.duckgames.client.rendering.entity.EntityRendererRegistry;
+import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
+import de.intektor.duckgames.client.rendering.utils.FutureTextureRegistry;
 import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.editor.EditableGameMap;
 import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldClient;
+import de.intektor.network.IPacket;
 
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,6 +41,8 @@ public class DuckGamesClient extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
 
+    public BitmapFont defaultFont12;
+
     private final int preferredScreenWidth = 1920;
     private final int preferredScreenHeight = 1080;
 
@@ -42,12 +50,13 @@ public class DuckGamesClient extends ApplicationAdapter {
     private SpriteBatch defaultSpriteBatch;
     private ModelBatch defaultModelBatch;
 
+    private ShaderProgram outlineShaderProgram;
+
     private Gui currentGui;
 
     private BlockRendererRegistry blockRendererRegistry;
-    private BlockRegistry blockRegistry;
-
     private EntityRendererRegistry entityRendererRegistry;
+    private ItemRendererRegistry itemRendererRegistry;
 
     private DuckGamesClientConnection clientConnection;
 
@@ -55,6 +64,8 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     public WorldClient theWorld;
     public EntityPlayer thePlayer;
+
+    private float partialTicks;
 
     @Override
     public void create() {
@@ -69,32 +80,39 @@ public class DuckGamesClient extends ApplicationAdapter {
         defaultShapeRenderer.setProjectionMatrix(camera.combined);
         defaultSpriteBatch = new SpriteBatch();
         defaultSpriteBatch.setProjectionMatrix(camera.combined);
+        defaultSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         defaultModelBatch = new ModelBatch();
 
         blockRendererRegistry = new BlockRendererRegistry();
-        blockRegistry = new BlockRegistry();
+        itemRendererRegistry = new ItemRendererRegistry();
 
-        Blocks.initUniversal();
+        defaultFont12 = new BitmapFont();
+
         Blocks.initClient();
+        Items.initClient();
+
+        outlineShaderProgram = new ShaderProgram(Gdx.files.internal("assets/shader/outline_shader_vertex.glsl"), Gdx.files.internal("assets/shader/outline_shader_fragment.glsl"));
 
         entityRendererRegistry = new EntityRendererRegistry();
         entityRendererRegistry.initDefaultEntities();
 
-        showGui(new GuiLevelEditor(new EditableGameMap(40, 20)));
+        FutureTextureRegistry.loadTextures();
+
+        showGui(new GuiLevelEditor(new EditableGameMap(80, 40)));
     }
 
     @Override
     public void render() {
-        if (System.currentTimeMillis() - 15.625D >= lastTickTime) {
+        camera.update();
+        if (System.currentTimeMillis() - lastTickTime >= 15.625D) {
             lastTickTime = System.currentTimeMillis();
             updateGame();
         }
-        camera.update();
         renderGame();
     }
 
     /**
-     * The update method of the game: Called 64 times per second
+     * The updateWorld method of the game: Called 64 times per second
      */
     private void updateGame() {
         Runnable r;
@@ -113,7 +131,13 @@ public class DuckGamesClient extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         defaultShapeRenderer.setProjectionMatrix(camera.combined);
         defaultSpriteBatch.setProjectionMatrix(camera.combined);
-        if (currentGui != null) currentGui.render(Gdx.input.getX(), Gdx.input.getY(), camera);
+        partialTicks = (System.currentTimeMillis() - lastTickTime) / (15.625f);
+        SpriteBatch spriteBatch = new SpriteBatch();
+        spriteBatch.begin();
+        defaultFont12.draw(spriteBatch, partialTicks + "      " + Gdx.graphics.getFramesPerSecond(), 0, 500);
+        spriteBatch.end();
+        spriteBatch.dispose();
+        if (currentGui != null) currentGui.render(Gdx.input.getX(), Gdx.input.getY(), camera, partialTicks);
     }
 
     @Override
@@ -163,10 +187,6 @@ public class DuckGamesClient extends ApplicationAdapter {
         return blockRendererRegistry;
     }
 
-    public BlockRegistry getBlockRegistry() {
-        return blockRegistry;
-    }
-
     public DuckGamesClientConnection getClientConnection() {
         return clientConnection;
     }
@@ -185,6 +205,10 @@ public class DuckGamesClient extends ApplicationAdapter {
         this.clientConnection.connect(ip, port);
     }
 
+    public void sendPacketToServer(IPacket packet) {
+        SharedGameRegistries.packetHelper.sendPacket(packet, clientConnection.getClientSocket());
+    }
+
     public void disconnect() {
         try {
             if (this.clientConnection != null) this.clientConnection.close();
@@ -200,6 +224,7 @@ public class DuckGamesClient extends ApplicationAdapter {
             e.printStackTrace();
         }
         this.dedicatedServer = dedicatedServer;
+        SharedGameRegistries.setDuckGamesServer(dedicatedServer);
     }
 
     public DuckGamesServer getDedicatedServer() {
@@ -208,5 +233,13 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     public EntityRendererRegistry getEntityRendererRegistry() {
         return entityRendererRegistry;
+    }
+
+    public ItemRendererRegistry getItemRendererRegistry() {
+        return itemRendererRegistry;
+    }
+
+    public ShaderProgram getOutlineShaderProgram() {
+        return outlineShaderProgram;
     }
 }

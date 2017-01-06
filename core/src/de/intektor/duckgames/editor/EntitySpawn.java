@@ -1,6 +1,7 @@
 package de.intektor.duckgames.editor;
 
-import de.intektor.duckgames.collision.CollisionRect;
+import de.intektor.duckgames.collision.Collision2D;
+import de.intektor.duckgames.world.WorldServer;
 
 /**
  * @author Intektor
@@ -34,9 +35,14 @@ public abstract class EntitySpawn {
 
     public abstract float getHeight();
 
-    public abstract CollisionRect getCollision();
+    public abstract Collision2D getCollision();
+
+    public void spawnInWorld(WorldServer world) {
+
+    }
 
     public enum EntitySpawnType {
-        PLAYER_SPAWN
+        PLAYER_SPAWN,
+        ITEM_SPAWN
     }
 }
