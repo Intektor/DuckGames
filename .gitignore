@@ -80,3 +80,14 @@ core/src/de/intektor/duckgames/client/net/handler/
 /desktop/build/
 /.gradle/
 /local.properties
+!/android/assets/iron_sword.png
+!/android/assets/duck.png
+!/android/assets/level_editor/Cursor.png
+!/android/assets/level_editor/trash_can.png
+!/android/assets/level_editor/
+!/android/libs/
+!/android/libs/armeabi/
+!/android/libs/arm64-v8a/
+!/android/libs/armeabi-v7a/
+!/android/libs/x86/
+!/android/libs/x86_64/
