@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import de.intektor.duckgames.DuckGamesClient;
 
+import javax.vecmath.Point2f;
+
 /**
  * @author Intektor
  */
@@ -33,5 +35,30 @@ public class GuiUtils {
 
     public static MousePos unprojectMousePosition(OrthographicCamera camera) {
         return unprojectMousePosition(camera, Gdx.input.getX(), Gdx.input.getY());
+    }
+
+    public static Point2f projectWorldPosition(OrthographicCamera camera, float posX, float posY) {
+        Vector3 project = camera.project(new Vector3(posX, posY, 0));
+        float scaleX = (float) (dg.getPreferredScreenWidth() / (double) Gdx.graphics.getWidth());
+        float scaleY = (float) (dg.getPreferredScreenHeight() / (double) Gdx.graphics.getHeight());
+        return new Point2f(project.x * scaleX, project.y * scaleY);
+    }
+
+    public static int scaleMouseX() {
+        return scaleMouseX(Gdx.input.getX());
+    }
+
+    public static int scaleMouseY() {
+        return scaleMouseY(Gdx.input.getY());
+    }
+
+    public static int scaleMouseX(int mouseX) {
+        double scale = DuckGamesClient.getDuckGames().getPreferredScreenWidth() / (double) Gdx.graphics.getWidth();
+        return (int) (mouseX * scale);
+    }
+
+    public static int scaleMouseY(int mouseY) {
+        double scale = DuckGamesClient.getDuckGames().getPreferredScreenHeight() / (double) Gdx.graphics.getHeight();
+        return DuckGamesClient.getDuckGames().getPreferredScreenHeight() - (int) ((mouseY * scale));
     }
 }

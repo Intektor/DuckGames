@@ -3,6 +3,7 @@ package de.intektor.duckgames.client.gui;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 
 /**
@@ -15,6 +16,8 @@ public class GuiComponent {
     protected boolean isShown = true;
     protected boolean isEnabled = true;
 
+    protected final DuckGamesClient dg = DuckGamesClient.getDuckGames();
+
     public GuiComponent(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
@@ -25,21 +28,21 @@ public class GuiComponent {
     /**
      * Gets called every renderInEditor tick, used to renderInEditor the component
      */
-    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
+    protected void renderComponent(float drawX, float drawY, int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
 
     }
 
     /**
      * Gets called every updateWorld tick, used to updateWorld the component
      */
-    protected void updateComponent(int mouseX, int mouseY) {
+    protected void updateComponent(int mouseX, int mouseY, float drawX, float drawY) {
 
     }
 
     /**
      * Gets called when the user clicks somewhere on the gui
      */
-    public void clickDown(int mouseX, int mouseY, int pointer, int button) {
+    public void clickDown(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
 
     }
 
@@ -53,7 +56,7 @@ public class GuiComponent {
     /**
      * Gets called when the user releases his click from the gui
      */
-    public void clickUp(int mouseX, int mouseY, int pointer, int button) {
+    public void clickUp(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
 
     }
 
@@ -115,6 +118,14 @@ public class GuiComponent {
     }
 
     /**
+     * Sets the position of this component
+     */
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
      * @return whether the component is hovered with the mouse
      */
     public boolean isHovered(int mouseX, int mouseY) {
@@ -135,5 +146,21 @@ public class GuiComponent {
 
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

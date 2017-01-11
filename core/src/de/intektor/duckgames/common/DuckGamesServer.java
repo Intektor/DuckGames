@@ -91,6 +91,11 @@ public class DuckGamesServer implements Closeable {
 
     public void kickClient(Socket socket) {
         socketList.remove(socket);
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void messageEveryone(IPacket packet) {

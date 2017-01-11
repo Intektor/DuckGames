@@ -16,7 +16,7 @@ import java.net.Socket;
  */
 public class JumpPacketToServer implements IPacket {
 
-    boolean start;
+    private boolean start;
 
     public JumpPacketToServer(boolean start) {
         this.start = start;
@@ -45,6 +45,9 @@ public class JumpPacketToServer implements IPacket {
                 public void run() {
                     EntityPlayer player = main.getProfileMap().get(socketFrom).player;
                     player.isJumping = packet.start;
+                    if (!packet.start) {
+                        player.jumpTicks = player.maxJumpTicks;
+                    }
                 }
             });
         }

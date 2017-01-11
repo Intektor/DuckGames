@@ -18,16 +18,20 @@ public class Blocks {
     public static final Block GRASS;
     public static final Block ICE;
     public static final Block STONE_BRICK;
+    public static final Block MARBLE_COBBLESTONE;
     public static final Block CLAY_BRICK;
     public static final Block AIR;
+    public static final Block WOODEN_PLANKS;
 
     static {
         DIRT = new Block("dirt");
         GRASS = new Block("grass");
         ICE = new Block("ice");
         STONE_BRICK = new Block("stone_brick");
+        MARBLE_COBBLESTONE = new Block("marble_cobblestone");
         CLAY_BRICK = new Block("clay_brick");
         AIR = new BlockAir("air");
+        WOODEN_PLANKS = new Block("wooden_planks");
     }
 
     public static void initCommon() {
@@ -36,8 +40,10 @@ public class Blocks {
         registry.registerBlock(GRASS);
         registry.registerBlock(ICE);
         registry.registerBlock(STONE_BRICK);
+        registry.registerBlock(MARBLE_COBBLESTONE);
         registry.registerBlock(CLAY_BRICK);
         registry.registerBlock(AIR);
+        registry.registerBlock(WOODEN_PLANKS);
     }
 
     public static void initClient() {
@@ -45,8 +51,10 @@ public class Blocks {
         registry.registerRenderer(DIRT, new DefaultTextureBlockRenderer("dirt"));
         registry.registerRenderer(GRASS, new DefaultTextureBlockRenderer("grass"));
         registry.registerRenderer(ICE, new DefaultTextureBlockRenderer("ice"));
+        registry.registerRenderer(MARBLE_COBBLESTONE, new DefaultTextureBlockRenderer("marble_cobblestone"));
         registry.registerRenderer(STONE_BRICK, new DefaultColorBlockRenderer(Color.GRAY));
-        registry.registerRenderer(CLAY_BRICK, new DefaultColorBlockRenderer(Color.RED));
+        registry.registerRenderer(CLAY_BRICK, new DefaultTextureBlockRenderer("clay_bricks"));
         registry.registerRenderer(AIR, new AirBlockBlockRenderer());
+        registry.registerRenderer(WOODEN_PLANKS, new DefaultTextureBlockRenderer("wooden_planks"));
     }
 }

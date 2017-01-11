@@ -2,6 +2,7 @@ package de.intektor.duckgames.item.items;
 
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.entity.Entity;
+import de.intektor.duckgames.entity.EntityDirection;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.EntityPlayer;
 import de.intektor.duckgames.game.damage.DamageSource;
@@ -25,7 +26,8 @@ public class ItemSword extends Item {
         super.onAttackWithItemBegin(stack, player, world, posX, posY);
         if (!world.isRemote) {
             float swordRange = 2.0f;
-            List<Entity> entitiesInRegion = world.getEntitiesInRegion(Entity.class, new Collision2D(player.posX, player.posY + player.getEyeHeight(), player.isLeft() ? -swordRange : swordRange, 1));
+            player.setDirection(posX > player.posX ? EntityDirection.RIGHT : EntityDirection.LEFT);
+            List<Entity> entitiesInRegion = world.getEntitiesInRegion(Entity.class, new Collision2D(player.posX + player.getWidth() / 2, player.posY + player.getEyeHeight(), player.getDirection() == EntityDirection.LEFT ? -swordRange : swordRange, 1));
             entitiesInRegion.remove(player);
             for (Entity entity : entitiesInRegion) {
                 entity.damageEntity(new DamageSource(player, 3f));

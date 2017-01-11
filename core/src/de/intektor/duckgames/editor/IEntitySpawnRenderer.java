@@ -1,5 +1,6 @@
 package de.intektor.duckgames.editor;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -8,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
  */
 public interface IEntitySpawnRenderer<T extends EntitySpawn> {
 
-    void renderInEditor(T spawn, float mouseX, float mouseY, float x, float y, float width, float height, boolean drawnOnMouse, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch);
+    void renderInEditor(T spawn, float mouseX, float mouseY, float x, float y, float width, float height, boolean drawnOnMouse, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, OrthographicCamera camera, float partialTicks);
 
-    void renderInScrollTool(T spawn, float x, float y, float width, float height, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch);
+    void renderInScrollTool(T spawn, float x, float y, float width, float height, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, OrthographicCamera camera, float partialTicks);
 }

@@ -72,6 +72,7 @@ public class ClientProxy implements IProxy {
                 entity.motionX = packet.motionX;
                 entity.motionY = packet.motionY;
                 entity.motionMultiplier = packet.motionMultiplier;
+                entity.setDirection(packet.direction);
                 entity.adjustCollision();
                 entity.setHealth(packet.health);
             }

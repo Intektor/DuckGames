@@ -4,6 +4,7 @@ import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.ClientProxy;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.*;
+import de.intektor.duckgames.entity.EntityBullet;
 import de.intektor.duckgames.entity.EntityItem;
 import de.intektor.duckgames.entity.EntityPlayer;
 import de.intektor.duckgames.item.Items;
@@ -47,10 +48,12 @@ public class SharedGameRegistries {
         packetRegistry.registerPacket(PlayerAttackWithItemPacketToServer.class, PlayerAttackWithItemPacketToServer.Handler.class, 16, Side.SERVER);
         packetRegistry.registerPacket(PlayerAttackWithItemPacketToClient.class, PlayerAttackWithItemPacketToClient.Handler.class, 17, Side.CLIENT);
         packetRegistry.registerPacket(DamageEntityPacketToClient.class, DamageEntityPacketToClient.Handler.class, 18, Side.CLIENT);
+        packetRegistry.registerPacket(UpdateEquipmentPacketToClient.class, UpdateEquipmentPacketToClient.Handler.class, 19, Side.CLIENT);
 
         gameRegistry = new GameRegistry();
         gameRegistry.registerEntity(EntityPlayer.class, 0);
         gameRegistry.registerEntity(EntityItem.class, 1);
+        gameRegistry.registerEntity(EntityBullet.class, 2);
 
         clientProxy = new ClientProxy();
         serverProxy = new ServerProxy();

@@ -5,6 +5,7 @@ import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.duckgames.common.net.server_to_client.DamageEntityPacketToClient;
+import de.intektor.duckgames.common.net.server_to_client.RemoveEntityPacketToClient;
 import de.intektor.duckgames.game.damage.DamageSource;
 import de.intektor.duckgames.util.EnumAxis;
 import de.intektor.duckgames.world.World;
@@ -33,14 +34,14 @@ public abstract class Entity {
     public World worldObj;
 
     public float stepHeight = 0;
+    protected boolean onGround;
+    private float health;
+    public long ticksAlive;
+    public boolean isDead;
 
     protected Collision2D collision;
 
-    protected boolean onGround, isLeft, isRight;
-
-    public long ticksAlive;
-
-    private float health;
+    protected EntityDirection direction = EntityDirection.RIGHT;
 
     public Entity(World world, float posX, float posY) {
         this.worldObj = world;
@@ -70,6 +71,8 @@ public abstract class Entity {
         move();
         updateEntity();
         ticksAlive++;
+        if (posY < -64) kill();
+        if (posX < -64 || posX > worldObj.getWidth() + 64) kill();
     }
 
     private void move() {
@@ -214,12 +217,12 @@ public abstract class Entity {
 
     }
 
-    public boolean isLeft() {
-        return isLeft;
+    public EntityDirection getDirection() {
+        return direction;
     }
 
-    public boolean isRight() {
-        return isRight;
+    public void setDirection(EntityDirection direction) {
+        this.direction = direction;
     }
 
     public float getDistanceSq(float x, float y) {
@@ -242,5 +245,14 @@ public abstract class Entity {
 
     public Collision2D getCollision() {
         return collision;
+    }
+
+    public void kill() {
+        isDead = true;
+        if (!worldObj.isRemote) {
+            WorldServer serverWorld = (WorldServer) worldObj;
+            serverWorld.getServer().messageEveryone(new RemoveEntityPacketToClient(uuid));
+            serverWorld.removeEntity(this);
+        }
     }
 }

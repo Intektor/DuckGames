@@ -17,7 +17,7 @@ public class EntityItemRenderer implements IEntityRenderer<EntityItem> {
     private float offsetY;
 
     @Override
-    public void renderEntity(EntityItem entity, OrthographicCamera camera, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, float partialTicks, float scaleX, float scaleY) {
+    public void renderEntityInWorld(EntityItem entity, OrthographicCamera camera, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, float partialTicks, float scaleX, float scaleY) {
         float drawX = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
         float drawY = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
         offsetY = (float) Math.sin((entity.ticksAlive + partialTicks) / 40f) * 0.2f + 0.2f;
@@ -25,5 +25,10 @@ public class EntityItemRenderer implements IEntityRenderer<EntityItem> {
                 drawX * scaleX, drawY * scaleY
                         + offsetY * scaleY
                 , entity.getWidth() * scaleX, entity.getHeight() * scaleY, partialTicks);
+    }
+
+    @Override
+    public void renderEntityOnScreen(EntityItem entity, OrthographicCamera screenCamera, OrthographicCamera worldCamera, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, float partialTicks, float scaleX, float scaleY) {
+
     }
 }

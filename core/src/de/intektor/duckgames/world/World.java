@@ -92,6 +92,16 @@ public abstract class World {
         return playerList;
     }
 
+    public <ENTITY extends Entity> List<ENTITY> getAllEntitiesOfType(Class<ENTITY> clazz) {
+        List<ENTITY> list = new ArrayList<ENTITY>();
+        for (Entity entity : getCombinedEntityList()) {
+            if (entity.getClass() == clazz) {
+                list.add((ENTITY) entity);
+            }
+        }
+        return list;
+    }
+
     public void spawnEntityInWorld(Entity entity) {
         addEntitiesNextUpdate.add(entity);
         uuidToEntityMap.put(entity.uuid, entity);

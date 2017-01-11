@@ -1,6 +1,7 @@
 package de.intektor.duckgames.client.gui.guis;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -8,6 +9,8 @@ import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.gui.util.MousePos;
+import de.intektor.duckgames.client.rendering.FontUtils;
+import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.WorldRenderer;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.client_to_server.JumpPacketToServer;
@@ -16,6 +19,8 @@ import de.intektor.duckgames.common.net.client_to_server.PlayerDropItemPacketToS
 import de.intektor.duckgames.common.net.client_to_server.PlayerMovementPacketToServer;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.item.ItemStack;
+import de.intektor.duckgames.item.items.gun.ItemGun;
 import de.intektor.duckgames.util.EnumDirection;
 import de.intektor.duckgames.world.World;
 
@@ -47,7 +52,16 @@ public class GuiPlayState extends Gui {
     protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
+        spriteBatch.enableBlending();
         worldRenderer.renderWorld(world, worldCamera, worldShapeRenderer, worldSpriteBatch, player, partialTicks);
+        ItemStack equipment = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);
+        if (equipment != null && equipment.getItem() instanceof ItemGun) {
+            ItemGun gun = (ItemGun) equipment.getItem();
+            String ammoInfo = gun.getRemainingBullets(equipment, player, world) + "/" + gun.getRemainingReserveAmmo(equipment, player, world);
+            spriteBatch.begin();
+            RenderUtils.drawString(ammoInfo, dg.defaultFont28, dg.getPreferredScreenWidth() - FontUtils.getStringWidth(ammoInfo, dg.defaultFont28), FontUtils.getStringHeight(ammoInfo, dg.defaultFont28), spriteBatch, Color.WHITE);
+            spriteBatch.end();
+        }
         super.renderGui(mouseX, mouseY, camera, partialTicks);
     }
 

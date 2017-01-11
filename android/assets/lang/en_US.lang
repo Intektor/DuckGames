@@ -1,0 +1,10 @@
+item.sword.name=Sword
+item.pistol.name=Pistol
+
+block.dirt.name=Dirt
+block.grass.name=Grass
+block.ice.name=Ice
+block.stone_brick.name=Stone Brick
+block.marble_cobblestone.name=Marble Cobblestone
+block.clay_brick.name=Bricks
+block.air.name=Air

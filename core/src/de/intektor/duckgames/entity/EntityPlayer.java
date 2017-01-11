@@ -23,8 +23,8 @@ public class EntityPlayer extends Entity {
     private boolean movingLeft, movingRight;
 
     public boolean isJumping;
-    private int maxJumpTicks = 50;
-    private int jumpTicks;
+    public int maxJumpTicks = 50;
+    public int jumpTicks;
 
     private boolean isAttacking;
     private float attackPosX, attackPosY;
@@ -55,7 +55,7 @@ public class EntityPlayer extends Entity {
         if (onGround) jumpTicks = 0;
         if (isJumping && jumpTicks <= maxJumpTicks) {
             jumpTicks++;
-            motionY += 0.4f;
+            motionY += 0.275f;
         }
         if (!worldObj.isRemote) {
             List<EntityItem> entitiesInRegion = worldObj.getEntitiesInRegion(EntityItem.class, new Collision2D(posX - 1, posY, 2, 1));
@@ -112,26 +112,16 @@ public class EntityPlayer extends Entity {
             case LEFT:
                 movingLeft = start;
                 if (start) {
-                    isLeft = true;
-                    isRight = false;
+                    setDirection(EntityDirection.LEFT);
                 }
                 break;
             case RIGHT:
                 movingRight = start;
                 if (start) {
-                    isRight = true;
-                    isLeft = false;
+                    setDirection(EntityDirection.RIGHT);
                 }
                 break;
         }
-    }
-
-    public boolean isLeft() {
-        return isLeft;
-    }
-
-    public boolean isRight() {
-        return isRight;
     }
 
     public void setEquipment(EntityEquipmentSlot slot, ItemStack stack) {

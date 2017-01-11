@@ -3,6 +3,7 @@ package de.intektor.duckgames.common.net.server_to_client;
 import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.duckgames.entity.Entity;
+import de.intektor.duckgames.entity.EntityDirection;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -20,7 +21,7 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
     public UUID entityUUID;
 
     public float posX, posY, prevPosX, prevPosY, motionX, motionY, motionMultiplier, health;
-    public boolean isLeft, isRight;
+    public EntityDirection direction;
 
     public BasicEntityUpdateInformationPacketToClient(Entity entity) {
         this.entityUUID = entity.uuid;
@@ -31,8 +32,7 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         this.motionX = entity.motionX;
         this.motionY = entity.motionY;
         this.motionMultiplier = entity.motionMultiplier;
-        this.isLeft = entity.isLeft();
-        this.isRight = entity.isRight();
+        this.direction = entity.getDirection();
         this.health = entity.getHealth();
     }
 
@@ -49,8 +49,7 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         out.writeFloat(motionX);
         out.writeFloat(motionY);
         out.writeFloat(motionMultiplier);
-        out.writeBoolean(isLeft);
-        out.writeBoolean(isRight);
+        out.writeInt(direction.ordinal());
         out.writeFloat(health);
     }
 
@@ -64,8 +63,7 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         motionX = in.readFloat();
         motionY = in.readFloat();
         motionMultiplier = in.readFloat();
-        isLeft = in.readBoolean();
-        isRight = in.readBoolean();
+        direction = EntityDirection.values()[in.readInt()];
         health = in.readFloat();
     }
 

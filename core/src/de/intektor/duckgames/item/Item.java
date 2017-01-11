@@ -28,7 +28,7 @@ public abstract class Item {
     public final void itemHeld(ItemStack stack, EntityPlayer player, World world, EntityEquipmentSlot slotIn) {
         onItemHeld(stack, player, world);
         if (!world.isRemote) {
-            if (stack.getTagCompound().isDirty()) {
+            if (stack.hasTagCompound() && stack.getTagCompound().isDirty()) {
                 WorldServer serverWorld = (WorldServer) world;
                 serverWorld.getServer().messageEveryone(new UpdateEquipmentPacketToClient(player.uuid, stack, slotIn));
             }
@@ -82,6 +82,10 @@ public abstract class Item {
      */
     public void onItemThrownAway(ItemStack stack, EntityPlayer player, World world) {
 
+    }
+
+    public String getUnlocalizedName() {
+        return unlocalizedName;
     }
 
     public EntityEquipmentSlot getFittingSlot() {

@@ -32,7 +32,7 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
 
     protected List<T> entryList = new ArrayList<T>();
 
-    ScrollToolCallback callback;
+    private ScrollToolCallback callback;
 
     public GuiScrollTool(int x, int y, int width, int height, boolean verticalScroll, boolean horizontalScroll, boolean touch, int entryWidth, int entryHeight, int entryColumns, ScrollToolCallback callback) {
         super(x, y, width, height);
@@ -54,15 +54,15 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
     }
 
     @Override
-    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
-        super.renderComponent(mouseX, mouseY, camera, sR, sB, partialTicks);
+    protected void renderComponent(float drawX, float drawY, int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
+        super.renderComponent(drawX, drawY, mouseX, mouseY, camera, sR, sB, partialTicks);
         sR.identity();
         sR.begin();
         sR.set(ShapeRenderer.ShapeType.Filled);
         sR.setColor(Color.BLUE);
-        sR.rect(x, y, width, height);
+        sR.rect(drawX, drawY, width, height);
         Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
-        Gdx.gl.glScissor(GuiUtils.unscaleScreenCoordX(x), GuiUtils.unscaleScreenCoordY(y), GuiUtils.unscaleScreenCoordX(width), GuiUtils.unscaleScreenCoordY(height));
+        Gdx.gl.glScissor(GuiUtils.unscaleScreenCoordX(drawX), GuiUtils.unscaleScreenCoordY(drawY), GuiUtils.unscaleScreenCoordX(width), GuiUtils.unscaleScreenCoordY(height));
         int[] rac = calculateRowsAndColumns(entryList.size());
         int i = 0;
         int currentRow = 0;
@@ -74,9 +74,9 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
         sR.end();
         while (i < entryList.size()) {
             currentColumn++;
-            int x = this.x + offsetX + entryWidth * currentColumn;
-            int y = this.y + height - (offsetY + entryHeight * currentRow + entryHeight);
-            boolean highlighted = GuiUtils.isPointInRegion(x, y, entryWidth, entryHeight, mouseX, mouseY);
+            int x = (int) (drawX + offsetX + entryWidth * currentColumn);
+            int y = (int) (drawY + height - (offsetY + entryHeight * currentRow + entryHeight));
+            boolean highlighted = GuiUtils.isPointInRegion(x, y, entryWidth, entryHeight, GuiUtils.scaleMouseX(), GuiUtils.scaleMouseY());
             entryList.get(i).
                     render(camera, sR, sB, x, y, entryWidth, entryHeight, highlighted, partialTicks);
             if (currentColumn + 1 == entryColumns) {
@@ -114,23 +114,24 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
         }
     }
 
-    ScrollToolEntry clickedEntry;
+    private ScrollToolEntry clickedEntry;
 
     @Override
-    public void clickDown(int mouseX, int mouseY, int pointer, int button) {
-        super.clickDown(mouseX, mouseY, pointer, button);
-        clickedEntry = getEntry(mouseX, mouseY);
+    public void clickDown(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
+        super.clickDown(mouseX, mouseY, pointer, button, drawX, drawY);
+        clickedEntry = getEntry(GuiUtils.scaleMouseX(), GuiUtils.scaleMouseY(), drawX, drawY);
     }
 
-    protected ScrollToolEntry getEntry(int mouseX, int mouseY) {
+    protected ScrollToolEntry getEntry(int mouseX, int mouseY, float drawX, float drawY) {
         int i = 0;
         int currentRow = 0;
         int currentColumn = -1;
         while (i < entryList.size()) {
             currentColumn++;
-            int x = this.x + offsetX + entryWidth * currentColumn;
-            int y = this.y + height - (offsetY + entryHeight * currentRow + entryHeight);
-            if (GuiUtils.isPointInRegion(x, y, entryWidth, entryHeight, mouseX, mouseY)) return entryList.get(i);
+            int x = (int) (drawX + offsetX + entryWidth * currentColumn);
+            int y = (int) (drawY + height - (offsetY + entryHeight * currentRow + entryHeight));
+            if (GuiUtils.isPointInRegion(x, y, entryWidth, entryHeight, GuiUtils.scaleMouseX(), GuiUtils.scaleMouseY()))
+                return entryList.get(i);
             if (currentColumn + 1 == entryColumns) {
                 currentColumn = -1;
                 currentRow++;
@@ -141,9 +142,9 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
     }
 
     @Override
-    public void clickUp(int mouseX, int mouseY, int pointer, int button) {
-        super.clickUp(mouseX, mouseY, pointer, button);
-        if (getEntry(mouseX, mouseY) == clickedEntry && clickedEntry != null) {
+    public void clickUp(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
+        super.clickUp(mouseX, mouseY, pointer, button, drawX, drawY);
+        if (getEntry(mouseX, mouseY, drawX, drawY) == clickedEntry && clickedEntry != null) {
             callback.scrollToolCallback(this, clickedEntry);
             clickedEntry = null;
         }

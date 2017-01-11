@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.gui.GuiComponent;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 
@@ -23,8 +22,6 @@ public class GuiScrollBar extends GuiComponent {
     private boolean currentlyClicked;
     private int clickOffsetX, clickOffsetY;
 
-    private DuckGamesClient dg;
-
     public GuiScrollBar(int x, int y, int width, int height, Direction direction, int allWindowSize, int canBeShownInWindow) {
         super(x, y, width, height);
         this.direction = direction;
@@ -33,15 +30,14 @@ public class GuiScrollBar extends GuiComponent {
         if (direction == Direction.VERTICAL) {
             this.currentScrollAmt = height - getScrollToolSize();
         }
-        dg = DuckGamesClient.getDuckGames();
     }
 
     @Override
-    protected void renderComponent(int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
+    protected void renderComponent(float drawX, float drawY, int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
         sR.begin();
         sR.set(ShapeRenderer.ShapeType.Filled);
         sR.setColor(Color.LIGHT_GRAY);
-        sR.rect(x, y, width, height);
+        sR.rect(drawX, drawY, width, height);
 
         sR.identity();
 
@@ -49,23 +45,23 @@ public class GuiScrollBar extends GuiComponent {
         sR.setColor(Color.GRAY);
         switch (direction) {
             case HORIZONTAL:
-                sR.rect(x + currentScrollAmt, y, scrollToolSize, height);
+                sR.rect(drawX + currentScrollAmt, drawY, scrollToolSize, height);
                 break;
             case VERTICAL:
-                sR.rect(x, y + currentScrollAmt, width, scrollToolSize);
+                sR.rect(drawX, drawY + currentScrollAmt, width, scrollToolSize);
                 break;
         }
         sR.end();
     }
 
     @Override
-    public void updateComponent(int mouseX, int mouseY) {
-        super.updateComponent(mouseX, mouseY);
+    public void updateComponent(int mouseX, int mouseY, float drawX, float drawY) {
+        super.updateComponent(mouseX, mouseY, drawX, drawY);
         justScrolled = false;
     }
 
     @Override
-    public void clickDown(int mouseX, int mouseY, int pointer, int button) {
+    public void clickDown(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
         if (GuiUtils.isPointInRegion(x, y, width, height, mouseX, mouseY)) {
             int scrollToolSize = getScrollToolSize();
             switch (direction) {
@@ -82,7 +78,7 @@ public class GuiScrollBar extends GuiComponent {
     }
 
     @Override
-    public void clickUp(int mouseX, int mouseY, int pointer, int button) {
+    public void clickUp(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
         currentlyClicked = false;
     }
 

@@ -13,9 +13,9 @@ import de.intektor.tag.TagCompound;
  */
 public abstract class ItemGun extends Item {
 
-    protected final String shotBulletTagName = "shotBullets";
-    protected final String magazineSizeTagName = "maxMagazineSize";
+    protected final String shotBulletsTagName = "shotBullets";
     protected final String fireModeTagName = "fireMode";
+    protected final String usedReservedAmmoTagName = "usedReservedAmmo";
     protected final FireMode defaultFireMode;
 
     public ItemGun(String unlocalizedName, EntityEquipmentSlot fittingSlot, FireMode defaultFireMode) {
@@ -53,24 +53,16 @@ public abstract class ItemGun extends Item {
 
     public int getRemainingBullets(ItemStack stack, EntityPlayer player, World world) {
         TagCompound tag = TagUtils.getTag(stack);
-        return tag.getInteger(shotBulletTagName);
+        return getFullMagazineSize(stack, player, world) - tag.getInteger(shotBulletsTagName);
     }
 
     public void setRemainingBullets(ItemStack stack, EntityPlayer player, World world, int remBullets) {
         TagCompound tag = TagUtils.getTag(stack);
-        tag.setInteger(shotBulletTagName, getFullMagazineSize(stack, player, world) - remBullets);
+        tag.setInteger(shotBulletsTagName, getFullMagazineSize(stack, player, world) - remBullets);
 
     }
 
-    public int getFullMagazineSize(ItemStack stack, EntityPlayer player, World world) {
-        TagCompound tag = TagUtils.getTag(stack);
-        return tag.getInteger(magazineSizeTagName);
-    }
-
-    public void setFullMagazineSize(ItemStack stack, EntityPlayer player, World world, int size) {
-        TagCompound tag = TagUtils.getTag(stack);
-        tag.setInteger(magazineSizeTagName, size);
-    }
+    public abstract int getFullMagazineSize(ItemStack stack, EntityPlayer player, World world);
 
     public FireMode getFireMode(ItemStack stack, EntityPlayer player, World world) {
         TagCompound tag = TagUtils.getTag(stack);
@@ -81,6 +73,18 @@ public abstract class ItemGun extends Item {
         TagCompound tag = TagUtils.getTag(stack);
         tag.setInteger(fireModeTagName, mode.ordinal());
     }
+
+    public int getRemainingReserveAmmo(ItemStack stack, EntityPlayer player, World world) {
+        TagCompound tag = TagUtils.getTag(stack);
+        return getMaxReserveAmmo(stack, player, world) - tag.getInteger(usedReservedAmmoTagName);
+    }
+
+    public void setRemainingReserveAmmo(ItemStack stack, EntityPlayer player, World world, int remAmmo) {
+        TagCompound tag = TagUtils.getTag(stack);
+        tag.setInteger(usedReservedAmmoTagName, getMaxReserveAmmo(stack, player, world) - remAmmo);
+    }
+
+    public abstract int getMaxReserveAmmo(ItemStack stack, EntityPlayer player, World world);
 
     public enum FireMode {
         SEMI,
