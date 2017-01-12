@@ -1,5 +1,6 @@
 package de.intektor.duckgames.item.items.gun;
 
+import de.intektor.duckgames.entity.EntityDirection;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.EntityPlayer;
 import de.intektor.duckgames.item.Item;
@@ -53,6 +54,7 @@ public abstract class ItemGun extends Item {
     protected void preShoot(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
         if (canShoot(stack, player, world)) {
             setTimeAtLastShot(stack, player, world, world.getWorldTime());
+            player.setDirection(posX > player.posX + player.getWidth() / 2 ? EntityDirection.RIGHT : EntityDirection.LEFT);
             shoot(stack, player, world, posX, posY);
             player.recoilAngle += getRecoil(stack, player, world);
             player.worldTimeAtLastShot = world.getWorldTime();
