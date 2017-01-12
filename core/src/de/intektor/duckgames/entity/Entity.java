@@ -34,7 +34,7 @@ public abstract class Entity {
     public World worldObj;
 
     public float stepHeight = 0;
-    protected boolean onGround;
+    public boolean onGround;
     private float health;
     public long ticksAlive;
     public boolean isDead;
