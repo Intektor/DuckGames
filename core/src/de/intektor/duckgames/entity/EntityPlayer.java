@@ -29,6 +29,9 @@ public class EntityPlayer extends Entity {
     private boolean isAttacking;
     private float attackPosX, attackPosY;
 
+    public float recoilAngle;
+    public long worldTimeAtLastShot;
+
     private ItemStack[] equipment = new ItemStack[EntityEquipmentSlot.values().length];
 
     public EntityPlayer(World world, float posX, float posY, PlayerProfile profile) {
@@ -70,6 +73,7 @@ public class EntityPlayer extends Entity {
                     }
                 }
             }
+            if (worldObj.getWorldTime() - worldTimeAtLastShot > 60) recoilAngle = 0;
         }
         for (int i = 0; i < equipment.length; i++) {
             ItemStack equip = equipment[i];

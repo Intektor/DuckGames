@@ -13,10 +13,7 @@ import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.WorldRenderer;
 import de.intektor.duckgames.common.Status;
-import de.intektor.duckgames.common.net.client_to_server.JumpPacketToServer;
-import de.intektor.duckgames.common.net.client_to_server.PlayerAttackWithItemPacketToServer;
-import de.intektor.duckgames.common.net.client_to_server.PlayerDropItemPacketToServer;
-import de.intektor.duckgames.common.net.client_to_server.PlayerMovementPacketToServer;
+import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.EntityPlayer;
 import de.intektor.duckgames.item.ItemStack;
@@ -83,6 +80,7 @@ public class GuiPlayState extends Gui {
 
     @Override
     public void keyPushed(int keyCode, int mouseX, int mouseY) {
+        ItemStack mainHand = dg.thePlayer.getEquipment(EntityEquipmentSlot.MAIN_HAND);
         switch (keyCode) {
             case Keys.A:
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.LEFT));
@@ -107,6 +105,11 @@ public class GuiPlayState extends Gui {
             case Keys.Q:
                 if (dg.thePlayer.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null) {
                     dg.sendPacketToServer(new PlayerDropItemPacketToServer(EntityEquipmentSlot.MAIN_HAND));
+                }
+                break;
+            case Keys.R:
+                if (mainHand != null && mainHand.getItem() instanceof ItemGun) {
+                    dg.sendPacketToServer(new ReloadPacketToServer());
                 }
                 break;
         }

@@ -2,7 +2,6 @@ package de.intektor.duckgames.client.rendering.block;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.sun.istack.internal.NotNull;
 import de.intektor.duckgames.block.Block;
 
 /**
@@ -16,7 +15,6 @@ public class BlockRendererRegistry {
         registry.put(block, renderer);
     }
 
-    @NotNull
     public IBlockRenderer getRenderer(Block block) {
         return registry.get(block);
     }

@@ -2,7 +2,6 @@ package de.intektor.duckgames.client.rendering.item;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.sun.istack.internal.NotNull;
 import de.intektor.duckgames.item.Item;
 
 /**
@@ -16,7 +15,6 @@ public class ItemRendererRegistry {
         registry.put(item, renderer);
     }
 
-    @NotNull
     public IItemRenderer getRenderer(Item item) {
         return registry.get(item);
     }

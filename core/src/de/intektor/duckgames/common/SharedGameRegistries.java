@@ -49,6 +49,7 @@ public class SharedGameRegistries {
         packetRegistry.registerPacket(PlayerAttackWithItemPacketToClient.class, PlayerAttackWithItemPacketToClient.Handler.class, 17, Side.CLIENT);
         packetRegistry.registerPacket(DamageEntityPacketToClient.class, DamageEntityPacketToClient.Handler.class, 18, Side.CLIENT);
         packetRegistry.registerPacket(UpdateEquipmentPacketToClient.class, UpdateEquipmentPacketToClient.Handler.class, 19, Side.CLIENT);
+        packetRegistry.registerPacket(ReloadPacketToServer.class, ReloadPacketToServer.Handler.class, 20, Side.SERVER);
 
         gameRegistry = new GameRegistry();
         gameRegistry.registerEntity(EntityPlayer.class, 0);

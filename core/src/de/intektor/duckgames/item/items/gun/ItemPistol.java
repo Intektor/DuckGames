@@ -28,7 +28,7 @@ public class ItemPistol extends ItemGun {
                 setRemainingBullets(stack, player, world, remainingBullets - 1);
                 float dX = posX - (player.posX + (player.getWidth() / 2));
                 float dY = posY - (player.posY + player.getEyeHeight());
-                float angle = (float) Math.atan2(dY, dX);
+                float angle = (float) (Math.atan2(dY, dX) + player.recoilAngle / 180f * Math.PI);
                 float motionX = (float) Math.cos(angle) * 5;
                 float motionY = (float) Math.sin(angle) * 5;
                 EntityBullet bullet = new EntityBullet(world, player.posX + player.getWidth() / 2, player.posY + player.getEyeHeight(), player, motionX, motionY);
@@ -45,5 +45,15 @@ public class ItemPistol extends ItemGun {
     @Override
     public int getMaxReserveAmmo(ItemStack stack, EntityPlayer player, World world) {
         return 26;
+    }
+
+    @Override
+    public int getShotCooldownInTicks(ItemStack stack, EntityPlayer player, World world) {
+        return 10;
+    }
+
+    @Override
+    public float getRecoil(ItemStack stack, EntityPlayer player, World world) {
+        return 1;
     }
 }
