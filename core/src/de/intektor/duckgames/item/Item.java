@@ -2,7 +2,7 @@ package de.intektor.duckgames.item;
 
 import de.intektor.duckgames.common.net.server_to_client.UpdateEquipmentPacketToClient;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.world.World;
 import de.intektor.duckgames.world.WorldServer;
 
@@ -82,6 +82,14 @@ public abstract class Item {
      */
     public void onItemThrownAway(ItemStack stack, EntityPlayer player, World world) {
 
+    }
+
+    public float getWidthInWorld(ItemStack stack) {
+        return 1;
+    }
+
+    public float getHeightInWorld(ItemStack stack) {
+        return 1;
     }
 
     public String getUnlocalizedName() {

@@ -3,7 +3,7 @@ package de.intektor.duckgames.editor.spawns;
 import com.badlogic.gdx.math.RandomXS128;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.editor.EntitySpawn;
-import de.intektor.duckgames.entity.EntityItem;
+import de.intektor.duckgames.entity.entities.EntityItem;
 import de.intektor.duckgames.item.DTagCompound;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
@@ -30,12 +30,54 @@ public class ItemSpawner extends EntitySpawn {
 
     @Override
     public float getWidth() {
-        return 0.95f;
+        return getBiggestWidth() - 0.05f;
     }
 
     @Override
     public float getHeight() {
-        return 0.95f;
+        return getBiggestHeight() - 0.05f;
+    }
+
+    private ItemSpawn getBiggestItemSpawn() {
+        float biggestWidth = 0;
+        ItemSpawn biggest = null;
+        for (ItemSpawn itemSpawn : spawnList) {
+            float widthInWorld = itemSpawn.getItem().getWidthInWorld(itemSpawn.generateStack());
+            if (biggestWidth < widthInWorld) {
+                biggestWidth = widthInWorld;
+                biggest = itemSpawn;
+            }
+        }
+        return biggest;
+    }
+
+    private float getBiggestWidth() {
+        if (spawnList == null) return 0;
+        ItemSpawn biggestItemSpawn = getBiggestItemSpawn();
+        return biggestItemSpawn.getItem().getWidthInWorld(biggestItemSpawn.generateStack());
+    }
+
+    private ItemSpawn getTallestItemSpawn() {
+        float biggestHeight = 0;
+        ItemSpawn biggest = null;
+        for (ItemSpawn itemSpawn : spawnList) {
+            float heightInWorld = itemSpawn.getItem().getHeightInWorld(itemSpawn.generateStack());
+            if (biggestHeight < heightInWorld) {
+                biggestHeight = heightInWorld;
+                biggest = itemSpawn;
+            }
+        }
+        return biggest;
+    }
+
+    private float getBiggestHeight() {
+        if (spawnList == null) return 0;
+        ItemSpawn biggestItemSpawn = getBiggestItemSpawn();
+        return biggestItemSpawn.getItem().getHeightInWorld(biggestItemSpawn.generateStack());
+    }
+
+    public ItemSpawn getMostImportantItemSpawn() {
+        return getWidth() > getHeight() ? getBiggestItemSpawn() : getTallestItemSpawn();
     }
 
     @Override

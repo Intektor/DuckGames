@@ -1,9 +1,10 @@
 package de.intektor.duckgames.client.rendering.entity;
 
 import de.intektor.duckgames.entity.Entity;
-import de.intektor.duckgames.entity.EntityBullet;
-import de.intektor.duckgames.entity.EntityItem;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityBullet;
+import de.intektor.duckgames.entity.entities.EntityItem;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityRail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class EntityRendererRegistry {
         register(EntityPlayer.class, new EntityPlayerRenderer());
         register(EntityItem.class, new EntityItemRenderer());
         register(EntityBullet.class, new EntityBulletRenderer());
+        register(EntityRail.class, new EntityRailRenderer());
     }
 
 }

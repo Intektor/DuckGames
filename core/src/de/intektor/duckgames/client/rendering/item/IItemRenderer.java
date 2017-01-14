@@ -1,9 +1,10 @@
 package de.intektor.duckgames.client.rendering.item;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 
@@ -18,5 +19,7 @@ public interface IItemRenderer<T extends Item> {
 
     void renderItemInEditor(ItemStack stack, T item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks);
 
-    void renderItemInScrollTool(ItemStack stack, T item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks);
+    void renderItemInScrollTool(ItemStack stack, T item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float rotation, float partialTicks);
+
+    Texture getItemTexture();
 }

@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
-import de.intektor.duckgames.entity.EntityBullet;
+import de.intektor.duckgames.entity.entities.EntityBullet;
 
 import javax.vecmath.Point2f;
 

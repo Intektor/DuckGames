@@ -21,7 +21,10 @@ public class EntitySpawnCreationRegistry {
 
     public EntitySpawn createSpawn(EntitySpawn.EntitySpawnType type, float x, float y) {
         try {
-            return constructorRegistry.get(type).newInstance(x, y);
+            EntitySpawn entitySpawn = constructorRegistry.get(type).newInstance(x, y);
+            entitySpawn.setX(entitySpawn.getX() - entitySpawn.getWidth() / 2);
+            entitySpawn.setY(entitySpawn.getY() - entitySpawn.getHeight() / 2);
+            return entitySpawn;
         } catch (Exception e) {
             e.printStackTrace();
         }

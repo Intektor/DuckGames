@@ -10,7 +10,7 @@ import de.intektor.duckgames.client.rendering.entity.EntityRendererRegistry;
 import de.intektor.duckgames.common.GameRegistry;
 import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.entity.Entity;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.world.World;
 
 /**

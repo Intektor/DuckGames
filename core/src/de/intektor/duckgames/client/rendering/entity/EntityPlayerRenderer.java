@@ -10,7 +10,7 @@ import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.entity.EntityDirection;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 
 import javax.vecmath.Point2f;
 

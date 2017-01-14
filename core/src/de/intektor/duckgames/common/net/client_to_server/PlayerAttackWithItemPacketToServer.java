@@ -5,7 +5,7 @@ import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.server_to_client.PlayerAttackWithItemPacketToClient;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;

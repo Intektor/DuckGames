@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -16,6 +17,7 @@ import de.intektor.duckgames.client.gui.components.GuiScrollTool.ScrollToolEntry
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.i18n.I18nUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
+import de.intektor.duckgames.client.rendering.item.IItemRenderer;
 import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.editor.spawns.ItemSpawner;
 import de.intektor.duckgames.editor.spawns.ItemSpawner.ItemSpawn;
@@ -177,7 +179,7 @@ public class ItemSpawnEditorGuiComponent extends GuiFrame implements GuiScrollTo
 
     private void renderItemSpawn(ItemSpawn spawn, float drawX, float drawY, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float partialTicks) {
         dg.getItemRendererRegistry().getRenderer(spawn.getItem()).
-                renderItemInScrollTool(spawn.generateStack(), spawn.getItem(), sR, sB, camera, drawX, drawY, entrySize, entrySize, partialTicks);
+                renderItemInScrollTool(spawn.generateStack(), spawn.getItem(), sR, sB, camera, drawX, drawY, entrySize, entrySize, 0, partialTicks);
 
         sR.begin();
         sR.setColor(Color.BLACK);
@@ -200,7 +202,17 @@ public class ItemSpawnEditorGuiComponent extends GuiFrame implements GuiScrollTo
         @Override
         public void render(OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float x, float y, float width, float height, boolean highlighted, float partialTicks) {
             int r = highlighted ? 10 : 20;
-            DuckGamesClient.getDuckGames().getItemRendererRegistry().getRenderer(item).renderItemInScrollTool(new ItemStack(item), item, sR, sB, camera, x + r, y + r, width - r * 2, height - r * 2, partialTicks);
+
+            IItemRenderer renderer = DuckGamesClient.getDuckGames().getItemRendererRegistry().getRenderer(item);
+            Texture itemTexture = renderer.getItemTexture();
+            float ratio = itemTexture.getHeight() / ((float) itemTexture.getWidth());
+            float rHeight = height * ratio;
+            float angle = 0;
+            if (ratio < 1) {
+                angle = 45;
+                r = highlighted ? 0 : 10;
+            }
+            renderer.renderItemInScrollTool(new ItemStack(item), item, sR, sB, camera, x + r, y + r, width - r * 2, rHeight - r * 2, angle, partialTicks);
         }
     }
 

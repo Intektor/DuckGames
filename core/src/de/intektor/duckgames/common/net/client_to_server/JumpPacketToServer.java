@@ -2,7 +2,7 @@ package de.intektor.duckgames.common.net.client_to_server;
 
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.SharedGameRegistries;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 

@@ -57,13 +57,12 @@ public abstract class Entity {
     }
 
     private void initBasicEntity() {
-        collision = new Collision2D(posX, posY, getWidth(), getHeight());
         health = getDefaultHealth();
         initEntity();
     }
 
     protected void initEntity() {
-
+        collision = new Collision2D(posX, posY, getWidth(), getHeight());
     }
 
     public final void update() {

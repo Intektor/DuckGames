@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common;
 
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 
 import java.net.Socket;
 

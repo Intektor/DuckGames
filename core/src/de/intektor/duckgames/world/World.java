@@ -4,7 +4,7 @@ import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.entity.Entity;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 
 import java.util.*;
 

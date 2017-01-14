@@ -1,10 +1,8 @@
 package de.intektor.duckgames.block;
 
-import com.badlogic.gdx.graphics.Color;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.rendering.block.AirBlockBlockRenderer;
 import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
-import de.intektor.duckgames.client.rendering.block.DefaultColorBlockRenderer;
 import de.intektor.duckgames.client.rendering.block.DefaultTextureBlockRenderer;
 import de.intektor.duckgames.common.GameRegistry;
 import de.intektor.duckgames.common.SharedGameRegistries;
@@ -17,7 +15,6 @@ public class Blocks {
     public static final Block DIRT;
     public static final Block GRASS;
     public static final Block ICE;
-    public static final Block STONE_BRICK;
     public static final Block MARBLE_COBBLESTONE;
     public static final Block CLAY_BRICK;
     public static final Block AIR;
@@ -27,7 +24,6 @@ public class Blocks {
         DIRT = new Block("dirt");
         GRASS = new Block("grass");
         ICE = new Block("ice");
-        STONE_BRICK = new Block("stone_brick");
         MARBLE_COBBLESTONE = new Block("marble_cobblestone");
         CLAY_BRICK = new Block("clay_brick");
         AIR = new BlockAir("air");
@@ -39,7 +35,6 @@ public class Blocks {
         registry.registerBlock(DIRT);
         registry.registerBlock(GRASS);
         registry.registerBlock(ICE);
-        registry.registerBlock(STONE_BRICK);
         registry.registerBlock(MARBLE_COBBLESTONE);
         registry.registerBlock(CLAY_BRICK);
         registry.registerBlock(AIR);
@@ -52,7 +47,6 @@ public class Blocks {
         registry.registerRenderer(GRASS, new DefaultTextureBlockRenderer("grass"));
         registry.registerRenderer(ICE, new DefaultTextureBlockRenderer("ice"));
         registry.registerRenderer(MARBLE_COBBLESTONE, new DefaultTextureBlockRenderer("marble_cobblestone"));
-        registry.registerRenderer(STONE_BRICK, new DefaultColorBlockRenderer(Color.GRAY));
         registry.registerRenderer(CLAY_BRICK, new DefaultTextureBlockRenderer("clay_bricks"));
         registry.registerRenderer(AIR, new AirBlockBlockRenderer());
         registry.registerRenderer(WOODEN_PLANKS, new DefaultTextureBlockRenderer("wooden_planks"));

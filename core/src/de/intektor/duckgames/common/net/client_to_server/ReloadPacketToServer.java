@@ -4,7 +4,7 @@ import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.item.items.gun.ItemGun;
 import de.intektor.network.IPacket;
