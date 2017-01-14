@@ -1,6 +1,7 @@
-package de.intektor.duckgames.entity;
+package de.intektor.duckgames.entity.entities;
 
 import de.intektor.duckgames.common.net.NetworkUtils;
+import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.game.damage.DamageSource;
 import de.intektor.duckgames.util.EnumAxis;
 import de.intektor.duckgames.world.World;
@@ -8,7 +9,10 @@ import de.intektor.duckgames.world.World;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Intektor
@@ -19,11 +23,14 @@ public class EntityBullet extends Entity {
 
     protected Map<Entity, HitRegister> registeredHits = new HashMap<Entity, HitRegister>();
 
-    public EntityBullet(World world, float posX, float posY, EntityPlayer owner, float motionX, float motionY) {
+    private float damage;
+
+    public EntityBullet(World world, float posX, float posY, EntityPlayer owner, float motionX, float motionY, float damage) {
         super(world, posX, posY);
         this.motionX = motionX;
         this.motionY = motionY;
         this.ownerUUID = owner.uuid;
+        this.damage = damage;
     }
 
     public EntityBullet(UUID uuid) {
@@ -39,11 +46,15 @@ public class EntityBullet extends Entity {
                     HitRegister hitRegister = registeredHits.get(entity);
                     if (hitRegister == null || worldObj.getWorldTime() - hitRegister.getWorldTime() > 5) {
                         registeredHits.put(entity, new HitRegister(entity, worldObj.getWorldTime()));
-                        entity.damageEntity(new DamageSource(this, 1));
+                        onHitEntity(entity);
                     }
                 }
             }
         }
+    }
+
+    public void onHitEntity(Entity entity) {
+        entity.damageEntity(new DamageSource(this, 1));
     }
 
     @Override
@@ -76,12 +87,14 @@ public class EntityBullet extends Entity {
     protected void writeAdditionalSpawnData(DataOutputStream out) throws IOException {
         super.writeAdditionalSpawnData(out);
         NetworkUtils.writeUUID(out, ownerUUID);
+        out.writeFloat(damage);
     }
 
     @Override
     protected void readAdditionalSpawnData(DataInputStream in) throws IOException {
         super.readAdditionalSpawnData(in);
         ownerUUID = NetworkUtils.readUUID(in);
+        damage = in.readFloat();
     }
 
     @Override

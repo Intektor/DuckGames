@@ -8,6 +8,7 @@ import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.GameRegistry;
 import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.editor.spawns.PlayerSpawn;
 import de.intektor.duckgames.files.Serializable;
 import de.intektor.duckgames.world.WorldServer;
 import de.intektor.tag.TagCompound;
@@ -101,8 +102,29 @@ public class EditableGameMap implements Serializable {
         return list;
     }
 
+    public void removeEntitySpawn(EntitySpawn spawn) {
+        entitySpawnList.remove(spawn);
+    }
+
     public void removeEntitySpawns(List<EntitySpawn> list) {
         entitySpawnList.removeAll(list);
+    }
+
+    public boolean canPlaceEntitySpawnAtPosition(EntitySpawn spawn, float posX, float posY) {
+        float prevPosX = spawn.x;
+        float prevPosY = spawn.y;
+        spawn.setX(posX - spawn.getWidth() / 2);
+        spawn.setY(posY - spawn.getHeight() / 2);
+        if (!isCollisionInWorldBounds(spawn.getCollision())) return false;
+        if (doesEntitySpawnCollideWithSpawns(spawn, getEntitySpawnList())) return false;
+        if (collisionCollidesWithBlocks(spawn.getCollision())) return false;
+        spawn.setX(prevPosX);
+        spawn.setY(prevPosY);
+        return true;
+    }
+
+    public boolean canPlaceEntitySpawnAtPosition(EntitySpawn spawn) {
+        return canPlaceEntitySpawnAtPosition(spawn, spawn.getX() + spawn.getWidth() / 2, spawn.getY() + spawn.getHeight() / 2);
     }
 
     @Override
@@ -154,5 +176,16 @@ public class EditableGameMap implements Serializable {
             }
         }
         return new WorldServer(blockTable, entitySpawnList, width, height, server);
+    }
+
+    public boolean canBeConvertedToWorld() {
+        for (EntitySpawn entitySpawn : entitySpawnList) {
+            if (!canPlaceEntitySpawnAtPosition(entitySpawn)) return false;
+        }
+        int amountOfPlayers = 0;
+        for (EntitySpawn entitySpawn : entitySpawnList) {
+            if (entitySpawn instanceof PlayerSpawn) amountOfPlayers++;
+        }
+        return amountOfPlayers >= 1;
     }
 }

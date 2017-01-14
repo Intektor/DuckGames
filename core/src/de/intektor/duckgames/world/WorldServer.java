@@ -12,7 +12,7 @@ import de.intektor.duckgames.common.net.server_to_client.SpawnEntityPacketToClie
 import de.intektor.duckgames.editor.EntitySpawn;
 import de.intektor.duckgames.editor.spawns.PlayerSpawn;
 import de.intektor.duckgames.entity.Entity;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 
 import java.util.*;
 

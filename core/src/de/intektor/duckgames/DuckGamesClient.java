@@ -26,7 +26,7 @@ import de.intektor.duckgames.client.rendering.utils.FutureTextureRegistry;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.SharedGameRegistries;
 import de.intektor.duckgames.editor.EditableGameMap;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldClient;
 import de.intektor.network.IPacket;

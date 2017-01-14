@@ -1,6 +1,8 @@
-package de.intektor.duckgames.entity;
+package de.intektor.duckgames.entity.entities;
 
+import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.net.NetworkUtils;
+import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.world.World;
 
@@ -44,17 +46,17 @@ public class EntityItem extends Entity {
 
     @Override
     protected void updateEntity() {
-
+        if (collision.getWidth() == 0) collision = new Collision2D(posX, posY, getWidth(), getHeight());
     }
 
     @Override
     public float getWidth() {
-        return 0.95f;
+        return itemStack != null ? itemStack.getItem().getWidthInWorld(itemStack) - 0.05f : 0;
     }
 
     @Override
     public float getHeight() {
-        return 0.95f;
+        return itemStack != null ? itemStack.getItem().getHeightInWorld(itemStack) - 0.05f : 0;
     }
 
     @Override

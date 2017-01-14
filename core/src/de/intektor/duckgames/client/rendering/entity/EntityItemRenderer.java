@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
-import de.intektor.duckgames.entity.EntityItem;
+import de.intektor.duckgames.entity.entities.EntityItem;
 
 /**
  * @author Intektor

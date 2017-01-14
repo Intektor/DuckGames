@@ -4,7 +4,7 @@ import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.EntityDirection;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.damage.DamageSource;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;

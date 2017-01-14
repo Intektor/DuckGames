@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 
@@ -51,9 +52,14 @@ public class DefaultTextureItemRenderer implements IItemRenderer {
     }
 
     @Override
-    public void renderItemInScrollTool(ItemStack stack, Item item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks) {
+    public void renderItemInScrollTool(ItemStack stack, Item item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float rotation, float partialTicks) {
         sB.begin();
-        sB.draw(scaledTexture, x, y, width, height);
+        sB.draw(new TextureRegion(scaledTexture), x, y, 0, 0, width, height, 1, 1, rotation);
         sB.end();
+    }
+
+    @Override
+    public Texture getItemTexture() {
+        return fullTexture;
     }
 }

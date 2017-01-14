@@ -71,6 +71,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     private final int toolBarHeight = 200;
 
     private EntitySpawn selectedEntitySpawn;
+    private EntitySpawn grabbedEntitySpawn;
 
     private boolean showGrid = true;
 
@@ -79,6 +80,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
     private static Texture trashCanTexture = new Texture("assets/level_editor/trash_can.png");
     private static Texture cursorTexture = new Texture("assets/level_editor/cursor.png");
+    private static Texture grabTexture = new Texture("assets/level_editor/grab.png");
 
     static {
         entitySpawnCreationRegistry = new EntitySpawnCreationRegistry();
@@ -158,14 +160,21 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
         for (EntitySpawn entitySpawn : map.getEntitySpawnList()) {
             entitySpawnRendererRegistry.getRenderer(entitySpawn.getClass()).
-                    renderInEditor(entitySpawn, mP.x, mP.y, entitySpawn.getX(), entitySpawn.getY(), entitySpawn.getWidth(), entitySpawn.getHeight(), false, editorShapeRenderer, editorSpriteBatch, editorCamera, partialTicks);
+                    renderInEditor(entitySpawn, mP.x, mP.y, entitySpawn.getX(), entitySpawn.getY(), entitySpawn.getWidth(), entitySpawn.getHeight(), false, editorShapeRenderer, editorSpriteBatch, map, editorCamera, partialTicks);
         }
 
         if (currentTool == EditorTool.ENTITY_SPAWN) {
             EntitySpawn spawn = entitySpawnCreationRegistry.createSpawn(currentSelectedSpawnType.type, mP.x, mP.y);
             entitySpawnRendererRegistry.getRenderer(entitySpawnCreationRegistry.getClass(currentSelectedSpawnType.type)).
-                    renderInEditor(spawn, mP.x, mP.y, mP.x - spawn.getWidth() / 2, mP.y - spawn.getHeight() / 2, spawn.getWidth(), spawn.getHeight(), true, editorShapeRenderer, editorSpriteBatch, editorCamera, partialTicks);
+                    renderInEditor(spawn, mP.x, mP.y, mP.x - spawn.getWidth() / 2, mP.y - spawn.getHeight() / 2, spawn.getWidth(), spawn.getHeight(), true, editorShapeRenderer, editorSpriteBatch, map, editorCamera, partialTicks);
         }
+
+        if (currentTool == EditorTool.GRAB_ENTITY_SPAWN && grabbedEntitySpawn != null) {
+            entitySpawnRendererRegistry.getRenderer(grabbedEntitySpawn.getClass()).
+                    renderInEditor(grabbedEntitySpawn, mP.x, mP.y, mP.x - grabbedEntitySpawn.getWidth() / 2, mP.y - grabbedEntitySpawn.getHeight() / 2, grabbedEntitySpawn.getWidth(), grabbedEntitySpawn.getHeight(), true, editorShapeRenderer, editorSpriteBatch, map, editorCamera, partialTicks);
+
+        }
+
         editorShapeRenderer.begin();
 
         if (showGrid) drawGrid(editorShapeRenderer);
@@ -185,7 +194,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             editorSpriteBatch.setShader(shader);
             for (EntitySpawn entitySpawn : map.getEntitySpawnList()) {
                 if (entitySpawn.getCollision().collidesWith(new Collision2D(lastInEditorClickX, lastInEditorClickY, mP.x - lastInEditorClickX, mP.y - lastInEditorClickY))) {
-                    entitySpawnRendererRegistry.getRenderer(entitySpawn.getClass()).renderInEditor(entitySpawn, mP.x, mP.y, entitySpawn.getX(), entitySpawn.getY(), entitySpawn.getWidth(), entitySpawn.getHeight(), false, editorShapeRenderer, editorSpriteBatch, editorCamera, partialTicks);
+                    entitySpawnRendererRegistry.getRenderer(entitySpawn.getClass()).renderInEditor(entitySpawn, mP.x, mP.y, entitySpawn.getX(), entitySpawn.getY(), entitySpawn.getWidth(), entitySpawn.getHeight(), false, editorShapeRenderer, editorSpriteBatch, map, editorCamera, partialTicks);
                 }
             }
             editorSpriteBatch.setShader(null);
@@ -196,7 +205,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             shader.setUniformf("u_color", new Vector3(0, 1, 1f));
             shader.end();
             editorSpriteBatch.setShader(shader);
-            entitySpawnRendererRegistry.getRenderer(selectedEntitySpawn.getClass()).renderInEditor(selectedEntitySpawn, mP.x, mP.y, selectedEntitySpawn.getX(), selectedEntitySpawn.getY(), selectedEntitySpawn.getWidth(), selectedEntitySpawn.getHeight(), false, editorShapeRenderer, editorSpriteBatch, editorCamera, partialTicks);
+            entitySpawnRendererRegistry.getRenderer(selectedEntitySpawn.getClass()).renderInEditor(selectedEntitySpawn, mP.x, mP.y, selectedEntitySpawn.getX(), selectedEntitySpawn.getY(), selectedEntitySpawn.getWidth(), selectedEntitySpawn.getHeight(), false, editorShapeRenderer, editorSpriteBatch, map, editorCamera, partialTicks);
             editorSpriteBatch.setShader(null);
         }
 
@@ -252,6 +261,18 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
         spriteBatch.begin();
         spriteBatch.draw(trashCanTexture, 650, 50, 100, 100);
+        spriteBatch.end();
+
+        if (currentTool == EditorTool.GRAB_ENTITY_SPAWN) {
+            spriteBatch.setShader(shader);
+            spriteBatch.begin();
+            spriteBatch.draw(grabTexture, 850, 50, 100, 100);
+            spriteBatch.end();
+            spriteBatch.setShader(null);
+        }
+
+        spriteBatch.begin();
+        spriteBatch.draw(grabTexture, 850, 50, 100, 100);
         spriteBatch.end();
 
         renderGuiComponents(mouseX, mouseY, camera, partialTicks);
@@ -317,11 +338,13 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     public void keyPushed(int keyCode, int mouseX, int mouseY) {
         switch (keyCode) {
             case T:
-                DuckGamesServer server = new DuckGamesServer();
-                server.startServer();
-                dg.setDedicatedServer(server);
-                allowInput = false;
-                waitingForTestServer = true;
+                if (map.canBeConvertedToWorld()) {
+                    DuckGamesServer server = new DuckGamesServer();
+                    server.startServer();
+                    dg.setDedicatedServer(server);
+                    allowInput = false;
+                    waitingForTestServer = true;
+                }
                 break;
             case G:
                 showGrid = !showGrid;
@@ -340,7 +363,8 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         lastInEditorClickX = mP.x;
         lastInEditorClickY = mP.y;
         lastClickInEditor = clickInEditorScreen(mouseX, mouseY);
-        if (!input.isKeyPressed(Keys.SPACE)) {
+        if (!input.isKeyPressed(Keys.SPACE) && lastClickInEditor) {
+            List<EntitySpawn> entitySpawnsInRegion = map.getEntitySpawnsInRegion(new Collision2D(mP.x, mP.y, 1, 1));
             switch (currentTool) {
                 case PLACE_BLOCK:
                     changeBlock(currentSelectedBlock);
@@ -352,7 +376,6 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
                     deleteEntitySpawnToolSelecting = lastClickInEditor;
                     break;
                 case SELECT_ENTITY_SPAWN:
-                    List<EntitySpawn> entitySpawnsInRegion = map.getEntitySpawnsInRegion(new Collision2D(mP.x, mP.y, 1, 1));
                     if (!entitySpawnsInRegion.isEmpty()) {
                         selectedEntitySpawn = entitySpawnsInRegion.get(0);
                         if (selectedEntitySpawn instanceof ItemSpawner) {
@@ -363,6 +386,20 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
                         selectedEntitySpawn = null;
                     }
                     break;
+                case GRAB_ENTITY_SPAWN:
+                    if (grabbedEntitySpawn == null) {
+                        if (!entitySpawnsInRegion.isEmpty()) {
+                            grabbedEntitySpawn = entitySpawnsInRegion.get(0);
+                            map.removeEntitySpawn(grabbedEntitySpawn);
+                        }
+                    } else {
+                        if (map.canPlaceEntitySpawnAtPosition(grabbedEntitySpawn, mP.x, mP.y)) {
+                            grabbedEntitySpawn.place(mP.x, mP.y);
+                            map.addEntitySpawn(grabbedEntitySpawn);
+                            grabbedEntitySpawn = null;
+                        }
+                    }
+                    break;
             }
         }
         if (GuiUtils.isPointInRegion(450, 50, 100, 100, mouseX, mouseY)) {
@@ -370,6 +407,9 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         }
         if (GuiUtils.isPointInRegion(650, 50, 100, 100, mouseX, mouseY)) {
             currentTool = EditorTool.DELETE_ENTITY_SPAWNS;
+        }
+        if (GuiUtils.isPointInRegion(850, 50, 100, 100, mouseX, mouseY)) {
+            currentTool = EditorTool.GRAB_ENTITY_SPAWN;
         }
     }
 
@@ -439,9 +479,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         if (blockBuildTool.isShown() || entitySpawnTool.isShown()) return;
         MousePos mP = GuiUtils.unprojectMousePosition(editorCamera);
         EntitySpawn spawn = entitySpawnCreationRegistry.createSpawn(currentSelectedSpawnType.type, mP.x, mP.y);
-        if (!map.isCollisionInWorldBounds(spawn.getCollision())) return;
-        if (map.doesEntitySpawnCollideWithSpawns(spawn, map.getEntitySpawnList())) return;
-        if (map.collisionCollidesWithBlocks(spawn.getCollision())) return;
+        if (!map.canPlaceEntitySpawnAtPosition(spawn)) return;
         map.addEntitySpawn(spawn);
     }
 
@@ -503,6 +541,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         PLACE_BLOCK,
         ENTITY_SPAWN,
         DELETE_ENTITY_SPAWNS,
-        SELECT_ENTITY_SPAWN
+        SELECT_ENTITY_SPAWN,
+        GRAB_ENTITY_SPAWN
     }
 }

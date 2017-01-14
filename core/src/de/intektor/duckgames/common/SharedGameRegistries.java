@@ -4,9 +4,10 @@ import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.ClientProxy;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.*;
-import de.intektor.duckgames.entity.EntityBullet;
-import de.intektor.duckgames.entity.EntityItem;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityBullet;
+import de.intektor.duckgames.entity.entities.EntityItem;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityRail;
 import de.intektor.duckgames.item.Items;
 import de.intektor.network.PacketHelper;
 import de.intektor.network.PacketRegistry;
@@ -55,6 +56,7 @@ public class SharedGameRegistries {
         gameRegistry.registerEntity(EntityPlayer.class, 0);
         gameRegistry.registerEntity(EntityItem.class, 1);
         gameRegistry.registerEntity(EntityBullet.class, 2);
+        gameRegistry.registerEntity(EntityRail.class, 3);
 
         clientProxy = new ClientProxy();
         serverProxy = new ServerProxy();

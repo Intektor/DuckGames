@@ -9,7 +9,7 @@ import de.intektor.duckgames.common.net.client_to_server.IdentificationPacketToS
 import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
-import de.intektor.duckgames.entity.EntityPlayer;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.damage.DamageSource;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.world.WorldClient;

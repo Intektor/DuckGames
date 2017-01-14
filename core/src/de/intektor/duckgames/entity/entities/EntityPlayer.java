@@ -1,9 +1,12 @@
-package de.intektor.duckgames.entity;
+package de.intektor.duckgames.entity.entities;
 
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.server_to_client.PickupEquipmentItemStackPacketToClient;
+import de.intektor.duckgames.entity.Entity;
+import de.intektor.duckgames.entity.EntityDirection;
+import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.util.EnumDirection;
@@ -73,7 +76,7 @@ public class EntityPlayer extends Entity {
                     }
                 }
             }
-            if (worldObj.getWorldTime() - worldTimeAtLastShot > 60) recoilAngle = 0;
+            if (worldObj.getWorldTime() - worldTimeAtLastShot > 10) recoilAngle = 0;
         }
         for (int i = 0; i < equipment.length; i++) {
             ItemStack equip = equipment[i];
