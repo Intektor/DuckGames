@@ -7,6 +7,7 @@ import de.intektor.duckgames.common.GameRegistry;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.item.items.ItemSword;
 import de.intektor.duckgames.item.items.gun.ItemPistol;
+import de.intektor.duckgames.item.items.gun.ItemRailGun;
 import de.intektor.duckgames.item.items.gun.ItemTommyGun;
 
 /**
@@ -17,11 +18,13 @@ public class Items {
     public static final ItemSword SWORD;
     public static final ItemPistol PISTOL;
     public static final ItemTommyGun TOMMY_GUN;
+    public static final ItemRailGun RAIL_GUN;
 
     static {
         SWORD = new ItemSword();
         PISTOL = new ItemPistol();
         TOMMY_GUN = new ItemTommyGun();
+        RAIL_GUN = new ItemRailGun();
     }
 
     public static void initCommon() {
@@ -29,6 +32,7 @@ public class Items {
         gameRegistry.registerItem(SWORD);
         gameRegistry.registerItem(PISTOL);
         gameRegistry.registerItem(TOMMY_GUN);
+        gameRegistry.registerItem(RAIL_GUN);
     }
 
     public static void initClient() {
@@ -36,5 +40,6 @@ public class Items {
         registry.registerRenderer(SWORD, new DefaultTextureItemRenderer("iron_sword"));
         registry.registerRenderer(PISTOL, new DefaultTextureItemRenderer("pistol"));
         registry.registerRenderer(TOMMY_GUN, new DefaultTextureItemRenderer("tommygun"));
+        registry.registerRenderer(RAIL_GUN, new DefaultTextureItemRenderer("rail_guns"));
     }
 }

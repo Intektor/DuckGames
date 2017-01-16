@@ -11,8 +11,8 @@ import de.intektor.duckgames.world.World;
  */
 public class ItemRailGun extends ItemGun {
 
-    public ItemRailGun(String unlocalizedName, EntityEquipmentSlot fittingSlot, FireMode defaultFireMode) {
-        super(unlocalizedName, fittingSlot, defaultFireMode);
+    public ItemRailGun() {
+        super("rail_gun", EntityEquipmentSlot.MAIN_HAND, FireMode.SEMI);
     }
 
     @Override
