@@ -50,11 +50,11 @@ public class ItemRailGun extends ItemGun {
 
     @Override
     public float getWidthInWorld(ItemStack stack) {
-        return 0;
+        return 3;
     }
 
     @Override
     public float getHeightInWorld(ItemStack stack) {
-        return 0;
+        return 1;
     }
 }

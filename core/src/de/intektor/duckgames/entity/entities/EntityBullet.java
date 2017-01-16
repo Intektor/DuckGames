@@ -54,7 +54,7 @@ public class EntityBullet extends Entity {
     }
 
     public void onHitEntity(Entity entity) {
-        entity.damageEntity(new DamageSource(this, 1));
+        entity.damageEntity(new DamageSource(this, damage));
     }
 
     @Override
