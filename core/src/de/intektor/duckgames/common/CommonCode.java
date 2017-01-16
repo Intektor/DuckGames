@@ -16,7 +16,7 @@ import de.intektor.network.Side;
 /**
  * @author Intektor
  */
-public class SharedGameRegistries {
+public class CommonCode {
 
     public static final PacketHelper packetHelper;
     public static final PacketRegistry packetRegistry;
@@ -52,6 +52,8 @@ public class SharedGameRegistries {
         packetRegistry.registerPacket(UpdateEquipmentPacketToClient.class, UpdateEquipmentPacketToClient.Handler.class, 19, Side.CLIENT);
         packetRegistry.registerPacket(ReloadPacketToServer.class, ReloadPacketToServer.Handler.class, 20, Side.SERVER);
         packetRegistry.registerPacket(ChatMessagePacketToServer.class, ChatMessagePacketToServer.Handler.class, 21, Side.SERVER);
+        packetRegistry.registerPacket(ChatMessagePacketToClient.class, ChatMessagePacketToClient.Handler.class, 22, Side.CLIENT);
+        packetRegistry.registerPacket(PlayerProfilesPacketToClient.class, PlayerProfilesPacketToClient.Handler.class, 23, Side.CLIENT);
 
         gameRegistry = new GameRegistry();
         gameRegistry.registerEntity(EntityPlayer.class, 0);
@@ -73,6 +75,6 @@ public class SharedGameRegistries {
     }
 
     public static void setDuckGamesServer(DuckGamesServer server) {
-        SharedGameRegistries.server = server;
+        CommonCode.server = server;
     }
 }

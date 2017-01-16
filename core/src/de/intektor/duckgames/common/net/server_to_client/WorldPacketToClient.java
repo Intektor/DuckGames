@@ -3,9 +3,8 @@ package de.intektor.duckgames.common.net.server_to_client;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
-import de.intektor.duckgames.client.ClientProxy;
 import de.intektor.duckgames.common.GameRegistry;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -35,7 +34,7 @@ public class WorldPacketToClient implements IPacket {
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
+        GameRegistry gameRegistry = CommonCode.gameRegistry;
         out.writeInt(width);
         out.writeInt(height);
         for (int x = 0; x < width; x++) {
@@ -49,7 +48,7 @@ public class WorldPacketToClient implements IPacket {
     public void read(DataInputStream in) throws IOException {
         width = in.readInt();
         height = in.readInt();
-        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
+        GameRegistry gameRegistry = CommonCode.gameRegistry;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 Block block = gameRegistry.getBlock(in.readByte());
@@ -62,7 +61,7 @@ public class WorldPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final WorldPacketToClient packet, Socket socketFrom) {
-            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

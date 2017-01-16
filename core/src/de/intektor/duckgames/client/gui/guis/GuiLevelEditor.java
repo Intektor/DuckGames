@@ -22,7 +22,7 @@ import de.intektor.duckgames.client.gui.util.MousePos;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.DuckGamesServer;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.editor.EditableGameMap;
 import de.intektor.duckgames.editor.EntitySpawn;
 import de.intektor.duckgames.editor.EntitySpawn.EntitySpawnType;
@@ -109,7 +109,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     public void enterGui() {
         super.enterGui();
         blockBuildTool = new GuiScrollTool<BlockScrollToolEntry>(50, 150, 500, 600, true, false, false, 100, 100, 5, this);
-        for (Block block : SharedGameRegistries.gameRegistry.getAllRegisteredBlocks()) {
+        for (Block block : CommonCode.gameRegistry.getAllRegisteredBlocks()) {
             blockBuildTool.addEntry(new BlockScrollToolEntry(block));
         }
 

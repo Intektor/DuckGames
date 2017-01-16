@@ -4,7 +4,7 @@ import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.rendering.item.DefaultTextureItemRenderer;
 import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
 import de.intektor.duckgames.common.GameRegistry;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.item.items.ItemSword;
 import de.intektor.duckgames.item.items.gun.ItemPistol;
 import de.intektor.duckgames.item.items.gun.ItemTommyGun;
@@ -25,7 +25,7 @@ public class Items {
     }
 
     public static void initCommon() {
-        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
+        GameRegistry gameRegistry = CommonCode.gameRegistry;
         gameRegistry.registerItem(SWORD);
         gameRegistry.registerItem(PISTOL);
         gameRegistry.registerItem(TOMMY_GUN);

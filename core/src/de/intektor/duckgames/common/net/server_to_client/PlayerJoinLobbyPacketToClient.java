@@ -14,35 +14,31 @@ import java.util.UUID;
 /**
  * @author Intektor
  */
-public class ChatMessagePacketToClient implements IPacket {
+public class PlayerJoinLobbyPacketToClient implements IPacket {
 
-    public UUID profileUUID;
-    public String message;
+    public UUID playerProfileUUID;
 
-    public ChatMessagePacketToClient(UUID profileUUID, String message) {
-        this.profileUUID = profileUUID;
-        this.message = message;
+    public PlayerJoinLobbyPacketToClient(UUID playerProfileUUID) {
+        this.playerProfileUUID = playerProfileUUID;
     }
 
-    public ChatMessagePacketToClient() {
+    public PlayerJoinLobbyPacketToClient() {
     }
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        NetworkUtils.writeUUID(out, profileUUID);
-        out.writeUTF(message);
+        NetworkUtils.writeUUID(out, playerProfileUUID);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        profileUUID = NetworkUtils.readUUID(in);
-        message = in.readUTF();
+        playerProfileUUID = NetworkUtils.readUUID(in);
     }
 
-    public static class Handler implements IPacketHandler<ChatMessagePacketToClient> {
+    public static class Handler implements IPacketHandler<PlayerJoinLobbyPacketToClient> {
 
         @Override
-        public void handlePacket(ChatMessagePacketToClient packet, Socket socket) {
+        public void handlePacket(PlayerJoinLobbyPacketToClient packet, Socket socket) {
             CommonCode.clientProxy.handlePacket(packet, socket);
         }
     }

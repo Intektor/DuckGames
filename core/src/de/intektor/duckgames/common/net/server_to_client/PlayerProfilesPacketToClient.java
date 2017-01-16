@@ -1,5 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
+import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.network.IPacket;
@@ -9,40 +10,36 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.UUID;
 
 /**
  * @author Intektor
  */
-public class ChatMessagePacketToClient implements IPacket {
+public class PlayerProfilesPacketToClient implements IPacket {
 
-    public UUID profileUUID;
-    public String message;
+    public PlayerProfile profile;
 
-    public ChatMessagePacketToClient(UUID profileUUID, String message) {
-        this.profileUUID = profileUUID;
-        this.message = message;
+    public PlayerProfilesPacketToClient(PlayerProfile profile) {
+        this.profile = profile;
     }
 
-    public ChatMessagePacketToClient() {
+    public PlayerProfilesPacketToClient() {
     }
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        NetworkUtils.writeUUID(out, profileUUID);
-        out.writeUTF(message);
+        out.writeUTF(profile.username);
+        NetworkUtils.writeUUID(out, profile.profileUUID);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        profileUUID = NetworkUtils.readUUID(in);
-        message = in.readUTF();
+        profile = new PlayerProfile(in.readUTF(), NetworkUtils.readUUID(in));
     }
 
-    public static class Handler implements IPacketHandler<ChatMessagePacketToClient> {
+    public static class Handler implements IPacketHandler<PlayerProfilesPacketToClient> {
 
         @Override
-        public void handlePacket(ChatMessagePacketToClient packet, Socket socket) {
+        public void handlePacket(PlayerProfilesPacketToClient packet, Socket socket) {
             CommonCode.clientProxy.handlePacket(packet, socket);
         }
     }

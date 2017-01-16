@@ -7,7 +7,7 @@ import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.GameRegistry;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.editor.spawns.PlayerSpawn;
 import de.intektor.duckgames.files.Serializable;
 import de.intektor.duckgames.world.WorldServer;
@@ -129,7 +129,7 @@ public class EditableGameMap implements Serializable {
 
     @Override
     public void writeToTag(TagCompound tag) {
-        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
+        GameRegistry gameRegistry = CommonCode.gameRegistry;
         tag.setInteger("w", width);
         tag.setInteger("h", height);
         TagCompound blocksTag = new TagCompound();
@@ -151,7 +151,7 @@ public class EditableGameMap implements Serializable {
     public void readFromTag(TagCompound tag) {
         width = tag.getInteger("w");
         height = tag.getInteger("h");
-        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
+        GameRegistry gameRegistry = CommonCode.gameRegistry;
         int amtOfB = width * height;
         TagCompound blocksTag = tag.getTag("b");
         for (int i = 0; i < amtOfB; i++) {

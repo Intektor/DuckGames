@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static de.intektor.duckgames.common.SharedGameRegistries.packetHelper;
+import static de.intektor.duckgames.common.CommonCode.packetHelper;
 
 /**
  * @author Intektor
@@ -76,7 +76,7 @@ public class DuckGamesServer implements Closeable {
                     DataInputStream in = new DataInputStream(clientSocket.getInputStream());
                     while (serverRunning && !clientSocket.isClosed()) {
                         IPacket packet = packetHelper.readPacket(in, Side.SERVER);
-                        SharedGameRegistries.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
+                        CommonCode.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
                     }
                 } catch (PacketOnWrongSideException e) {
                     System.out.println("Client sent a server-to-client packet the server! Kicking client!");
@@ -86,7 +86,7 @@ public class DuckGamesServer implements Closeable {
                 }
             }
         }.start();
-        SharedGameRegistries.packetHelper.sendPacket(new RequestIdentificationPacketToClient(), clientSocket);
+        CommonCode.packetHelper.sendPacket(new RequestIdentificationPacketToClient(), clientSocket);
     }
 
     public void kickClient(Socket socket) {

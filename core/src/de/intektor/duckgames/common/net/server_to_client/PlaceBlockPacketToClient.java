@@ -1,8 +1,7 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
 import de.intektor.duckgames.block.Block;
-import de.intektor.duckgames.client.ClientProxy;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -32,21 +31,21 @@ public class PlaceBlockPacketToClient implements IPacket {
     public void write(DataOutputStream out) throws IOException {
         out.writeInt(x);
         out.writeInt(y);
-        out.writeByte(SharedGameRegistries.gameRegistry.getBlockID(block));
+        out.writeByte(CommonCode.gameRegistry.getBlockID(block));
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
         x = in.readInt();
         y = in.readInt();
-        block = SharedGameRegistries.gameRegistry.getBlock(in.readByte());
+        block = CommonCode.gameRegistry.getBlock(in.readByte());
     }
 
     public static class Handler implements IPacketHandler<PlaceBlockPacketToClient> {
 
         @Override
         public void handlePacket(final PlaceBlockPacketToClient packet, Socket socketFrom) {
-            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

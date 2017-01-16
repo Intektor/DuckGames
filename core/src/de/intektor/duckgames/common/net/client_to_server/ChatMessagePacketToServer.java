@@ -2,7 +2,7 @@ package de.intektor.duckgames.common.net.client_to_server;
 
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.PlayerProfile;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -39,7 +39,7 @@ public class ChatMessagePacketToServer implements IPacket {
 
         @Override
         public void handlePacket(ChatMessagePacketToServer chatMessagePacketToServer, final Socket socket) {
-            final DuckGamesServer server = SharedGameRegistries.getDuckGamesServer();
+            final DuckGamesServer server = CommonCode.getDuckGamesServer();
             server.getMainServerThread().addScheduledTask(new Runnable() {
                 @Override
                 public void run() {

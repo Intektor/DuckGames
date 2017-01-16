@@ -3,8 +3,10 @@ package de.intektor.duckgames.client;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.gui.guis.GuiDownloadingMap;
 import de.intektor.duckgames.client.gui.guis.GuiPlayState;
+import de.intektor.duckgames.client.gui.guis.lobby.GuiLobby;
 import de.intektor.duckgames.common.IProxy;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.PlayerProfile;
+import de.intektor.duckgames.common.chat.ChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.IdentificationPacketToServer;
 import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.entity.Entity;
@@ -56,6 +58,10 @@ public class ClientProxy implements IProxy {
             handleWorldPacketToClient((WorldPacketToClient) packet);
         } else if (packet instanceof UpdateEquipmentPacketToClient) {
             handleUpdateEquipmentPacketToClient((UpdateEquipmentPacketToClient) packet);
+        } else if (packet instanceof ChatMessagePacketToClient) {
+            handleChatMessagePacketToClient((ChatMessagePacketToClient) packet);
+        } else if (packet instanceof PlayerProfilesPacketToClient) {
+            handlePlayerProfilesPacketToClient((PlayerProfilesPacketToClient) packet);
         }
     }
 
@@ -192,7 +198,7 @@ public class ClientProxy implements IProxy {
         duckGames.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                SharedGameRegistries.packetHelper.sendPacket(new IdentificationPacketToServer("intektor"), duckGames.getClientConnection().getClientSocket());
+                duckGames.sendPacketToServer(new IdentificationPacketToServer("Intektor"));
             }
         });
     }
@@ -222,6 +228,28 @@ public class ClientProxy implements IProxy {
             public void run() {
                 EntityPlayer player = (EntityPlayer) duckGames.theWorld.getEntityByUUID(packet.playerUUID);
                 player.setEquipment(packet.slot, packet.stack);
+            }
+        });
+    }
+
+    private void handleChatMessagePacketToClient(final ChatMessagePacketToClient packet) {
+        duckGames.addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                if (duckGames.getCurrentGui() instanceof GuiLobby) {
+                    PlayerProfile messengersProfile = duckGames.getClientConnection().getPlayerProfiles().get(packet.profileUUID);
+                    GuiLobby lobby = (GuiLobby) duckGames.getCurrentGui();
+                    lobby.addMessage(new ChatMessage(messengersProfile, packet.message));
+                }
+            }
+        });
+    }
+
+    private void handlePlayerProfilesPacketToClient(final PlayerProfilesPacketToClient packet) {
+        duckGames.addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                duckGames.getClientConnection().getPlayerProfiles().put(packet.profile.profileUUID, packet.profile);
             }
         });
     }

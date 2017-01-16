@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.item.ItemStack;
@@ -54,7 +54,7 @@ public class PickupEquipmentItemStackPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final PickupEquipmentItemStackPacketToClient packet, Socket socketFrom) {
-            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

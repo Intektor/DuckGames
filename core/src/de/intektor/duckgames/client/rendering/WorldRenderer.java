@@ -8,7 +8,7 @@ import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
 import de.intektor.duckgames.client.rendering.entity.EntityRendererRegistry;
 import de.intektor.duckgames.common.GameRegistry;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.world.World;
@@ -27,7 +27,7 @@ public class WorldRenderer {
         dg = DuckGamesClient.getDuckGames();
         blockRenderingRegistry = dg.getBlockRendererRegistry();
         entityRendererRegistry = dg.getEntityRendererRegistry();
-        gameRegistry = SharedGameRegistries.gameRegistry;
+        gameRegistry = CommonCode.gameRegistry;
     }
 
     public void renderWorld(World world, OrthographicCamera camera, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, EntityPlayer player, float partialTicks) {
@@ -36,7 +36,9 @@ public class WorldRenderer {
         float drawX = player.prevPosX + (player.posX - player.prevPosX) * partialTicks;
         float drawY = player.prevPosY + (player.posY - player.prevPosY) * partialTicks;
         camera.position.set(drawX * blockSize, drawY * blockSize, 0);
+//        camera.position.set(world.getWidth() / 2, world.getHeight() / 2, 0);
         camera.zoom = 0.0225f;
+//        camera.zoom = 0.05f;
         camera.update();
         shapeRenderer.setProjectionMatrix(camera.combined);
         spriteBatch.setProjectionMatrix(camera.combined);

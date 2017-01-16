@@ -5,7 +5,7 @@ import de.intektor.duckgames.client.rendering.block.AirBlockBlockRenderer;
 import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
 import de.intektor.duckgames.client.rendering.block.DefaultTextureBlockRenderer;
 import de.intektor.duckgames.common.GameRegistry;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 
 /**
  * @author Intektor
@@ -31,7 +31,7 @@ public class Blocks {
     }
 
     public static void initCommon() {
-        GameRegistry registry = SharedGameRegistries.gameRegistry;
+        GameRegistry registry = CommonCode.gameRegistry;
         registry.registerBlock(DIRT);
         registry.registerBlock(GRASS);
         registry.registerBlock(ICE);

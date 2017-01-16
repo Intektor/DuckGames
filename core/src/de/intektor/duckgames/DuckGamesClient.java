@@ -24,7 +24,7 @@ import de.intektor.duckgames.client.rendering.entity.EntityRendererRegistry;
 import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
 import de.intektor.duckgames.client.rendering.utils.FutureTextureRegistry;
 import de.intektor.duckgames.common.DuckGamesServer;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldClient;
@@ -120,7 +120,6 @@ public class DuckGamesClient extends ApplicationAdapter {
 
         FutureTextureRegistry.loadTextures();
 
-//        showGui(new GuiLevelEditor(new EditableGameMap(80, 40)));
         showGui(new GuiMainMenu());
     }
 
@@ -203,6 +202,10 @@ public class DuckGamesClient extends ApplicationAdapter {
         currentGui.enterGui();
     }
 
+    public Gui getCurrentGui() {
+        return currentGui;
+    }
+
     public OrthographicCamera getDefaultCamera() {
         return camera;
     }
@@ -230,7 +233,7 @@ public class DuckGamesClient extends ApplicationAdapter {
     }
 
     public void sendPacketToServer(IPacket packet) {
-        SharedGameRegistries.packetHelper.sendPacket(packet, clientConnection.getClientSocket());
+        CommonCode.packetHelper.sendPacket(packet, clientConnection.getClientSocket());
     }
 
     public void disconnect() {
@@ -248,7 +251,7 @@ public class DuckGamesClient extends ApplicationAdapter {
             e.printStackTrace();
         }
         this.dedicatedServer = dedicatedServer;
-        SharedGameRegistries.setDuckGamesServer(dedicatedServer);
+        CommonCode.setDuckGamesServer(dedicatedServer);
     }
 
     public DuckGamesServer getDedicatedServer() {

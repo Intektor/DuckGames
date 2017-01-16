@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
+import de.intektor.duckgames.common.chat.ChatMessage;
 
 /**
  * @author Intektor
@@ -58,7 +59,7 @@ public class GuiLobby extends Gui {
         super.buttonCallback(button);
     }
 
-    public void addMessage() {
-
+    public void addMessage(ChatMessage message) {
+        chatComponent.addMessage(message);
     }
 }
