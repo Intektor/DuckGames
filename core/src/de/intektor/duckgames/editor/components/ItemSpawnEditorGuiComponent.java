@@ -18,7 +18,7 @@ import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.i18n.I18nUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.item.IItemRenderer;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.editor.spawns.ItemSpawner;
 import de.intektor.duckgames.editor.spawns.ItemSpawner.ItemSpawn;
 import de.intektor.duckgames.item.Item;
@@ -53,7 +53,7 @@ public class ItemSpawnEditorGuiComponent extends GuiFrame implements GuiScrollTo
         itemSelectionScrollTool = new GuiScrollTool<ItemScrollToolEntry>(0, 0, width, height, true, false, DeviceUtils.isDeviceTouch(), width / 5, width / 5, 5, this);
         itemSelectionScrollTool.setShown(false);
 
-        for (Item item : SharedGameRegistries.gameRegistry.getAllRegisteredItems()) {
+        for (Item item : CommonCode.gameRegistry.getAllRegisteredItems()) {
             itemSelectionScrollTool.addEntry(new ItemScrollToolEntry(item));
         }
         registerGuiComponent(itemSelectionScrollTool);

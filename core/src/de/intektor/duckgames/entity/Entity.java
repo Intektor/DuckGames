@@ -2,7 +2,7 @@ package de.intektor.duckgames.entity;
 
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.collision.Collision2D;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.duckgames.common.net.server_to_client.DamageEntityPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RemoveEntityPacketToClient;
@@ -189,7 +189,7 @@ public abstract class Entity {
     }
 
     public final void writeEntityToStream(DataOutputStream out) throws IOException {
-        out.writeInt(SharedGameRegistries.gameRegistry.getEntityID(getClass()));
+        out.writeInt(CommonCode.gameRegistry.getEntityID(getClass()));
         NetworkUtils.writeUUID(out, uuid);
         out.writeFloat(posX);
         out.writeFloat(posY);
@@ -199,7 +199,7 @@ public abstract class Entity {
     }
 
     public static Entity readEntityFromStream(DataInputStream in) throws IOException {
-        Entity entity = SharedGameRegistries.gameRegistry.createEntity(in.readInt(), NetworkUtils.readUUID(in));
+        Entity entity = CommonCode.gameRegistry.createEntity(in.readInt(), NetworkUtils.readUUID(in));
         entity.posX = in.readFloat();
         entity.posY = in.readFloat();
         entity.motionX = in.readFloat();

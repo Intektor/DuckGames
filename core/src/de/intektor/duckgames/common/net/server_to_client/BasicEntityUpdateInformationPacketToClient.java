@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.EntityDirection;
@@ -71,7 +71,7 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final BasicEntityUpdateInformationPacketToClient packet, Socket socketFrom) {
-            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

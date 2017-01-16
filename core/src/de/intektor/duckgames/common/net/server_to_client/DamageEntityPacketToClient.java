@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.game.damage.DamageSource;
@@ -49,7 +49,7 @@ public class DamageEntityPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(DamageEntityPacketToClient packet, Socket socketFrom) {
-            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

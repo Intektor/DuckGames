@@ -3,7 +3,7 @@ package de.intektor.duckgames.world;
 import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.common.DuckGamesServer;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.net.server_to_client.BasicEntityUpdateInformationPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.PlayerPacketToClient;
@@ -80,7 +80,7 @@ public class WorldServer extends World {
             EntityPlayer player = new EntityPlayer(this, playerSpawn.getX(), playerSpawn.getY(), profile);
             profile.player = player;
             spawnEntityInWorld(player);
-            SharedGameRegistries.packetHelper.sendPacket(new PlayerPacketToClient(player.uuid), profile.socket);
+            CommonCode.packetHelper.sendPacket(new PlayerPacketToClient(player.uuid), profile.socket);
         }
     }
 

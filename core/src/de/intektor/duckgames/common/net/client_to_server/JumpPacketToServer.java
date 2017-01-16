@@ -1,7 +1,7 @@
 package de.intektor.duckgames.common.net.client_to_server;
 
 import de.intektor.duckgames.common.DuckGamesServer;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
@@ -39,7 +39,7 @@ public class JumpPacketToServer implements IPacket {
 
         @Override
         public void handlePacket(final JumpPacketToServer packet, final Socket socketFrom) {
-            final DuckGamesServer.MainServerThread main = SharedGameRegistries.getDuckGamesServer().getMainServerThread();
+            final DuckGamesServer.MainServerThread main = CommonCode.getDuckGamesServer().getMainServerThread();
             main.addScheduledTask(new Runnable() {
                 @Override
                 public void run() {

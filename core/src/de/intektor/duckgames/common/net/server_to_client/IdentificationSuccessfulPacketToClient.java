@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -28,7 +28,7 @@ public class IdentificationSuccessfulPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(IdentificationSuccessfulPacketToClient packet, Socket socketFrom) {
-            SharedGameRegistries.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.clientProxy.handlePacket(packet, socketFrom);
         }
     }
 }

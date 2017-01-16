@@ -1,7 +1,7 @@
 package de.intektor.duckgames.item;
 
 import de.intektor.duckgames.common.GameRegistry;
-import de.intektor.duckgames.common.SharedGameRegistries;
+import de.intektor.duckgames.common.CommonCode;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -50,7 +50,7 @@ public class ItemStack {
     }
 
     public void writeItemStackToStream(DataOutputStream out) throws IOException {
-        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
+        GameRegistry gameRegistry = CommonCode.gameRegistry;
         out.writeByte(gameRegistry.getItemID(item));
         out.writeInt(stackSize);
         out.writeBoolean(tagCompound != null);
@@ -58,7 +58,7 @@ public class ItemStack {
     }
 
     public static ItemStack readItemStackFromSteam(DataInputStream in) throws IOException {
-        GameRegistry gameRegistry = SharedGameRegistries.gameRegistry;
+        GameRegistry gameRegistry = CommonCode.gameRegistry;
         Item item = gameRegistry.getItem(in.readByte());
         int stackSize = in.readInt();
         DTagCompound tagCompound = null;

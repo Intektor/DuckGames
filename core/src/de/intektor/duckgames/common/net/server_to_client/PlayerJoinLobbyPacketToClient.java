@@ -14,32 +14,32 @@ import java.util.UUID;
 /**
  * @author Intektor
  */
-public class PlayerPacketToClient implements IPacket {
+public class PlayerJoinLobbyPacketToClient implements IPacket {
 
-    public UUID playerUUID;
+    public UUID playerProfileUUID;
 
-    public PlayerPacketToClient(UUID playerUUID) {
-        this.playerUUID = playerUUID;
+    public PlayerJoinLobbyPacketToClient(UUID playerProfileUUID) {
+        this.playerProfileUUID = playerProfileUUID;
     }
 
-    public PlayerPacketToClient() {
+    public PlayerJoinLobbyPacketToClient() {
     }
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        NetworkUtils.writeUUID(out, playerUUID);
+        NetworkUtils.writeUUID(out, playerProfileUUID);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        playerUUID = NetworkUtils.readUUID(in);
+        playerProfileUUID = NetworkUtils.readUUID(in);
     }
 
-    public static class Handler implements IPacketHandler<PlayerPacketToClient> {
+    public static class Handler implements IPacketHandler<PlayerJoinLobbyPacketToClient> {
 
         @Override
-        public void handlePacket(final PlayerPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+        public void handlePacket(PlayerJoinLobbyPacketToClient packet, Socket socket) {
+            CommonCode.clientProxy.handlePacket(packet, socket);
         }
     }
 }

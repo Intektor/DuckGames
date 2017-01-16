@@ -45,14 +45,14 @@ public abstract class ItemGun extends Item {
     @Override
     public void onAttackWithItemBegin(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
         super.onAttackWithItemBegin(stack, player, world, posX, posY);
-        preShoot(stack, player, world, posX, posY);
+        prepareShoot(stack, player, world, posX, posY);
     }
 
     @Override
     public void onAttackingWithItem(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
         super.onAttackingWithItem(stack, player, world, posX, posY);
         if (getFireMode(stack, player, world) == FireMode.AUTO) {
-            preShoot(stack, player, world, posX, posY);
+            prepareShoot(stack, player, world, posX, posY);
         }
     }
 
@@ -62,7 +62,7 @@ public abstract class ItemGun extends Item {
 
     }
 
-    protected void preShoot(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
+    protected void prepareShoot(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
         int remainingBullets = getRemainingBullets(stack, player, world);
         if (canShoot(stack, player, world) && remainingBullets > 0 && !world.isRemote) {
             setTimeAtLastShot(stack, player, world, world.getWorldTime());
@@ -90,6 +90,7 @@ public abstract class ItemGun extends Item {
             shoot(stack, player, world, angle);
 
             player.recoilAngle += getRecoil(stack, player, world);
+            player.recoilAngle = Math.min(player.recoilAngle, 30);
             player.worldTimeAtLastShot = world.getWorldTime();
         }
     }
