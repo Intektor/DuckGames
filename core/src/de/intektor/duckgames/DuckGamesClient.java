@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.gui.Gui;
-import de.intektor.duckgames.client.gui.guis.GuiLevelEditor;
+import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
 import de.intektor.duckgames.client.net.DuckGamesClientConnection;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
@@ -25,7 +25,6 @@ import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
 import de.intektor.duckgames.client.rendering.utils.FutureTextureRegistry;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.SharedGameRegistries;
-import de.intektor.duckgames.editor.EditableGameMap;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldClient;
@@ -121,7 +120,8 @@ public class DuckGamesClient extends ApplicationAdapter {
 
         FutureTextureRegistry.loadTextures();
 
-        showGui(new GuiLevelEditor(new EditableGameMap(80, 40)));
+//        showGui(new GuiLevelEditor(new EditableGameMap(80, 40)));
+        showGui(new GuiMainMenu());
     }
 
     @Override

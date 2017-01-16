@@ -160,7 +160,7 @@ public class DuckGamesServer implements Closeable {
 
         public void registrationMessageFromClient(Socket socket, String username) {
             if (serverState == ServerState.CONNECT_STATE) {
-                PlayerProfile profile = new PlayerProfile(username, socket);
+                PlayerProfile profile = new PlayerProfile(username, socket, UUID.randomUUID());
                 profileMap.put(socket, profile);
                 packetHelper.sendPacket(new IdentificationSuccessfulPacketToClient(), socket);
             } else {
