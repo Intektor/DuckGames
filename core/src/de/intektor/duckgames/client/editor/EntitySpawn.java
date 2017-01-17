@@ -1,12 +1,13 @@
-package de.intektor.duckgames.editor;
+package de.intektor.duckgames.client.editor;
 
 import de.intektor.duckgames.collision.Collision2D;
+import de.intektor.duckgames.files.Serializable;
 import de.intektor.duckgames.world.WorldServer;
 
 /**
  * @author Intektor
  */
-public abstract class EntitySpawn {
+public abstract class EntitySpawn implements Serializable {
 
     protected float x, y;
 

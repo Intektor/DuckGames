@@ -23,6 +23,9 @@ public class DuckGamesClientConnection implements Closeable {
     private volatile boolean running;
     private boolean identificationSuccessful;
 
+    private boolean connectionFailed;
+    private Throwable connectionFailedProblem;
+
     private Map<UUID, PlayerProfile> playerProfiles = new HashMap<UUID, PlayerProfile>();
 
     public void connect(final String ip, final int port) {
@@ -46,6 +49,8 @@ public class DuckGamesClientConnection implements Closeable {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    connectionFailed = true;
+                    connectionFailedProblem = e;
                 }
             }
         }.start();
@@ -70,10 +75,18 @@ public class DuckGamesClientConnection implements Closeable {
     @Override
     public void close() throws IOException {
         running = false;
-        clientSocket.close();
+        if (clientSocket != null) clientSocket.close();
     }
 
     public Map<UUID, PlayerProfile> getPlayerProfiles() {
         return playerProfiles;
+    }
+
+    public boolean connectionFailed() {
+        return connectionFailed;
+    }
+
+    public Throwable getConnectionFailedProblem() {
+        return connectionFailedProblem;
     }
 }

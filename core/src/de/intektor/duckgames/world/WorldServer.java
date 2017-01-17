@@ -9,8 +9,8 @@ import de.intektor.duckgames.common.net.server_to_client.BasicEntityUpdateInform
 import de.intektor.duckgames.common.net.server_to_client.PlayerPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RemoveEntityPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.SpawnEntityPacketToClient;
-import de.intektor.duckgames.editor.EntitySpawn;
-import de.intektor.duckgames.editor.spawns.PlayerSpawn;
+import de.intektor.duckgames.client.editor.EntitySpawn;
+import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 

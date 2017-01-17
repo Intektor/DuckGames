@@ -1,14 +1,17 @@
-package de.intektor.duckgames.editor.spawns;
+package de.intektor.duckgames.game.worlds.spawns;
 
 import com.badlogic.gdx.math.RandomXS128;
+import de.intektor.duckgames.client.editor.EntitySpawn;
 import de.intektor.duckgames.collision.Collision2D;
-import de.intektor.duckgames.editor.EntitySpawn;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.entity.entities.EntityItem;
+import de.intektor.duckgames.files.Serializable;
 import de.intektor.duckgames.item.DTagCompound;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldServer;
+import de.intektor.tag.TagCompound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,12 +100,34 @@ public class ItemSpawner extends EntitySpawn {
         return spawnList;
     }
 
-    public static class ItemSpawn {
+    @Override
+    public void writeToTag(TagCompound tag) {
+        tag.setInteger("iA", spawnList.size());
+        for (int i = 0; i < spawnList.size(); i++) {
+            ItemSpawn itemSpawn = spawnList.get(i);
+            TagCompound itemSpawnTag = new TagCompound();
+            itemSpawn.writeToTag(itemSpawnTag);
+            tag.setTag("iS" + i, itemSpawnTag);
+        }
+    }
+
+    @Override
+    public void readFromTag(TagCompound tag) {
+        int amt = tag.getInteger("iA");
+        for (int i = 0; i < amt; i++) {
+            TagCompound itemSpawnTag = tag.getTag("iS" + i);
+            ItemSpawn spawn = new ItemSpawn();
+            spawn.readFromTag(itemSpawnTag);
+            spawnList.add(spawn);
+        }
+    }
+
+    public static class ItemSpawn implements Serializable {
 
         private Item item;
         private boolean hasFixedStackSize;
         private int stackSize;
-        private DTagCompound fixedTagCompound;
+        private TagCompound fixedTagCompound;
 
         public ItemSpawn(Item item) {
             this(item, true, 1, null);
@@ -113,6 +138,9 @@ public class ItemSpawner extends EntitySpawn {
             this.hasFixedStackSize = hasFixedStackSize;
             this.stackSize = stackSize;
             this.fixedTagCompound = fixedTagCompound;
+        }
+
+        public ItemSpawn() {
         }
 
         public Item getItem() {
@@ -127,7 +155,7 @@ public class ItemSpawner extends EntitySpawn {
             return hasFixedStackSize;
         }
 
-        public DTagCompound getFixedTagCompound() {
+        public TagCompound getFixedTagCompound() {
             return fixedTagCompound;
         }
 
@@ -139,8 +167,24 @@ public class ItemSpawner extends EntitySpawn {
                 stackSize = rng.nextInt(getStackSize()) + 1;
             }
             ItemStack stack = new ItemStack(getItem(), stackSize);
-            stack.setTagCompound(getFixedTagCompound());
+            stack.setTagCompound(new DTagCompound(getFixedTagCompound()));
             return stack;
+        }
+
+        @Override
+        public void writeToTag(TagCompound tag) {
+            tag.setByte("i", CommonCode.gameRegistry.getItemID(item));
+            tag.setBoolean("hF", hasFixedStackSize);
+            tag.setInteger("ss", stackSize);
+            if (fixedTagCompound != null) tag.setTag("fT", fixedTagCompound);
+        }
+
+        @Override
+        public void readFromTag(TagCompound tag) {
+            item = CommonCode.gameRegistry.getItem(tag.getByte("i"));
+            hasFixedStackSize = tag.getBoolean("hF");
+            stackSize = tag.getInteger("ss");
+            fixedTagCompound = tag.getTag("fT");
         }
     }
 }

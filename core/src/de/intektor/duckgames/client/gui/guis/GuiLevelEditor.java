@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.block.Blocks;
+import de.intektor.duckgames.client.editor.components.SaveWorldGuiComponent;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiScrollTool;
@@ -23,16 +24,16 @@ import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.editor.EditableGameMap;
-import de.intektor.duckgames.editor.EntitySpawn;
-import de.intektor.duckgames.editor.EntitySpawn.EntitySpawnType;
-import de.intektor.duckgames.editor.EntitySpawnCreationRegistry;
-import de.intektor.duckgames.editor.components.ItemSpawnEditorGuiComponent;
-import de.intektor.duckgames.editor.spawns.ItemSpawner;
-import de.intektor.duckgames.editor.spawns.PlayerSpawn;
-import de.intektor.duckgames.editor.spawns.renderer.EntitySpawnRendererRegistry;
-import de.intektor.duckgames.editor.spawns.renderer.ItemSpawnRenderer;
-import de.intektor.duckgames.editor.spawns.renderer.PlayerSpawnRenderer;
+import de.intektor.duckgames.client.editor.EditableGameMap;
+import de.intektor.duckgames.client.editor.EntitySpawn;
+import de.intektor.duckgames.client.editor.EntitySpawn.EntitySpawnType;
+import de.intektor.duckgames.client.editor.EntitySpawnCreationRegistry;
+import de.intektor.duckgames.client.editor.components.ItemSpawnEditorGuiComponent;
+import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
+import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
+import de.intektor.duckgames.game.worlds.spawns.renderer.EntitySpawnRendererRegistry;
+import de.intektor.duckgames.game.worlds.spawns.renderer.ItemSpawnRenderer;
+import de.intektor.duckgames.game.worlds.spawns.renderer.PlayerSpawnRenderer;
 
 import java.util.List;
 
@@ -53,6 +54,8 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     private GuiScrollTool<EntitySpawnToolEntry> entitySpawnTool;
 
     private ItemSpawnEditorGuiComponent itemSpawnEditorGuiComponent;
+
+    private SaveWorldGuiComponent saveWorldGuiComponent;
 
     private Block currentSelectedBlock;
     private EntitySpawnToolEntry currentSelectedSpawnType;
@@ -128,6 +131,10 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         itemSpawnEditorGuiComponent = new ItemSpawnEditorGuiComponent(0, 0, 500, 600);
         itemSpawnEditorGuiComponent.setShown(false);
         registerComponent(itemSpawnEditorGuiComponent);
+
+        saveWorldGuiComponent = new SaveWorldGuiComponent(dg.getPreferredScreenWidth() / 2 - 250, dg.getPreferredScreenHeight() / 2 - 300, 500, 600, this);
+        saveWorldGuiComponent.setShown(false);
+        registerComponent(saveWorldGuiComponent);
     }
 
     @Override
@@ -336,6 +343,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
     @Override
     public void keyPushed(int keyCode, int mouseX, int mouseY) {
+        if (saveWorldGuiComponent.isShown()) return;
         switch (keyCode) {
             case T:
                 if (map.canBeConvertedToWorld()) {
@@ -348,6 +356,9 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
                 break;
             case G:
                 showGrid = !showGrid;
+                break;
+            case S:
+                saveWorldGuiComponent.setShown(true);
                 break;
         }
     }
@@ -429,7 +440,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             MousePos prevMousePos = GuiUtils.unprojectMousePosition(editorCamera, unscaleMouseX(prevMouseX), Gdx.graphics.getHeight() - unscaleMouseY(prevMouseY));
             editorCamera.position.add(prevMousePos.x - mousePos.x, prevMousePos.y - mousePos.y, 0);
         }
-        if (itemSpawnEditorGuiComponent.isActive()) return;
+        if (itemSpawnEditorGuiComponent.isActive() || hoversComponent(mouseX, mouseY)) return;
         switch (currentTool) {
             case PLACE_BLOCK:
                 changeBlock(currentSelectedBlock);
@@ -466,7 +477,8 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     }
 
     private void changeBlock(Block block) {
-        if (input.isKeyPressed(SPACE) || blockBuildTool.isShown() || entitySpawnTool.isShown()) return;
+        if (input.isKeyPressed(SPACE) || blockBuildTool.isShown() || entitySpawnTool.isShown() || hoversComponent(input.getX(), input.getY()))
+            return;
         MousePos mousePos = GuiUtils.unprojectMousePosition(editorCamera);
         if (map.collisionCollidesWithEntitySpawns(new Collision2D((int) mousePos.x, (int) mousePos.y, 1, 1))) return;
         if (!(mousePos.x >= 0 && mousePos.x <= map.getWidth() + 1 && mousePos.y >= 0 && mousePos.y <= map.getHeight() + 1))
@@ -503,6 +515,9 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         }
     }
 
+    public EditableGameMap getMap() {
+        return map;
+    }
 
     private static class BlockScrollToolEntry implements GuiScrollTool.ScrollToolEntry {
 

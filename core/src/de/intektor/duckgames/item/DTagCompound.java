@@ -9,6 +9,15 @@ public class DTagCompound extends TagCompound {
 
     private boolean isDirty;
 
+    public DTagCompound(TagCompound tag) {
+        if (tag != null) {
+            this.tags = tag.getTags();
+        }
+    }
+
+    public DTagCompound() {
+    }
+
     @Override
     public void setByte(String key, byte value) {
         byte prev = getByte(key);

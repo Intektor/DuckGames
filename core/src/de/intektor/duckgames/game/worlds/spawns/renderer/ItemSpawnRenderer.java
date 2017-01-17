@@ -1,4 +1,4 @@
-package de.intektor.duckgames.editor.spawns.renderer;
+package de.intektor.duckgames.game.worlds.spawns.renderer;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.rendering.item.IItemRenderer;
-import de.intektor.duckgames.editor.EditableGameMap;
-import de.intektor.duckgames.editor.IEntitySpawnRenderer;
-import de.intektor.duckgames.editor.spawns.ItemSpawner;
+import de.intektor.duckgames.client.editor.EditableGameMap;
+import de.intektor.duckgames.client.editor.IEntitySpawnRenderer;
+import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
 
 /**
  * @author Intektor

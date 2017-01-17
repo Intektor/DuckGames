@@ -1,4 +1,4 @@
-  package de.intektor.duckgames.client.rendering;
+package de.intektor.duckgames.client.rendering;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

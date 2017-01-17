@@ -5,7 +5,7 @@ import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
 import de.intektor.duckgames.client.gui.guis.lobby.GuiLobby;
-import de.intektor.duckgames.editor.EditableGameMap;
+import de.intektor.duckgames.client.editor.EditableGameMap;
 
 /**
  * @author Intektor
@@ -49,7 +49,7 @@ public class GuiMainMenu extends Gui {
     @Override
     public void buttonCallback(GuiButton button) {
         if (button == joinLobbyButton) {
-
+            dg.showGui(new GuiConnectToLobby());
         } else if (button == createLobbyButton) {
             dg.showGui(new GuiLobby(true));
         } else if (button == levelEditorButton) {

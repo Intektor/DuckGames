@@ -1,7 +1,7 @@
-package de.intektor.duckgames.editor.spawns.renderer;
+package de.intektor.duckgames.game.worlds.spawns.renderer;
 
-import de.intektor.duckgames.editor.EntitySpawn;
-import de.intektor.duckgames.editor.IEntitySpawnRenderer;
+import de.intektor.duckgames.client.editor.EntitySpawn;
+import de.intektor.duckgames.client.editor.IEntitySpawnRenderer;
 
 import java.util.HashMap;
 import java.util.Map;

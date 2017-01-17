@@ -1,18 +1,28 @@
-package de.intektor.duckgames.editor;
+package de.intektor.duckgames.client.editor;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.collision.Collision2D;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.GameRegistry;
-import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.editor.spawns.PlayerSpawn;
 import de.intektor.duckgames.files.Serializable;
+import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
+import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 import de.intektor.duckgames.world.WorldServer;
 import de.intektor.tag.TagCompound;
 
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +31,28 @@ import java.util.List;
  */
 public class EditableGameMap implements Serializable {
 
+    private static BiMap<Integer, Class<? extends EntitySpawn>> entitySpawnRegistry = HashBiMap.create();
+    private static BiMap<Class<? extends EntitySpawn>, Constructor<? extends EntitySpawn>> constructorBiMap = HashBiMap.create();
+
+    static {
+        registerEntitySpawn(PlayerSpawn.class, 0);
+        registerEntitySpawn(ItemSpawner.class, 1);
+    }
+
+    private static void registerEntitySpawn(Class<? extends EntitySpawn> clazz, int id) {
+        try {
+            Constructor<? extends EntitySpawn> constructor = clazz.getConstructor(float.class, float.class);
+            entitySpawnRegistry.put(id, clazz);
+            constructorBiMap.put(clazz, constructor);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private Table<Integer, Integer, Block> blockTable = HashBasedTable.create();
     private List<EntitySpawn> entitySpawnList = new ArrayList<EntitySpawn>();
+
+    private String saveName;
 
     private int width;
     private int height;
@@ -127,11 +157,30 @@ public class EditableGameMap implements Serializable {
         return canPlaceEntitySpawnAtPosition(spawn, spawn.getX() + spawn.getWidth() / 2, spawn.getY() + spawn.getHeight() / 2);
     }
 
+    public void saveMapToFile(String mapName) {
+        try {
+            FileHandle handle = Gdx.files.local("saves/user");
+            handle.mkdirs();
+
+            handle = Gdx.files.local(String.format("saves/user/%s", mapName));
+            DataOutputStream out = new DataOutputStream(new FileOutputStream(handle.file()));
+            TagCompound tag = new TagCompound();
+            tag.setString("mN", mapName);
+            writeToTag(tag);
+            tag.writeToStream(out);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void writeToTag(TagCompound tag) {
         GameRegistry gameRegistry = CommonCode.gameRegistry;
         tag.setInteger("w", width);
         tag.setInteger("h", height);
+
         TagCompound blocksTag = new TagCompound();
         int blockNumber = 0;
         for (int x = 0; x < width; x++) {
@@ -145,21 +194,49 @@ public class EditableGameMap implements Serializable {
             }
         }
         tag.setTag("b", blocksTag);
+
+        TagCompound spawnTag = new TagCompound();
+        spawnTag.setInteger("eN", entitySpawnList.size());
+        for (int i = 0; i < entitySpawnList.size(); i++) {
+            EntitySpawn entitySpawn = entitySpawnList.get(i);
+            TagCompound entityTag = new TagCompound();
+            entityTag.setInteger("ID", entitySpawnRegistry.inverse().get(entitySpawn.getClass()));
+            entityTag.setFloat("x", entitySpawn.x);
+            entityTag.setFloat("y", entitySpawn.y);
+            entitySpawn.writeToTag(entityTag);
+            spawnTag.setTag("e" + i, entityTag);
+        }
+        tag.setTag("e", spawnTag);
     }
 
     @Override
     public void readFromTag(TagCompound tag) {
-        width = tag.getInteger("w");
-        height = tag.getInteger("h");
-        GameRegistry gameRegistry = CommonCode.gameRegistry;
-        int amtOfB = width * height;
-        TagCompound blocksTag = tag.getTag("b");
-        for (int i = 0; i < amtOfB; i++) {
-            TagCompound blockTag = blocksTag.getTag("" + i);
-            int x = blockTag.getInteger("x");
-            int y = blockTag.getInteger("y");
-            Block b = gameRegistry.getBlock(blockTag.getByte("t"));
-            blockTable.put(x, y, b);
+        try {
+            width = tag.getInteger("w");
+            height = tag.getInteger("h");
+            saveName = tag.getString("mN");
+            GameRegistry gameRegistry = CommonCode.gameRegistry;
+            int amtOfB = width * height;
+            TagCompound blocksTag = tag.getTag("b");
+            for (int i = 0; i < amtOfB; i++) {
+                TagCompound blockTag = blocksTag.getTag("" + i);
+                int x = blockTag.getInteger("x");
+                int y = blockTag.getInteger("y");
+                Block b = gameRegistry.getBlock(blockTag.getByte("t"));
+                blockTable.put(x, y, b);
+            }
+            TagCompound spawnTag = tag.getTag("e");
+            int amtOfEntities = spawnTag.getInteger("eN");
+            for (int i = 0; i < amtOfEntities; i++) {
+                TagCompound entityTag = spawnTag.getTag("e" + i);
+                float x = entityTag.getFloat("x");
+                float y = entityTag.getFloat("y");
+                EntitySpawn spawn = constructorBiMap.get(entitySpawnRegistry.get(entityTag.getInteger("ID"))).newInstance(x, y);
+                spawn.readFromTag(entityTag);
+                entitySpawnList.add(spawn);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -187,5 +264,9 @@ public class EditableGameMap implements Serializable {
             if (entitySpawn instanceof PlayerSpawn) amountOfPlayers++;
         }
         return amountOfPlayers >= 1;
+    }
+
+    public String getSaveName() {
+        return saveName;
     }
 }

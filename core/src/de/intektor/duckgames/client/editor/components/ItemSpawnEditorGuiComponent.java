@@ -1,4 +1,4 @@
-package de.intektor.duckgames.editor.components;
+package de.intektor.duckgames.client.editor.components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -19,8 +19,8 @@ import de.intektor.duckgames.client.i18n.I18nUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.item.IItemRenderer;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.editor.spawns.ItemSpawner;
-import de.intektor.duckgames.editor.spawns.ItemSpawner.ItemSpawn;
+import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
+import de.intektor.duckgames.game.worlds.spawns.ItemSpawner.ItemSpawn;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 

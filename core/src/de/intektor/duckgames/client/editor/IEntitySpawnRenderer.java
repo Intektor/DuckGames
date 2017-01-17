@@ -1,4 +1,4 @@
-package de.intektor.duckgames.editor;
+package de.intektor.duckgames.client.editor;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

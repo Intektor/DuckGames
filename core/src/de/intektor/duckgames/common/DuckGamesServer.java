@@ -3,7 +3,7 @@ package de.intektor.duckgames.common;
 import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.common.net.server_to_client.FinishedWorldTransmissionPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.WorldPacketToClient;
-import de.intektor.duckgames.editor.EditableGameMap;
+import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.world.WorldServer;
 import de.intektor.network.IPacket;
 import de.intektor.network.PacketOnWrongSideException;
@@ -168,6 +168,9 @@ public class DuckGamesServer implements Closeable {
                 if (serverState == ServerState.LOBBY_STATE) {
                     DuckGamesServer.this.messageEveryone(new PlayerJoinLobbyPacketToClient(profile.profileUUID));
                 }
+                for (PlayerProfile playerProfile : profileMap.values()) {
+                    packetHelper.sendPacket(new PlayerProfilesPacketToClient(playerProfile), socket);
+                }
             } else {
                 packetHelper.sendPacket(new KickClientFromServerPacketToClient("Can't join while game is running!"), socket);
                 socketList.remove(socket);
@@ -180,6 +183,7 @@ public class DuckGamesServer implements Closeable {
 
         public void launchGame(EditableGameMap map) {
             backup = map;
+            serverState = ServerState.PLAY_STATE;
             world = map.convertToWorld(DuckGamesServer.this);
             messageEveryone(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
             world.spawnPlayers();

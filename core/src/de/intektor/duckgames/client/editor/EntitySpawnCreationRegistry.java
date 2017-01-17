@@ -1,4 +1,4 @@
-package de.intektor.duckgames.editor;
+package de.intektor.duckgames.client.editor;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;

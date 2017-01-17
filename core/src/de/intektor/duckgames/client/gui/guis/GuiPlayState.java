@@ -49,6 +49,7 @@ public class GuiPlayState extends Gui {
     protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
+        if (player == null) return;
         spriteBatch.enableBlending();
         worldRenderer.renderWorld(world, worldCamera, worldShapeRenderer, worldSpriteBatch, player, partialTicks);
         ItemStack equipment = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);

@@ -23,6 +23,8 @@ public class GuiTextField extends GuiComponent {
     private boolean showCursor;
     private long lastSwitchCursorTime;
 
+    private int cursorPosition;
+
     public GuiTextField(int x, int y, int width, int height, String infoText) {
         super(x, y, width, height);
         this.infoText = infoText;
@@ -49,15 +51,18 @@ public class GuiTextField extends GuiComponent {
         sB.begin();
         String text;
         Color color;
+        float y = drawY + height / 2;
         if (currentlyWritten.length() == 0 && !isActive) {
             text = infoText;
             color = new Color(1, 1, 1, 0.5f);
         } else {
             text = currentlyWritten;
             color = Color.WHITE;
-            if (showCursor && isActive) text += "|";
+            if (showCursor && isActive) {
+                RenderUtils.drawString("|", font, drawX + FontUtils.getStringWidth(currentlyWritten.substring(0, cursorPosition), font), y, sB, Color.WHITE, false, true);
+            }
         }
-        RenderUtils.drawString(text, font, drawX + 3, drawY + height / 2, sB, color, false, true);
+        RenderUtils.drawString(text, font, drawX + 3, y, sB, color, false, true);
         sB.end();
     }
 
@@ -65,6 +70,9 @@ public class GuiTextField extends GuiComponent {
     public void clickDown(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
         super.clickDown(mouseX, mouseY, pointer, button, drawX, drawY);
         isActive = GuiUtils.isPointInRegion(x, y, width, height, mouseX, mouseY);
+        if (isActive) {
+            cursorPosition = FontUtils.getCharPosition(currentlyWritten, font, mouseX);
+        }
     }
 
     @Override
@@ -78,15 +86,21 @@ public class GuiTextField extends GuiComponent {
         if (isActive) {
             switch (character) {
                 case '\b':
-                    if (currentlyWritten.length() > 0) {
-                        currentlyWritten = currentlyWritten.substring(0, currentlyWritten.length() - 1);
+                    if (currentlyWritten.length() > 0 && cursorPosition > 0) {
+                        currentlyWritten = currentlyWritten.substring(0, cursorPosition - 1) + currentlyWritten.substring(cursorPosition);
+                        cursorPosition--;
+                        lastSwitchCursorTime = System.currentTimeMillis();
+                        showCursor = true;
                     }
                     break;
                 default:
                     if (Character.isLetterOrDigit(character) || character == ' '
                             || character == '?' || character == '!' || character == '.' || character == ',') {
                         if (FontUtils.getStringWidth(currentlyWritten + character, font) <= width) {
-                            currentlyWritten += character;
+                            currentlyWritten = currentlyWritten.substring(0, cursorPosition) + character + currentlyWritten.substring(cursorPosition);
+                            cursorPosition++;
+                            lastSwitchCursorTime = System.currentTimeMillis();
+                            showCursor = true;
                         }
                     }
                     break;
@@ -100,5 +114,6 @@ public class GuiTextField extends GuiComponent {
 
     public void setText(String text) {
         this.currentlyWritten = text;
+        cursorPosition = 0;
     }
 }
