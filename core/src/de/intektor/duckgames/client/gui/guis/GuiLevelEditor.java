@@ -340,7 +340,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             case T:
                 if (map.canBeConvertedToWorld()) {
                     DuckGamesServer server = new DuckGamesServer();
-                    server.startServer();
+                    server.startServer(DuckGamesServer.ServerState.CONNECT_STATE);
                     dg.setDedicatedServer(server);
                     allowInput = false;
                     waitingForTestServer = true;

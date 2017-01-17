@@ -1,6 +1,9 @@
 package de.intektor.duckgames.client.gui.guis.lobby;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,10 +12,11 @@ import de.intektor.duckgames.client.gui.GuiMultiComponent;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiScrollBar;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
+import de.intektor.duckgames.client.gui.components.GuiTextField;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
-import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.net.client_to_server.ChatMessagePacketToServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,31 +30,46 @@ public class GuiLobbyChat extends GuiMultiComponent {
 
     private GuiScrollBar messageScrollBar;
     private GuiTextBasedButton sendMessageButton;
+    private GuiTextField chatWritingField;
+
+    private BitmapFont font = dg.defaultFont28;
 
     private List<ChatMessage> messages = new ArrayList<ChatMessage>();
 
-    private String currentlyTyped = "";
-    private boolean currentlyTypingMessage;
-
     public GuiLobbyChat(int x, int y, int width, int height) {
         super(x, y, width, height);
-        messageScrollBar = new GuiScrollBar(width - 20, 0, 20, height, GuiScrollBar.Direction.VERTICAL, 0, height);
+        messageScrollBar = new GuiScrollBar(width - 20, 0, 20, height, GuiScrollBar.Direction.VERTICAL, 0, (int) (height - font.getLineHeight()));
         registerGuiComponent(messageScrollBar);
-        sendMessageButton = new GuiTextBasedButton(width - 50, 0, 100, 50, "Send!");
+
+        sendMessageButton = new GuiTextBasedButton(width - 100, 0, 100, (int) font.getLineHeight(), "Send!");
         registerGuiComponent(sendMessageButton);
+
+        chatWritingField = new GuiTextField(0, 0, width - 100, (int) font.getLineHeight(), "Type message here!");
+        registerGuiComponent(chatWritingField);
     }
 
     @Override
     protected void renderComponent(float drawX, float drawY, int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
-        super.renderComponent(drawX, drawY, mouseX, mouseY, camera, sR, sB, partialTicks);
         sR.begin(Filled);
         sR.setColor(Color.BLUE);
         sR.rect(drawX, drawY, width, height);
         sR.end();
         sB.begin();
-        BitmapFont font = dg.defaultFont28;
-        RenderUtils.drawString(currentlyTyped, font, drawX, drawY + FontUtils.getStringHeight(currentlyTyped, font), sB, Color.WHITE);
+        Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+        Gdx.gl.glScissor(GuiUtils.unscaleScreenCoordX(drawX), GuiUtils.unscaleScreenCoordY(drawY + font.getLineHeight()),
+                GuiUtils.unscaleScreenCoordX(width), GuiUtils.unscaleScreenCoordX(height - font.getLineHeight()));
+        float y = drawY + height;
+        if (messages.size() * font.getLineHeight() > height - font.getLineHeight()) {
+            y += (font.getLineHeight() * messages.size() - height + font.getLineHeight()) * messageScrollBar.getScrollPercent();
+        }
+        for (ChatMessage message : messages) {
+            String text = String.format("%s: %s", message.getPlayerProfile().username, message.getMessage());
+            RenderUtils.drawString(text, font, drawX, y, sB, Color.WHITE);
+            y -= font.getLineHeight();
+        }
         sB.end();
+        Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
+        super.renderComponent(drawX, drawY, mouseX, mouseY, camera, sR, sB, partialTicks);
     }
 
     @Override
@@ -61,7 +80,6 @@ public class GuiLobbyChat extends GuiMultiComponent {
     @Override
     public void clickDown(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
         super.clickDown(mouseX, mouseY, pointer, button, drawX, drawY);
-        currentlyTypingMessage = GuiUtils.isPointInRegion(x, y, width, 50, mouseX, mouseY);
     }
 
     @Override
@@ -70,14 +88,11 @@ public class GuiLobbyChat extends GuiMultiComponent {
     }
 
     @Override
-    public void charTyped(int mouseX, int mouseY, char character) {
-        super.charTyped(mouseX, mouseY, character);
-        switch (character) {
-            case '\b':
-                currentlyTyped = currentlyTyped.substring(0, currentlyTyped.length() - 1);
-                break;
-            default:
-                currentlyTyped += character;
+    public void keyDown(int mouseX, int mouseY, int keyCode) {
+        super.keyDown(mouseX, mouseY, keyCode);
+        switch (keyCode) {
+            case Input.Keys.ENTER:
+                sendMessage();
                 break;
         }
     }
@@ -90,14 +105,18 @@ public class GuiLobbyChat extends GuiMultiComponent {
     @Override
     public void buttonCallback(GuiButton button) {
         super.buttonCallback(button);
+        if (button == sendMessageButton) {
+            sendMessage();
+        }
     }
 
     public void addMessage(ChatMessage message) {
         messages.add(message);
+        messageScrollBar.addAllWindowSize((int) font.getLineHeight() + 1);
     }
 
     private void sendMessage() {
-
-        currentlyTyped = "";
+        dg.sendPacketToServer(new ChatMessagePacketToServer(chatWritingField.getText()));
+        chatWritingField.setText("");
     }
 }

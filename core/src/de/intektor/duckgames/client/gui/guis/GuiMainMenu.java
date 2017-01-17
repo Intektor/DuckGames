@@ -51,7 +51,7 @@ public class GuiMainMenu extends Gui {
         if (button == joinLobbyButton) {
 
         } else if (button == createLobbyButton) {
-            dg.showGui(new GuiLobby());
+            dg.showGui(new GuiLobby(true));
         } else if (button == levelEditorButton) {
             dg.showGui(new GuiLevelEditor(new EditableGameMap(80, 40)));
         }

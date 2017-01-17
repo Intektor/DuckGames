@@ -54,6 +54,7 @@ public class CommonCode {
         packetRegistry.registerPacket(ChatMessagePacketToServer.class, ChatMessagePacketToServer.Handler.class, 21, Side.SERVER);
         packetRegistry.registerPacket(ChatMessagePacketToClient.class, ChatMessagePacketToClient.Handler.class, 22, Side.CLIENT);
         packetRegistry.registerPacket(PlayerProfilesPacketToClient.class, PlayerProfilesPacketToClient.Handler.class, 23, Side.CLIENT);
+        packetRegistry.registerPacket(PlayerJoinLobbyPacketToClient.class, PlayerJoinLobbyPacketToClient.Handler.class, 24, Side.CLIENT);
 
         gameRegistry = new GameRegistry();
         gameRegistry.registerEntity(EntityPlayer.class, 0);

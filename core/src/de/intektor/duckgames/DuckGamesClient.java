@@ -18,6 +18,7 @@ import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
 import de.intektor.duckgames.client.net.DuckGamesClientConnection;
+import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
 import de.intektor.duckgames.client.rendering.entity.EntityRendererRegistry;
@@ -142,6 +143,7 @@ public class DuckGamesClient extends ApplicationAdapter {
             r.run();
         }
         if (currentGui != null) currentGui.update(Gdx.input.getX(), Gdx.input.getY());
+        FontUtils.splitString("ienieinnievv", defaultFont28, 5);
     }
 
     /**

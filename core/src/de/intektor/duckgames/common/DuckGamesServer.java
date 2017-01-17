@@ -45,9 +45,9 @@ public class DuckGamesServer implements Closeable {
         port = 19473;
     }
 
-    public void startServer() {
+    public void startServer(ServerState state) {
         serverRunning = true;
-        serverState = ServerState.CONNECT_STATE;
+        serverState = state;
         new Thread("Server Thread") {
             @Override
             public void run() {
@@ -114,9 +114,10 @@ public class DuckGamesServer implements Closeable {
         serverSocket.close();
     }
 
-    private enum ServerState {
+    public enum ServerState {
         CONNECT_STATE,
-        PLAY_STATE
+        PLAY_STATE,
+        LOBBY_STATE
     }
 
     public MainServerThread getMainServerThread() {
@@ -159,10 +160,14 @@ public class DuckGamesServer implements Closeable {
         }
 
         public void registrationMessageFromClient(Socket socket, String username) {
-            if (serverState == ServerState.CONNECT_STATE) {
+            if (serverState == ServerState.CONNECT_STATE || serverState == ServerState.LOBBY_STATE) {
                 PlayerProfile profile = new PlayerProfile(username, socket, UUID.randomUUID());
                 profileMap.put(socket, profile);
                 packetHelper.sendPacket(new IdentificationSuccessfulPacketToClient(), socket);
+                DuckGamesServer.this.messageEveryone(new PlayerProfilesPacketToClient(profile));
+                if (serverState == ServerState.LOBBY_STATE) {
+                    DuckGamesServer.this.messageEveryone(new PlayerJoinLobbyPacketToClient(profile.profileUUID));
+                }
             } else {
                 packetHelper.sendPacket(new KickClientFromServerPacketToClient("Can't join while game is running!"), socket);
                 socketList.remove(socket);
