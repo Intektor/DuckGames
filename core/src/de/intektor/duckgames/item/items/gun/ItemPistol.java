@@ -22,8 +22,8 @@ public class ItemPistol extends ItemGun {
 
     @Override
     protected void shoot(ItemStack stack, EntityPlayer player, World world, float angle) {
-        float mX = (float) Math.cos(angle);
-        float mY = (float) Math.sin(angle);
+        float mX = (float) Math.cos(angle) * 5;
+        float mY = (float) Math.sin(angle) * 5;
         EntityBullet bullet = new EntityBullet(world, player.posX + player.getWidth() / 2, player.posY + player.getEyeHeight(), player, mX, mY, 1);
         world.spawnEntityInWorld(bullet);
     }

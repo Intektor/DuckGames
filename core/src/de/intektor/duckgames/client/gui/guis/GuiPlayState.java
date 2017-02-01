@@ -143,6 +143,7 @@ public class GuiPlayState extends Gui {
         super.pointerDown(mouseX, mouseY, pointer, button);
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
+        if (player == null || world == null) return;
         MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
         switch (button) {
             case 0:

@@ -1,9 +1,7 @@
 package de.intektor.duckgames.common;
 
-import de.intektor.duckgames.common.net.server_to_client.*;
-import de.intektor.duckgames.common.net.server_to_client.FinishedWorldTransmissionPacketToClient;
-import de.intektor.duckgames.common.net.server_to_client.WorldPacketToClient;
 import de.intektor.duckgames.client.editor.EditableGameMap;
+import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.world.WorldServer;
 import de.intektor.network.IPacket;
 import de.intektor.network.PacketOnWrongSideException;
@@ -34,15 +32,18 @@ public class DuckGamesServer implements Closeable {
     private volatile List<Socket> socketList = Collections.synchronizedList(new ArrayList<Socket>());
 
     private volatile ServerState serverState;
+    private final ServerType type;
 
     private MainServerThread mainServerThread;
 
-    public DuckGamesServer(int port) {
+    public DuckGamesServer(int port, ServerType type) {
         this.port = port;
+        this.type = type;
     }
 
-    public DuckGamesServer() {
+    public DuckGamesServer(ServerType type) {
         port = 19473;
+        this.type = type;
     }
 
     public void startServer(ServerState state) {
@@ -63,6 +64,7 @@ public class DuckGamesServer implements Closeable {
                 }
             }
         }.start();
+
         mainServerThread = new MainServerThread(this);
         mainServerThread.start();
     }
@@ -118,6 +120,12 @@ public class DuckGamesServer implements Closeable {
         CONNECT_STATE,
         PLAY_STATE,
         LOBBY_STATE
+    }
+
+    public enum ServerType {
+        UPNP,
+        LAN,
+        BLUETOOTH
     }
 
     public MainServerThread getMainServerThread() {

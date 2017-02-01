@@ -11,7 +11,7 @@ import java.util.UUID;
 public class EntityRail extends EntityBullet {
 
     public EntityRail(World world, float posX, float posY, EntityPlayer owner, float motionX, float motionY) {
-        super(world, posX, posY, owner, motionX, motionY, Float.MAX_VALUE);
+        super(world, posX, posY, owner, motionX, motionY, 10f);
     }
 
     public EntityRail(UUID uuid) {

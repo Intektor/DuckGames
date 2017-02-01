@@ -1,10 +1,13 @@
 package de.intektor.duckgames.world;
 
+import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.util.BlockPos;
+import de.intektor.duckgames.util.tracing.RayTraceResult;
 
 import java.util.*;
 
@@ -135,6 +138,16 @@ public abstract class World {
         return blockTable;
     }
 
+    public List<BlockPos> getBlocksInRegion(int x, int y, int width, int height) {
+        List<BlockPos> blocks = new ArrayList<BlockPos>();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                blocks.add(new BlockPos(x + i, y + j, getBlock(x + i, y + j)));
+            }
+        }
+        return blocks;
+    }
+
     public List<Collision2D> getWorldCollisionList() {
         return worldCollisionList;
     }
@@ -151,5 +164,19 @@ public abstract class World {
 
     public long getWorldTime() {
         return worldTime;
+    }
+
+    public RayTraceResult rayTraceWorld(float sX, float sY, float angle, float distance, boolean ignoreBlocks, boolean ignoreEntities) {
+        return rayTraceWorld(sX, sY, angle, distance, ignoreBlocks, ignoreEntities, Collections.<Entity>emptyList());
+    }
+
+    public RayTraceResult rayTraceWorld(float sX, float sY, float angle, float distance, boolean ignoreBlocks, boolean ignoreEntities, List<Entity> ignoreEntity) {
+        Vector2 p1 = new Vector2(sX, sY);
+        Vector2 p2 = new Vector2((float) (sX + Math.cos(angle) * distance), (float) (sY + Math.sin(angle) * distance));
+        List<BlockPos> blocksInRegion = getBlocksInRegion((int) sX, (int) sY, (int) distance, (int) distance);
+        for (BlockPos blockPos : blocksInRegion) {
+
+        }
+        return null;
     }
 }

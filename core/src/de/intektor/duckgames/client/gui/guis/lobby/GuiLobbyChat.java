@@ -58,14 +58,15 @@ public class GuiLobbyChat extends GuiMultiComponent {
         Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
         Gdx.gl.glScissor(GuiUtils.unscaleScreenCoordX(drawX), GuiUtils.unscaleScreenCoordY(drawY + font.getLineHeight()),
                 GuiUtils.unscaleScreenCoordX(width), GuiUtils.unscaleScreenCoordX(height - font.getLineHeight()));
-        float y = drawY + height;
+        float y = drawY + chatWritingField.getHeight() + font.getLineHeight();
         if (messages.size() * font.getLineHeight() > height - font.getLineHeight()) {
             y += (font.getLineHeight() * messages.size() - height + font.getLineHeight()) * messageScrollBar.getScrollPercent();
         }
-        for (ChatMessage message : messages) {
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            ChatMessage message = messages.get(i);
             String text = String.format("%s: %s", message.getPlayerProfile().username, message.getMessage());
             RenderUtils.drawString(text, font, drawX, y, sB, Color.WHITE);
-            y -= font.getLineHeight();
+            y += font.getLineHeight();
         }
         sB.end();
         Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
