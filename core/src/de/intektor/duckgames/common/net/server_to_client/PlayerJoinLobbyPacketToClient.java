@@ -39,7 +39,7 @@ public class PlayerJoinLobbyPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(PlayerJoinLobbyPacketToClient packet, Socket socket) {
-            CommonCode.clientProxy.handlePacket(packet, socket);
+            CommonCode.proxy.handlePacket(packet, socket);
         }
     }
 }

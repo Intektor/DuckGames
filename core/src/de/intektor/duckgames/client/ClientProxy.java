@@ -1,12 +1,14 @@
 package de.intektor.duckgames.client;
 
 import de.intektor.duckgames.DuckGamesClient;
+import de.intektor.duckgames.client.entity.EntityPlayerSP;
 import de.intektor.duckgames.client.gui.guis.GuiDownloadingMap;
-import de.intektor.duckgames.client.gui.guis.GuiPlayState;
+import de.intektor.duckgames.client.gui.guis.play_state.GuiPlayState;
 import de.intektor.duckgames.client.gui.guis.lobby.GuiLobby;
 import de.intektor.duckgames.common.IProxy;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.client_to_server.IdentificationPacketToServer;
 import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.entity.Entity;
@@ -14,10 +16,13 @@ import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.damage.DamageSource;
 import de.intektor.duckgames.item.ItemStack;
+import de.intektor.duckgames.world.World;
 import de.intektor.duckgames.world.WorldClient;
 import de.intektor.network.IPacket;
 
+import java.lang.reflect.Constructor;
 import java.net.Socket;
+import java.util.UUID;
 
 /**
  * @author Intektor
@@ -65,6 +70,32 @@ public class ClientProxy implements IProxy {
         }
     }
 
+    @Override
+    public World getWorld() {
+        return duckGames.theWorld;
+    }
+
+    private Constructor<EntityPlayerSP> playerSPConstructor;
+    private Constructor<EntityPlayerMP> playerMPConstructor;
+
+    @Override
+    public EntityPlayer createPlayer(World world, UUID uuid) {
+        try {
+            if (playerSPConstructor == null) {
+                playerSPConstructor = EntityPlayerSP.class.getConstructor(UUID.class);
+                playerMPConstructor = EntityPlayerMP.class.getConstructor(UUID.class);
+            }
+            if (world.isRemote) {
+                return playerSPConstructor.newInstance(uuid);
+            } else {
+                return playerMPConstructor.newInstance(uuid);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private void handleBasicEntityUpdateInformationPacketToClient(final BasicEntityUpdateInformationPacketToClient packet) {
         duckGames.addScheduledTask(new Runnable() {
             @Override
@@ -102,7 +133,7 @@ public class ClientProxy implements IProxy {
             public void run() {
                 EntityPlayer player = (EntityPlayer) duckGames.theWorld.getEntityByUUID(packet.entityUUID);
                 ItemStack equipment = player.getEquipment(packet.slot);
-                equipment.getItem().onItemThrownAway(equipment, player, player.worldObj);
+                equipment.getItem().onItemThrownAway(equipment, player, player.world);
                 player.setEquipment(packet.slot, null);
             }
         });
@@ -141,7 +172,7 @@ public class ClientProxy implements IProxy {
             public void run() {
                 EntityPlayer player = (EntityPlayer) duckGames.theWorld.getEntityByUUID(packet.entityID);
                 player.setEquipment(packet.slot, packet.pickedStack);
-                packet.pickedStack.getItem().onItemPickup(packet.pickedStack, player, player.worldObj);
+                packet.pickedStack.getItem().onItemPickup(packet.pickedStack, player, player.world);
             }
         });
     }
@@ -165,10 +196,10 @@ public class ClientProxy implements IProxy {
                     player.setAttacking(packet.status, packet.ingameClickX, packet.ingameClickY);
                     switch (packet.status) {
                         case START:
-                            mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.worldObj, packet.ingameClickX, packet.ingameClickY);
+                            mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);
                             break;
                         case END:
-                            mainHand.getItem().onAttackWithItemEnd(mainHand, player, player.worldObj, packet.ingameClickX, packet.ingameClickY);
+                            mainHand.getItem().onAttackWithItemEnd(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);
                             break;
                     }
                 }
@@ -213,11 +244,11 @@ public class ClientProxy implements IProxy {
     }
 
     private void handleWorldPacketToClient(final WorldPacketToClient packet) {
+        duckGames.theWorld = new WorldClient(packet.blockTable, packet.width, packet.height);
         duckGames.addScheduledTask(new Runnable() {
             @Override
             public void run() {
                 duckGames.showGui(new GuiDownloadingMap());
-                duckGames.theWorld = new WorldClient(packet.blockTable, packet.width, packet.height);
             }
         });
     }

@@ -71,7 +71,7 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final BasicEntityUpdateInformationPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

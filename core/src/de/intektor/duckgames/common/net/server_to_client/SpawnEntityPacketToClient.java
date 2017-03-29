@@ -31,14 +31,14 @@ public class SpawnEntityPacketToClient implements IPacket {
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        entity = Entity.readEntityFromStream(in);
+        entity = Entity.readEntityFromStream(in, CommonCode.proxy.getWorld());
     }
 
     public static class Handler implements IPacketHandler<SpawnEntityPacketToClient> {
 
         @Override
         public void handlePacket(final SpawnEntityPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

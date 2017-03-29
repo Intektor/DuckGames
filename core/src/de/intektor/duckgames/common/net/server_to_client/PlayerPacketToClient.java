@@ -39,7 +39,7 @@ public class PlayerPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final PlayerPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

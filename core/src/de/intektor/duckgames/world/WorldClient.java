@@ -15,7 +15,7 @@ public class WorldClient extends World {
 
     @Override
     public void spawnEntityInWorld(Entity entity) {
-        entity.worldObj = this;
+        entity.world = this;
         super.spawnEntityInWorld(entity);
     }
 }

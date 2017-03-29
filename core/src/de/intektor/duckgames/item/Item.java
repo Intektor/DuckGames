@@ -30,7 +30,7 @@ public abstract class Item {
         if (!world.isRemote) {
             if (stack.hasTagCompound() && stack.getTagCompound().isDirty()) {
                 WorldServer serverWorld = (WorldServer) world;
-                serverWorld.getServer().messageEveryone(new UpdateEquipmentPacketToClient(player.uuid, stack, slotIn));
+                serverWorld.getServer().broadcast(new UpdateEquipmentPacketToClient(player.uuid, stack, slotIn));
             }
         }
     }

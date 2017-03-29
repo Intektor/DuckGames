@@ -4,5 +4,5 @@ package de.intektor.duckgames.entity;
  * @author Intektor
  */
 public enum EntityEquipmentSlot {
-    MAIN_HAND
+    MAIN_HAND,
 }

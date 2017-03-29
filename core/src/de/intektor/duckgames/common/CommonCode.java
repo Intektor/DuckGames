@@ -4,14 +4,18 @@ import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.ClientProxy;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.*;
+import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityBullet;
 import de.intektor.duckgames.entity.entities.EntityItem;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.entity.entities.EntityRail;
 import de.intektor.duckgames.item.Items;
+import de.intektor.duckgames.world.World;
 import de.intektor.network.PacketHelper;
 import de.intektor.network.PacketRegistry;
 import de.intektor.network.Side;
+
+import java.util.UUID;
 
 /**
  * @author Intektor
@@ -23,8 +27,7 @@ public class CommonCode {
 
     public static final GameRegistry gameRegistry;
 
-    public static IProxy clientProxy;
-    public static IProxy serverProxy;
+    public static IProxy proxy;
 
     static {
         packetRegistry = new PacketRegistry();
@@ -55,15 +58,20 @@ public class CommonCode {
         packetRegistry.registerPacket(ChatMessagePacketToClient.class, ChatMessagePacketToClient.Handler.class, 22, Side.CLIENT);
         packetRegistry.registerPacket(PlayerProfilesPacketToClient.class, PlayerProfilesPacketToClient.Handler.class, 23, Side.CLIENT);
         packetRegistry.registerPacket(PlayerJoinLobbyPacketToClient.class, PlayerJoinLobbyPacketToClient.Handler.class, 24, Side.CLIENT);
+        packetRegistry.registerPacket(CurrentPadControllingPacketToServer.class, CurrentPadControllingPacketToServer.Handler.class, 25, Side.SERVER);
 
         gameRegistry = new GameRegistry();
-        gameRegistry.registerEntity(EntityPlayer.class, 0);
+        gameRegistry.registerEntity(EntityPlayer.class, 0, new BiFunction<Entity, World, UUID>() {
+            @Override
+            public Entity apply(World world, UUID uuid) {
+                return CommonCode.proxy.createPlayer(world, uuid);
+            }
+        });
         gameRegistry.registerEntity(EntityItem.class, 1);
         gameRegistry.registerEntity(EntityBullet.class, 2);
         gameRegistry.registerEntity(EntityRail.class, 3);
 
-        clientProxy = new ClientProxy();
-        serverProxy = new ServerProxy();
+        proxy = new ClientProxy();
 
         Blocks.initCommon();
         Items.initCommon();

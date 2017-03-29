@@ -28,7 +28,7 @@ public class IdentificationSuccessfulPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(IdentificationSuccessfulPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

@@ -4,6 +4,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import de.intektor.duckgames.DuckGamesClient;
+import de.intektor.duckgames.entity.Entity;
+
+import javax.vecmath.Point2f;
 
 /**
  * @author Intektor
@@ -25,5 +28,16 @@ public class RenderUtils {
         float rx = centerX ? x - FontUtils.getStringWidth(text, font) / 2 : x;
         float ry = centerY ? y + FontUtils.getStringHeight(text, font) / 2 : y;
         font.draw(spriteBatch, text, rx, ry);
+    }
+
+    /**
+     * @return the interpolated point using {@link DuckGamesClient#getPartialTicks()}
+     */
+    public static Point2f getInterpolatedPoint(double prevX, double prevY, double x, double y) {
+        return new Point2f((float) (prevX + (x - prevX) * dg.getPartialTicks()), (float) (prevY + (y - prevY) * dg.getPartialTicks()));
+    }
+
+    public static Point2f getInterpolatedEntityPos(Entity entity) {
+        return getInterpolatedPoint(entity.prevPosX, entity.prevPosY, entity.posX, entity.posY);
     }
 }

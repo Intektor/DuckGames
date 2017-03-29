@@ -35,6 +35,4 @@ public abstract class I18n {
     public abstract String translate0(String s);
 
     public abstract String translate0(String s, Object... args);
-
-
 }

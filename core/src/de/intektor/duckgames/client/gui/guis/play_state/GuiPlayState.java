@@ -1,4 +1,4 @@
-package de.intektor.duckgames.client.gui.guis;
+package de.intektor.duckgames.client.gui.guis.play_state;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
+import de.intektor.duckgames.client.gui.guis.GuiLevelEditor;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.gui.util.MousePos;
 import de.intektor.duckgames.client.rendering.FontUtils;
@@ -36,6 +37,8 @@ public class GuiPlayState extends Gui {
 
     private float lastAttackPosX, lastAttackPosY;
 
+    private GuiThumbPad movementPad;
+
     public GuiPlayState() {
         worldCamera = new OrthographicCamera(width, height);
         worldCamera.position.set(width / 2, height / 2, 0);
@@ -43,6 +46,13 @@ public class GuiPlayState extends Gui {
         worldShapeRenderer.setAutoShapeType(true);
         worldSpriteBatch = new SpriteBatch();
         dg.theWorld.updateWorld();
+    }
+
+    @Override
+    public void enterGui() {
+        super.enterGui();
+        movementPad = new GuiThumbPad(350, 350, 160);
+        registerComponent(movementPad);
     }
 
     @Override
@@ -76,6 +86,7 @@ public class GuiPlayState extends Gui {
             }
         }
 
+        dg.sendPacketToServer(new CurrentPadControllingPacketToServer((float) movementPad.getAngle(), (float) movementPad.getPercentage(), 0, 0));
         super.updateGui(mouseX, mouseY);
     }
 
@@ -190,6 +201,7 @@ public class GuiPlayState extends Gui {
         super.pointerMoved(mouseX, mouseY, prevMouseX, prevMouseY);
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
+
     }
 
     @Override

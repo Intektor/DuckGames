@@ -15,7 +15,7 @@ import de.intektor.duckgames.client.rendering.RenderUtils;
  */
 public class GuiTextField extends GuiComponent {
 
-    private String currentlyWritten = "";
+    private String currentlyWritten;
     private String infoText;
     private BitmapFont font = dg.defaultFont28;
 
@@ -26,8 +26,13 @@ public class GuiTextField extends GuiComponent {
     private int cursorPosition;
 
     public GuiTextField(int x, int y, int width, int height, String infoText) {
+        this(x, y, width, height, infoText, "");
+    }
+
+    public GuiTextField(int x, int y, int width, int height, String infoText, String defaultText) {
         super(x, y, width, height);
         this.infoText = infoText;
+        currentlyWritten = defaultText;
     }
 
     @Override
@@ -95,7 +100,7 @@ public class GuiTextField extends GuiComponent {
                     break;
                 default:
                     if (Character.isLetterOrDigit(character) || character == ' '
-                            || character == '?' || character == '!' || character == '.' || character == ',') {
+                            || character == '?' || character == '!' || character == '.' || character == ',' || character == ':') {
                         if (FontUtils.getStringWidth(currentlyWritten + character, font) <= width) {
                             currentlyWritten = currentlyWritten.substring(0, cursorPosition) + character + currentlyWritten.substring(cursorPosition);
                             cursorPosition++;

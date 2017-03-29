@@ -11,8 +11,11 @@ import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.HostingInfo;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.chat.ChatMessage;
+
+import java.net.InetSocketAddress;
 
 /**
  * @author Intektor
@@ -20,6 +23,7 @@ import de.intektor.duckgames.common.chat.ChatMessage;
 public class GuiLobby extends Gui {
 
     private boolean isHost;
+    private final HostingInfo hostingInfo;
 
     private GuiTextBasedButton startGameButton;
     private GuiTextBasedButton leaveLobbyButton;
@@ -32,8 +36,9 @@ public class GuiLobby extends Gui {
 
     private BitmapFont font = dg.defaultFont28;
 
-    public GuiLobby(boolean isHost) {
+    public GuiLobby(boolean isHost, HostingInfo hostingInfo) {
         this.isHost = isHost;
+        this.hostingInfo = hostingInfo;
     }
 
     @Override
@@ -55,7 +60,7 @@ public class GuiLobby extends Gui {
 
             DuckGamesServer dedicatedServer = new DuckGamesServer();
             dg.setDedicatedServer(dedicatedServer);
-            dedicatedServer.startServer(DuckGamesServer.ServerState.LOBBY_STATE);
+            dedicatedServer.startServer(DuckGamesServer.ServerState.LOBBY_STATE, hostingInfo);
         }
     }
 
@@ -109,7 +114,7 @@ public class GuiLobby extends Gui {
         if (isHost) {
             DuckGamesServer server = dg.getDedicatedServer();
             if (server.isServerReadyForConnections() && dg.getClientConnection() == null) {
-                dg.connectToServer("localhost");
+                dg.connectToServer(new InetSocketAddress("localhost", 19473));
             }
         }
     }

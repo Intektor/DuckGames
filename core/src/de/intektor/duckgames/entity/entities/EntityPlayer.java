@@ -9,6 +9,7 @@ import de.intektor.duckgames.entity.EntityDirection;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
+import de.intektor.duckgames.util.EnumAxis;
 import de.intektor.duckgames.util.EnumDirection;
 import de.intektor.duckgames.world.World;
 import de.intektor.duckgames.world.WorldServer;
@@ -19,7 +20,7 @@ import java.util.UUID;
 /**
  * @author Intektor
  */
-public class EntityPlayer extends Entity {
+public abstract class EntityPlayer extends Entity {
 
     private PlayerProfile profile;
 
@@ -63,30 +64,48 @@ public class EntityPlayer extends Entity {
             jumpTicks++;
             motionY += 0.275f;
         }
-        if (!worldObj.isRemote) {
-            List<EntityItem> entitiesInRegion = worldObj.getEntitiesInRegion(EntityItem.class, new Collision2D(posX - 1, posY, 2, 1));
+        if (!world.isRemote) {
+            List<EntityItem> entitiesInRegion = world.getEntitiesInRegion(EntityItem.class, new Collision2D(posX - 1, posY, 2, 1));
             for (EntityItem entityItem : entitiesInRegion) {
                 if (entityItem.canBePickedUpByPlayer(this)) {
                     Item item = entityItem.getItemStack().getItem();
                     if (getEquipment(item.getFittingSlot()) == null) {
                         setEquipment(item.getFittingSlot(), entityItem.getItemStack());
-                        worldObj.removeEntity(entityItem);
-                        ((WorldServer) worldObj).getServer().messageEveryone(new PickupEquipmentItemStackPacketToClient(uuid, item.getFittingSlot(), entityItem.getItemStack()));
-                        item.onItemPickup(entityItem.getItemStack(), this, worldObj);
+                        world.removeEntity(entityItem);
+                        ((WorldServer) world).getServer().broadcast(new PickupEquipmentItemStackPacketToClient(uuid, item.getFittingSlot(), entityItem.getItemStack()));
+                        item.onItemPickup(entityItem.getItemStack(), this, world);
                     }
                 }
             }
-            if (worldObj.getWorldTime() - worldTimeAtLastShot > 10) recoilAngle = 0;
+            if (world.getWorldTime() - worldTimeAtLastShot > 10) recoilAngle = 0;
         }
         for (int i = 0; i < equipment.length; i++) {
             ItemStack equip = equipment[i];
             if (equip != null) {
-                equip.getItem().itemHeld(equip, this, worldObj, EntityEquipmentSlot.values()[i]);
+                equip.getItem().itemHeld(equip, this, world, EntityEquipmentSlot.values()[i]);
             }
         }
         if (isAttacking) {
             ItemStack equipment = getEquipment(EntityEquipmentSlot.MAIN_HAND);
-            equipment.getItem().onAttackingWithItem(equipment, this, worldObj, attackPosX, attackPosY);
+            equipment.getItem().onAttackingWithItem(equipment, this, world, attackPosX, attackPosY);
+        }
+    }
+
+    @Override
+    protected void collidedInAxis(EnumAxis axis, float collisionPointX, float collisionPointY, float motionX, float motionY) {
+        super.collidedInAxis(axis, collisionPointX, collisionPointY, motionX, motionY);
+        if (!world.isRemote) {
+            if (axis == EnumAxis.X && onGround) {
+                float cX = posX + motionX;
+                int cY = (int) posY;
+                for (int y = cY; y <= cY + stepHeight; y++) {
+                    if (canBeAtPosition(cX, y)) {
+                        posX = cX;
+                        posY = y;
+                        break;
+                    }
+                }
+            }
         }
     }
 

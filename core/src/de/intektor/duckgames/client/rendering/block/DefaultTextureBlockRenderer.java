@@ -30,10 +30,8 @@ public class DefaultTextureBlockRenderer implements IBlockRenderer {
 
     @Override
     public void renderBlockInWorld(Block block, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks) {
-        sB.begin();
         TextureRegion region = new TextureRegion(fullTexture);
         sB.draw(region, x, y, width, height);
-        sB.end();
     }
 
     @Override

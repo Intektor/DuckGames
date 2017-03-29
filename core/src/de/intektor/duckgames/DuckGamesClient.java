@@ -31,6 +31,8 @@ import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldClient;
 import de.intektor.network.IPacket;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -71,8 +73,8 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     private DuckGamesServer dedicatedServer;
 
-    public WorldClient theWorld;
-    public EntityPlayer thePlayer;
+    public volatile WorldClient theWorld;
+    public volatile EntityPlayer thePlayer;
 
     private float partialTicks;
 
@@ -126,9 +128,10 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     @Override
     public void render() {
+        super.render();
         camera.update();
-        if (System.currentTimeMillis() - lastTickTime >= 15.625D) {
-            lastTickTime = System.currentTimeMillis();
+        if (System.nanoTime() - lastTickTime >= 15625000D) {
+            lastTickTime = System.nanoTime();
             updateGame();
         }
         renderGame();
@@ -156,10 +159,11 @@ public class DuckGamesClient extends ApplicationAdapter {
         camera.update();
         defaultShapeRenderer.setProjectionMatrix(camera.combined);
         defaultSpriteBatch.setProjectionMatrix(camera.combined);
-        partialTicks = (System.currentTimeMillis() - lastTickTime) / (15.625f);
+        partialTicks = (System.nanoTime() - lastTickTime) / (15625000f);
         SpriteBatch spriteBatch = new SpriteBatch();
         spriteBatch.begin();
-        RenderUtils.drawString(Gdx.graphics.getFramesPerSecond() + "", defaultFont12, 10, getPreferredScreenHeight() / 2, spriteBatch, Color.WHITE);
+        RenderUtils.drawString("fps: " + Gdx.graphics.getFramesPerSecond(), defaultFont12, 0, Gdx.graphics.getHeight(), spriteBatch, Color.WHITE);
+        RenderUtils.drawString("p-ticks: " + partialTicks, defaultFont12, 0, Gdx.graphics.getHeight() - 12, spriteBatch, Color.WHITE);
         spriteBatch.end();
         spriteBatch.dispose();
         if (currentGui != null) currentGui.render(Gdx.input.getX(), Gdx.input.getY(), camera, partialTicks);
@@ -167,7 +171,12 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-
+        disconnect();
+        try {
+            getDedicatedServer().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addScheduledTask(Runnable task) {
@@ -220,8 +229,8 @@ public class DuckGamesClient extends ApplicationAdapter {
         return clientConnection;
     }
 
-    public void connectToServer(String ip) {
-        connectToServer(ip, 19473);
+    public void connectToServer(InetSocketAddress address) {
+        connectToServer(address.getHostName(), address.getPort());
     }
 
     public void connectToServer(String ip, int port) {
@@ -270,5 +279,9 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     public ShaderProgram getOutlineShaderProgram() {
         return outlineShaderProgram;
+    }
+
+    public float getPartialTicks() {
+        return partialTicks;
     }
 }

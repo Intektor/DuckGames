@@ -28,7 +28,7 @@ public class RequestIdentificationPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(RequestIdentificationPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

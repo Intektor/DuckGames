@@ -28,7 +28,7 @@ public class FinishedWorldTransmissionPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(FinishedWorldTransmissionPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

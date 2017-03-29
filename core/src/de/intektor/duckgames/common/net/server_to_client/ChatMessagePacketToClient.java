@@ -43,7 +43,7 @@ public class ChatMessagePacketToClient implements IPacket {
 
         @Override
         public void handlePacket(ChatMessagePacketToClient packet, Socket socket) {
-            CommonCode.clientProxy.handlePacket(packet, socket);
+            CommonCode.proxy.handlePacket(packet, socket);
         }
     }
 }

@@ -45,7 +45,7 @@ public class PlaceBlockPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final PlaceBlockPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

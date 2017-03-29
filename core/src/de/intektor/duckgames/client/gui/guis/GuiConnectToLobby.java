@@ -3,6 +3,7 @@ package de.intektor.duckgames.client.gui.guis;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.google.common.base.Splitter;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
@@ -11,6 +12,11 @@ import de.intektor.duckgames.client.gui.guis.lobby.GuiLobby;
 import de.intektor.duckgames.client.net.DuckGamesClientConnection;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
+import de.intektor.duckgames.common.net.lan.ThreadFindLanServers;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * @author Intektor
@@ -24,12 +30,22 @@ public class GuiConnectToLobby extends Gui {
     private boolean connectionFailed;
     private String errorMessage;
 
+    private final Splitter spliiterDoublePoint = Splitter.on(':').trimResults();
+
+    private ThreadFindLanServers lanServerFinder;
+
     @Override
     public void enterGui() {
         super.enterGui();
         BitmapFont font = dg.defaultFont28;
         enterIPTextField = new GuiTextField(width / 2 - 300, (int) (height / 2 - font.getLineHeight() / 2), 600, (int) font.getLineHeight(), "Enter Address here!");
         buttonJoinLobby = new GuiTextBasedButton(width / 2 + 300, (int) (height / 2 - font.getLineHeight() / 2), 100, (int) font.getLineHeight(), "Connect!");
+        try {
+            lanServerFinder = new ThreadFindLanServers();
+            lanServerFinder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         registerComponent(enterIPTextField);
         registerComponent(buttonJoinLobby);
     }
@@ -58,20 +74,33 @@ public class GuiConnectToLobby extends Gui {
                 buttonJoinLobby.setShown(true);
             } else if (clientConnection.isConnected()) {
                 tryingConnection = false;
-                dg.showGui(new GuiLobby(false));
+                dg.showGui(new GuiLobby(false, null));
             }
         }
     }
 
     @Override
     public void exitGui() {
+        if (lanServerFinder != null) {
+            lanServerFinder.interrupt();
+        }
         super.exitGui();
     }
 
     @Override
     public void buttonCallback(GuiButton button) {
         if (button == buttonJoinLobby) {
-            dg.connectToServer(enterIPTextField.getText());
+            List<String> strings = spliiterDoublePoint.splitToList(enterIPTextField.getText());
+            InetSocketAddress address = new InetSocketAddress("localhost", 0);
+            if (strings.size() == 1) {
+                address = new InetSocketAddress(strings.get(0), 19473);
+            } else if (strings.size() == 2) {
+                try {
+                    address = new InetSocketAddress(strings.get(0), Integer.parseInt(strings.get(1)));
+                } catch (Exception ignored) {
+                }
+            }
+            dg.connectToServer(address);
             tryingConnection = true;
             buttonJoinLobby.setShown(false);
         }

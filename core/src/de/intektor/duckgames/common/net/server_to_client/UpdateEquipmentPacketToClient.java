@@ -49,7 +49,7 @@ public class UpdateEquipmentPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(UpdateEquipmentPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

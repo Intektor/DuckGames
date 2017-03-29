@@ -51,11 +51,11 @@ public class PlayerDropItemPacketToServer implements IPacket {
                     EntityPlayer player = mainThread.getProfileMap().get(socketFrom).player;
                     ItemStack equipment = player.getEquipment(packet.slot);
                     if (equipment != null) {
-                        server.messageEveryone(new DropEquipmentItemStackPacketToClient(packet.slot, player.uuid));
-                        EntityItem entity = new EntityItem(player.worldObj, player.posX, player.posY, equipment, player);
-                        player.worldObj.spawnEntityInWorld(entity);
+                        server.broadcast(new DropEquipmentItemStackPacketToClient(packet.slot, player.uuid));
+                        EntityItem entity = new EntityItem(player.world, player.posX, player.posY, equipment, player);
+                        player.world.spawnEntityInWorld(entity);
                         player.setEquipment(packet.slot, null);
-                        equipment.getItem().onItemThrownAway(equipment, player, player.worldObj);
+                        equipment.getItem().onItemThrownAway(equipment, player, player.world);
                     }
                 }
             });

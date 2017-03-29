@@ -2,17 +2,18 @@ package de.intektor.duckgames.world;
 
 import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
-import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.client.editor.EntitySpawn;
 import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.PlayerProfile;
+import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.server_to_client.BasicEntityUpdateInformationPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.PlayerPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RemoveEntityPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.SpawnEntityPacketToClient;
-import de.intektor.duckgames.client.editor.EntitySpawn;
-import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 
 import java.util.*;
 
@@ -38,18 +39,18 @@ public class WorldServer extends World {
     @Override
     protected void updateEntity(Entity entity) {
         super.updateEntity(entity);
-        server.messageEveryone(new BasicEntityUpdateInformationPacketToClient(entity));
+        server.broadcast(new BasicEntityUpdateInformationPacketToClient(entity));
     }
 
     @Override
     public void spawnEntityInWorld(Entity entity) {
-        server.messageEveryone(new SpawnEntityPacketToClient(entity));
+        server.broadcast(new SpawnEntityPacketToClient(entity));
         super.spawnEntityInWorld(entity);
     }
 
     @Override
     public void removeEntity(Entity entity) {
-        server.messageEveryone(new RemoveEntityPacketToClient(entity.uuid));
+        server.broadcast(new RemoveEntityPacketToClient(entity.uuid));
         super.removeEntity(entity);
     }
 
@@ -77,7 +78,7 @@ public class WorldServer extends World {
         for (PlayerSpawn playerSpawn : playerSpawnList) {
             if (remainingProfiles.size() == 0) return;
             PlayerProfile profile = remainingProfiles.get(r.nextInt(remainingProfiles.size()));
-            EntityPlayer player = new EntityPlayer(this, playerSpawn.getX(), playerSpawn.getY(), profile);
+            EntityPlayer player = new EntityPlayerMP(this, playerSpawn.getX(), playerSpawn.getY(), profile);
             profile.player = player;
             spawnEntityInWorld(player);
             CommonCode.packetHelper.sendPacket(new PlayerPacketToClient(player.uuid), profile.socket);

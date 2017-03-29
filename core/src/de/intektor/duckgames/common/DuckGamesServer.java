@@ -1,19 +1,27 @@
 package de.intektor.duckgames.common;
 
-import de.intektor.duckgames.common.net.server_to_client.*;
-import de.intektor.duckgames.common.net.server_to_client.FinishedWorldTransmissionPacketToClient;
-import de.intektor.duckgames.common.net.server_to_client.WorldPacketToClient;
 import de.intektor.duckgames.client.editor.EditableGameMap;
+import de.intektor.duckgames.common.net.lan.ThreadLanServerPing;
+import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.world.WorldServer;
 import de.intektor.network.IPacket;
 import de.intektor.network.PacketOnWrongSideException;
 import de.intektor.network.Side;
+import org.fourthline.cling.UpnpService;
+import org.fourthline.cling.UpnpServiceImpl;
+import org.fourthline.cling.model.types.UnsignedIntegerFourBytes;
+import org.fourthline.cling.model.types.UnsignedIntegerTwoBytes;
+import org.fourthline.cling.registry.RegistryListener;
+import org.fourthline.cling.support.igd.PortMappingListener;
+import org.fourthline.cling.support.model.PortMapping;
 
 import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,6 +44,13 @@ public class DuckGamesServer implements Closeable {
     private volatile ServerState serverState;
 
     private MainServerThread mainServerThread;
+    private ThreadLanServerPing pingThread;
+
+    private volatile UpnpService upnpService;
+
+    private boolean openedToLan;
+
+    private HostingInfo hostingInfo;
 
     public DuckGamesServer(int port) {
         this.port = port;
@@ -45,7 +60,8 @@ public class DuckGamesServer implements Closeable {
         port = 19473;
     }
 
-    public void startServer(ServerState state) {
+    public void startServer(ServerState state, HostingInfo hostingInfo) {
+        this.hostingInfo = hostingInfo;
         serverRunning = true;
         serverState = state;
         new Thread("Server Thread") {
@@ -65,6 +81,11 @@ public class DuckGamesServer implements Closeable {
         }.start();
         mainServerThread = new MainServerThread(this);
         mainServerThread.start();
+
+        shareToLan();
+        if (hostingInfo.hostingType == HostingType.INTERNET) {
+            shareToInternet(hostingInfo.port);
+        }
     }
 
     private void registerConnection(final Socket clientSocket) {
@@ -98,10 +119,43 @@ public class DuckGamesServer implements Closeable {
         }
     }
 
-    public void messageEveryone(IPacket packet) {
+    public void broadcast(IPacket packet) {
         for (Socket socket : socketList) {
             packetHelper.sendPacket(packet, socket);
         }
+    }
+
+    private void shareToLan() {
+        try {
+            pingThread = new ThreadLanServerPing(this);
+            pingThread.start();
+            openedToLan = true;
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void shareToInternet(int port) {
+        try {
+            upnpService = new UpnpServiceImpl();
+            RegistryListener registryListener = new PortMappingListener(new PortMapping(true, new UnsignedIntegerFourBytes(60*60*4),
+                    null, new UnsignedIntegerTwoBytes(port), new UnsignedIntegerTwoBytes(this.port),
+                    InetAddress.getLocalHost().getHostAddress(), PortMapping.Protocol.TCP, "Port Mapping"));
+            upnpService.getRegistry().addListener(registryListener);
+
+            upnpService.getControlPoint().search();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public ServerState getServerState() {
+        return serverState;
+    }
+
+    public int getPort() {
+        return serverSocket.getLocalPort();
     }
 
     public boolean isServerReadyForConnections() {
@@ -112,12 +166,18 @@ public class DuckGamesServer implements Closeable {
     public void close() throws IOException {
         serverRunning = false;
         serverSocket.close();
+        upnpService.shutdown();
     }
 
     public enum ServerState {
         CONNECT_STATE,
         PLAY_STATE,
         LOBBY_STATE
+    }
+
+    public enum HostingType {
+        LAN,
+        INTERNET
     }
 
     public MainServerThread getMainServerThread() {
@@ -164,9 +224,9 @@ public class DuckGamesServer implements Closeable {
                 PlayerProfile profile = new PlayerProfile(username, socket, UUID.randomUUID());
                 profileMap.put(socket, profile);
                 packetHelper.sendPacket(new IdentificationSuccessfulPacketToClient(), socket);
-                DuckGamesServer.this.messageEveryone(new PlayerProfilesPacketToClient(profile));
+                DuckGamesServer.this.broadcast(new PlayerProfilesPacketToClient(profile));
                 if (serverState == ServerState.LOBBY_STATE) {
-                    DuckGamesServer.this.messageEveryone(new PlayerJoinLobbyPacketToClient(profile.profileUUID));
+                    DuckGamesServer.this.broadcast(new PlayerJoinLobbyPacketToClient(profile.profileUUID));
                 }
                 for (PlayerProfile playerProfile : profileMap.values()) {
                     packetHelper.sendPacket(new PlayerProfilesPacketToClient(playerProfile), socket);
@@ -185,10 +245,10 @@ public class DuckGamesServer implements Closeable {
             backup = map;
             serverState = ServerState.PLAY_STATE;
             world = map.convertToWorld(DuckGamesServer.this);
-            messageEveryone(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
+            broadcast(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
             world.spawnPlayers();
             world.spawnEntities();
-            messageEveryone(new FinishedWorldTransmissionPacketToClient());
+            broadcast(new FinishedWorldTransmissionPacketToClient());
         }
 
         public EditableGameMap getBackup() {

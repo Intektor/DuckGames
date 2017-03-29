@@ -31,7 +31,7 @@ public abstract class Entity {
 
     public UUID uuid;
 
-    public World worldObj;
+    public World world;
 
     public float stepHeight = 0;
     public boolean onGround;
@@ -44,7 +44,7 @@ public abstract class Entity {
     protected EntityDirection direction = EntityDirection.RIGHT;
 
     public Entity(World world, float posX, float posY) {
-        this.worldObj = world;
+        this.world = world;
         this.posX = posX;
         this.posY = posY;
         this.uuid = UUID.randomUUID();
@@ -67,11 +67,11 @@ public abstract class Entity {
 
     public final void update() {
         motionY -= getGravitationalVelocity();
-        move();
+        if (!world.isRemote) move();
         updateEntity();
         ticksAlive++;
         if (posY < -64) kill();
-        if (posX < -64 || posX > worldObj.getWidth() + 64) kill();
+        if (posX < -64 || posX > world.getWidth() + 64) kill();
     }
 
     private void move() {
@@ -84,9 +84,9 @@ public abstract class Entity {
         List<Collision2D> xCollided = new ArrayList<Collision2D>();
         List<Collision2D> yCollided = new ArrayList<Collision2D>();
 
-        for (int x = 0; x < worldObj.getWidth(); x++) {
-            for (int y = 0; y < worldObj.getHeight(); y++) {
-                Block block = worldObj.getBlock(x, y);
+        for (int x = 0; x < world.getWidth(); x++) {
+            for (int y = 0; y < world.getHeight(); y++) {
+                Block block = world.getBlock(x, y);
                 if (block.isSolidBlock()) {
                     Collision2D blockCollision = new Collision2D(x, y, 1, 1);
                     if (blockCollision.collidesWith(potentialCollisionX)) {
@@ -102,18 +102,6 @@ public abstract class Entity {
         if (xCollided.isEmpty()) {
             posX += motionX * motionMultiplier;
         } else {
-            label:
-            for (Collision2D collision2D : xCollided) {
-                for (int y = (int) collision2D.y; y < worldObj.getHeight(); y++) {
-                    if (!worldObj.getBlock((int) collision2D.x, y).isSolidBlock()) {
-                        if (y - posY <= stepHeight && canBeAtPosition(posX + motionX * motionMultiplier, y)) {
-                            posX += motionX * motionMultiplier;
-                            posY = y;
-                            break label;
-                        }
-                    }
-                }
-            }
             collidedInAxis(EnumAxis.X, potentialCollisionX.x, potentialCollisionY.y, motionX * motionMultiplier, motionY * motionMultiplier);
         }
 
@@ -130,9 +118,9 @@ public abstract class Entity {
 
     protected boolean canBeAtPosition(float posX, float posY) {
         Collision2D potColl = new Collision2D(posX, posY, getWidth(), getHeight());
-        for (int x = 0; x < worldObj.getWidth(); x++) {
-            for (int y = 0; y < worldObj.getHeight(); y++) {
-                Block block = worldObj.getBlock(x, y);
+        for (int x = 0; x < world.getWidth(); x++) {
+            for (int y = 0; y < world.getHeight(); y++) {
+                Block block = world.getBlock(x, y);
                 if (block.isSolidBlock()) {
                     Collision2D blockCollision = new Collision2D(x, y, 1, 1);
                     if (blockCollision.collidesWith(potColl)) return false;
@@ -174,9 +162,9 @@ public abstract class Entity {
 
     public void damageEntity(DamageSource source) {
         health -= source.getDamage();
-        if (!worldObj.isRemote) {
-            WorldServer worldServer = (WorldServer) worldObj;
-            worldServer.getServer().messageEveryone(new DamageEntityPacketToClient(this, source));
+        if (!world.isRemote) {
+            WorldServer worldServer = (WorldServer) world;
+            worldServer.getServer().broadcast(new DamageEntityPacketToClient(this, source));
         }
     }
 
@@ -198,8 +186,8 @@ public abstract class Entity {
         writeAdditionalSpawnData(out);
     }
 
-    public static Entity readEntityFromStream(DataInputStream in) throws IOException {
-        Entity entity = CommonCode.gameRegistry.createEntity(in.readInt(), NetworkUtils.readUUID(in));
+    public static Entity readEntityFromStream(DataInputStream in, World world) throws IOException {
+        Entity entity = CommonCode.gameRegistry.createEntity(in.readInt(), NetworkUtils.readUUID(in), world);
         entity.posX = in.readFloat();
         entity.posY = in.readFloat();
         entity.motionX = in.readFloat();
@@ -248,9 +236,9 @@ public abstract class Entity {
 
     public void kill() {
         isDead = true;
-        if (!worldObj.isRemote) {
-            WorldServer serverWorld = (WorldServer) worldObj;
-            serverWorld.getServer().messageEveryone(new RemoveEntityPacketToClient(uuid));
+        if (!world.isRemote) {
+            WorldServer serverWorld = (WorldServer) world;
+            serverWorld.getServer().broadcast(new RemoveEntityPacketToClient(uuid));
             serverWorld.removeEntity(this);
         }
     }

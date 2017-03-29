@@ -51,7 +51,7 @@ public class PlayerAttackWithItemPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final PlayerAttackWithItemPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

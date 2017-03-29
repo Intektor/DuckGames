@@ -39,7 +39,7 @@ public class RemoveEntityPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final RemoveEntityPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

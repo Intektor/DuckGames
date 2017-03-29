@@ -29,12 +29,14 @@ import de.intektor.duckgames.client.editor.EntitySpawn;
 import de.intektor.duckgames.client.editor.EntitySpawn.EntitySpawnType;
 import de.intektor.duckgames.client.editor.EntitySpawnCreationRegistry;
 import de.intektor.duckgames.client.editor.components.ItemSpawnEditorGuiComponent;
+import de.intektor.duckgames.common.HostingInfo;
 import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
 import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 import de.intektor.duckgames.game.worlds.spawns.renderer.EntitySpawnRendererRegistry;
 import de.intektor.duckgames.game.worlds.spawns.renderer.ItemSpawnRenderer;
 import de.intektor.duckgames.game.worlds.spawns.renderer.PlayerSpawnRenderer;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Keys.*;
@@ -324,7 +326,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             if (DuckGamesClient.getDuckGames().getDedicatedServer().isServerReadyForConnections()) {
                 waitingForTestServer = false;
                 waitingForClientConnection = true;
-                dg.connectToServer("localhost");
+                dg.connectToServer(new InetSocketAddress("localhost", 19473));
             }
         }
         if (waitingForClientConnection) {
@@ -348,7 +350,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             case T:
                 if (map.canBeConvertedToWorld()) {
                     DuckGamesServer server = new DuckGamesServer();
-                    server.startServer(DuckGamesServer.ServerState.CONNECT_STATE);
+                    server.startServer(DuckGamesServer.ServerState.CONNECT_STATE, new HostingInfo(DuckGamesServer.HostingType.LAN, 0));
                     dg.setDedicatedServer(server);
                     allowInput = false;
                     waitingForTestServer = true;

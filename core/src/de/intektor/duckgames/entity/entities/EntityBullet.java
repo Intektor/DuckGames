@@ -39,13 +39,13 @@ public class EntityBullet extends Entity {
 
     @Override
     protected void updateEntity() {
-        if (!worldObj.isRemote) {
-            List<Entity> entitiesInRegion = worldObj.getEntitiesInRegion(Entity.class, getCollision());
+        if (!world.isRemote) {
+            List<Entity> entitiesInRegion = world.getEntitiesInRegion(Entity.class, getCollision());
             for (Entity entity : entitiesInRegion) {
                 if (!entity.uuid.equals(ownerUUID)) {
                     HitRegister hitRegister = registeredHits.get(entity);
-                    if (hitRegister == null || worldObj.getWorldTime() - hitRegister.getWorldTime() > 5) {
-                        registeredHits.put(entity, new HitRegister(entity, worldObj.getWorldTime()));
+                    if (hitRegister == null || world.getWorldTime() - hitRegister.getWorldTime() > 5) {
+                        registeredHits.put(entity, new HitRegister(entity, world.getWorldTime()));
                         onHitEntity(entity);
                     }
                 }

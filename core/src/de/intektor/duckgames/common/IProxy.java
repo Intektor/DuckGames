@@ -1,8 +1,11 @@
 package de.intektor.duckgames.common;
 
+import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.world.World;
 import de.intektor.network.IPacket;
 
 import java.net.Socket;
+import java.util.UUID;
 
 /**
  * @author Intektor
@@ -10,4 +13,8 @@ import java.net.Socket;
 public interface IProxy {
 
     void handlePacket(IPacket packet, Socket socketFrom);
+
+    World getWorld();
+
+    EntityPlayer createPlayer(World world, UUID uuid);
 }

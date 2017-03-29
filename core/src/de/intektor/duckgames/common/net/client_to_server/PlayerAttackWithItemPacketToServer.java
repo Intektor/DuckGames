@@ -62,13 +62,13 @@ public class PlayerAttackWithItemPacketToServer implements IPacket {
                         player.setAttacking(packet.status, packet.ingameClickX, packet.ingameClickY);
                         switch (packet.status) {
                             case START:
-                                mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.worldObj, packet.ingameClickX, packet.ingameClickY);
+                                mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);
                                 break;
                             case END:
-                                mainHand.getItem().onAttackWithItemEnd(mainHand, player, player.worldObj, packet.ingameClickX, packet.ingameClickY);
+                                mainHand.getItem().onAttackWithItemEnd(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);
                                 break;
                         }
-                        server.messageEveryone(new PlayerAttackWithItemPacketToClient(player.uuid, packet.ingameClickX, packet.ingameClickY, packet.status));
+                        server.broadcast(new PlayerAttackWithItemPacketToClient(player.uuid, packet.ingameClickX, packet.ingameClickY, packet.status));
                     }
                 }
             });

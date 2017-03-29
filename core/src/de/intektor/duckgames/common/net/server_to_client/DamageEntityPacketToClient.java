@@ -49,7 +49,7 @@ public class DamageEntityPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(DamageEntityPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

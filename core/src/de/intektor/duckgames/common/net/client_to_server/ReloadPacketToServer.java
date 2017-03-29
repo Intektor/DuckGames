@@ -44,7 +44,7 @@ public class ReloadPacketToServer implements IPacket {
                         ItemStack equipment = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);
                         if (equipment != null && equipment.getItem() instanceof ItemGun) {
                             ItemGun gun = (ItemGun) equipment.getItem();
-                            gun.reload(equipment, player, player.worldObj);
+                            gun.reload(equipment, player, player.world);
                         }
                     }
                 }

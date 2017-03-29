@@ -32,7 +32,7 @@ public class EntityItem extends Entity {
         super(world, posX, posY);
         this.itemStack = itemStack;
         this.lastThrower = lastThrower.uuid;
-        tickTimeAtThrowAway = lastThrower.worldObj.getWorldTime();
+        tickTimeAtThrowAway = lastThrower.world.getWorldTime();
     }
 
     public EntityItem(UUID uuid) {
@@ -95,6 +95,6 @@ public class EntityItem extends Entity {
     }
 
     public boolean canBePickedUpByPlayer(EntityPlayer player) {
-        return !player.uuid.equals(lastThrower) || worldObj.getWorldTime() - tickTimeAtThrowAway >= 64;
+        return !player.uuid.equals(lastThrower) || world.getWorldTime() - tickTimeAtThrowAway >= 64;
     }
 }

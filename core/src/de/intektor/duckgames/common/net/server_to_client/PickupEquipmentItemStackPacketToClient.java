@@ -54,7 +54,7 @@ public class PickupEquipmentItemStackPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final PickupEquipmentItemStackPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

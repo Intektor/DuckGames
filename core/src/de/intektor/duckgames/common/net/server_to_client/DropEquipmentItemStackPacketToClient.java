@@ -44,7 +44,7 @@ public class DropEquipmentItemStackPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(final DropEquipmentItemStackPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }

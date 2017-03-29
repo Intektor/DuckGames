@@ -37,7 +37,7 @@ public class KickClientFromServerPacketToClient implements IPacket {
 
         @Override
         public void handlePacket(KickClientFromServerPacketToClient packet, Socket socketFrom) {
-            CommonCode.clientProxy.handlePacket(packet, socketFrom);
+            CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
 }
