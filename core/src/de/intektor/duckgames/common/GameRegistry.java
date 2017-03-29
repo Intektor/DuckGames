@@ -38,7 +38,6 @@ public class GameRegistry {
         return blockRegistry.inverse().get(block);
     }
 
-
     //-------------------------------------------------Entities-------------------------------------------------
 
     private BiMap<Class<? extends Entity>, Integer> classRegistry = HashBiMap.create();
