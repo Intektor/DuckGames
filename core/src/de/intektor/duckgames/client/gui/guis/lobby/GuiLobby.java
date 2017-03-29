@@ -58,7 +58,7 @@ public class GuiLobby extends Gui {
             registerComponent(selectWorldButton);
             registerComponent(startGameButton);
 
-            DuckGamesServer dedicatedServer = new DuckGamesServer(DuckGamesServer.ServerType.LAN);
+            DuckGamesServer dedicatedServer = new DuckGamesServer();
             dg.setDedicatedServer(dedicatedServer);
             dedicatedServer.startServer(DuckGamesServer.ServerState.LOBBY_STATE, hostingInfo);
         }
