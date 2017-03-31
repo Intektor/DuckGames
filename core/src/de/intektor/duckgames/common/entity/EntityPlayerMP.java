@@ -11,11 +11,20 @@ import java.util.UUID;
  */
 public class EntityPlayerMP extends EntityPlayer {
 
+    private PlayerProfile profile;
+
     public EntityPlayerMP(World world, float posX, float posY, PlayerProfile profile) {
-        super(world, posX, posY, profile);
+        super(world, posX, posY, profile.gameProfile.username);
+        this.profile = profile;
     }
 
     public EntityPlayerMP(UUID uuid) {
         super(uuid);
     }
+
+    public PlayerProfile getProfile() {
+        return profile;
+    }
 }
+
+

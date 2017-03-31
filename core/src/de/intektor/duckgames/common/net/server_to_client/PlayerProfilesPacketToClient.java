@@ -1,8 +1,8 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
-import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.NetworkUtils;
+import de.intektor.duckgames.game.GameProfile;
 import de.intektor.network.IPacket;
 import de.intektor.network.IPacketHandler;
 
@@ -16,9 +16,9 @@ import java.net.Socket;
  */
 public class PlayerProfilesPacketToClient implements IPacket {
 
-    public PlayerProfile profile;
+    public GameProfile profile;
 
-    public PlayerProfilesPacketToClient(PlayerProfile profile) {
+    public PlayerProfilesPacketToClient(GameProfile profile) {
         this.profile = profile;
     }
 
@@ -27,13 +27,13 @@ public class PlayerProfilesPacketToClient implements IPacket {
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        out.writeUTF(profile.username);
         NetworkUtils.writeUUID(out, profile.profileUUID);
+        out.writeUTF(profile.username);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        profile = new PlayerProfile(in.readUTF(), NetworkUtils.readUUID(in));
+        profile = new GameProfile(NetworkUtils.readUUID(in), in.readUTF());
     }
 
     public static class Handler implements IPacketHandler<PlayerProfilesPacketToClient> {

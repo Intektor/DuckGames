@@ -1,21 +1,21 @@
 package de.intektor.duckgames.common.chat;
 
-import de.intektor.duckgames.common.PlayerProfile;
+import de.intektor.duckgames.game.GameProfile;
 
 /**
  * @author Intektor
  */
 public class ChatMessage {
 
-    private final PlayerProfile playerProfile;
+    private final GameProfile playerProfile;
     private final String message;
 
-    public ChatMessage(PlayerProfile playerProfile, String message) {
+    public ChatMessage(GameProfile playerProfile, String message) {
         this.playerProfile = playerProfile;
         this.message = message;
     }
 
-    public PlayerProfile getPlayerProfile() {
+    public GameProfile getPlayerProfile() {
         return playerProfile;
     }
 

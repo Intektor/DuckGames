@@ -1,10 +1,12 @@
 package de.intektor.duckgames.common;
 
 import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.game.GameProfile;
 import de.intektor.duckgames.world.World;
 import de.intektor.network.IPacket;
 
 import java.net.Socket;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -17,4 +19,6 @@ public interface IProxy {
     World getWorld();
 
     EntityPlayer createPlayer(World world, UUID uuid);
+
+    Map<UUID, GameProfile> getGameProfiles();
 }

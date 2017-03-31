@@ -1,7 +1,6 @@
 package de.intektor.duckgames.entity.entities;
 
 import de.intektor.duckgames.collision.Collision2D;
-import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.server_to_client.PickupEquipmentItemStackPacketToClient;
 import de.intektor.duckgames.entity.Entity;
@@ -14,6 +13,9 @@ import de.intektor.duckgames.util.EnumDirection;
 import de.intektor.duckgames.world.World;
 import de.intektor.duckgames.world.WorldServer;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,8 +23,6 @@ import java.util.UUID;
  * @author Intektor
  */
 public abstract class EntityPlayer extends Entity {
-
-    private PlayerProfile profile;
 
     private boolean movingLeft, movingRight;
 
@@ -38,9 +38,11 @@ public abstract class EntityPlayer extends Entity {
 
     private ItemStack[] equipment = new ItemStack[EntityEquipmentSlot.values().length];
 
-    public EntityPlayer(World world, float posX, float posY, PlayerProfile profile) {
+    private String displayName;
+
+    public EntityPlayer(World world, float posX, float posY, String displayName) {
         super(world, posX, posY);
-        this.profile = profile;
+        this.displayName = displayName;
     }
 
     public EntityPlayer(UUID uuid) {
@@ -166,5 +168,21 @@ public abstract class EntityPlayer extends Entity {
 
     public boolean isAttacking() {
         return isAttacking;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @Override
+    protected void writeAdditionalSpawnData(DataOutputStream out) throws IOException {
+        super.writeAdditionalSpawnData(out);
+        out.writeUTF(displayName);
+    }
+
+    @Override
+    protected void readAdditionalSpawnData(DataInputStream in) throws IOException {
+        super.readAdditionalSpawnData(in);
+        displayName = in.readUTF();
     }
 }

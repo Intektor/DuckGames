@@ -56,7 +56,7 @@ public class PlayerAttackWithItemPacketToServer implements IPacket {
             mainServerThread.addScheduledTask(new Runnable() {
                 @Override
                 public void run() {
-                    EntityPlayer player = mainServerThread.getProfileMap().get(socketFrom).player;
+                    EntityPlayer player = mainServerThread.getProfileMap().get(socketFrom).gameProfile.player;
                     ItemStack mainHand = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);
                     if (mainHand != null) {
                         player.setAttacking(packet.status, packet.ingameClickX, packet.ingameClickY);

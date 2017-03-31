@@ -13,6 +13,7 @@ import de.intektor.duckgames.client.net.DuckGamesClientConnection;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.net.lan.ThreadFindLanServers;
+import de.intektor.duckgames.util.charlist.CharList;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -30,7 +31,7 @@ public class GuiConnectToLobby extends Gui {
     private boolean connectionFailed;
     private String errorMessage;
 
-    private final Splitter spliiterDoublePoint = Splitter.on(':').trimResults();
+    private final Splitter splitterDoublePoint = Splitter.on(':').trimResults();
 
     private ThreadFindLanServers lanServerFinder;
 
@@ -38,7 +39,7 @@ public class GuiConnectToLobby extends Gui {
     public void enterGui() {
         super.enterGui();
         BitmapFont font = dg.defaultFont28;
-        enterIPTextField = new GuiTextField(width / 2 - 300, (int) (height / 2 - font.getLineHeight() / 2), 600, (int) font.getLineHeight(), "Enter Address here!");
+        enterIPTextField = new GuiTextField(width / 2 - 300, (int) (height / 2 - font.getLineHeight() / 2), 600, (int) font.getLineHeight(), "Enter Address here!", CharList.combine(CharList.DIGITS, CharList.create(':')));
         buttonJoinLobby = new GuiTextBasedButton(width / 2 + 300, (int) (height / 2 - font.getLineHeight() / 2), 100, (int) font.getLineHeight(), "Connect!");
         try {
             lanServerFinder = new ThreadFindLanServers();
@@ -90,7 +91,7 @@ public class GuiConnectToLobby extends Gui {
     @Override
     public void buttonCallback(GuiButton button) {
         if (button == buttonJoinLobby) {
-            List<String> strings = spliiterDoublePoint.splitToList(enterIPTextField.getText());
+            List<String> strings = splitterDoublePoint.splitToList(enterIPTextField.getText());
             InetSocketAddress address = new InetSocketAddress("localhost", 0);
             if (strings.size() == 1) {
                 address = new InetSocketAddress(strings.get(0), 19473);

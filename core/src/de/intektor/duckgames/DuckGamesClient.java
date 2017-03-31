@@ -2,6 +2,7 @@ package de.intektor.duckgames;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
+import de.intektor.duckgames.client.gui.guis.GuiSetUserInformation;
 import de.intektor.duckgames.client.net.DuckGamesClientConnection;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
@@ -30,7 +32,10 @@ import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldClient;
 import de.intektor.network.IPacket;
+import de.intektor.tag.TagCompound;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Queue;
@@ -56,6 +61,8 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     private final int preferredScreenWidth = 1920;
     private final int preferredScreenHeight = 1080;
+
+    private String username;
 
     private ShapeRenderer defaultShapeRenderer;
     private SpriteBatch defaultSpriteBatch;
@@ -123,7 +130,20 @@ public class DuckGamesClient extends ApplicationAdapter {
 
         FutureTextureRegistry.loadTextures();
 
-        showGui(new GuiMainMenu());
+        FileHandle dataFile = Gdx.files.local("user/user.data");
+        if (!dataFile.exists()) {
+            showGui(new GuiSetUserInformation());
+        } else {
+            try {
+                TagCompound dataTag = new TagCompound();
+                dataTag.readFromStream(new DataInputStream(new FileInputStream(dataFile.file())));
+                username = dataTag.getString("username");
+                showGui(new GuiMainMenu());
+            } catch (Exception e) {
+                e.printStackTrace();
+                showGui(new GuiSetUserInformation());
+            }
+        }
     }
 
     @Override
@@ -283,5 +303,13 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     public float getPartialTicks() {
         return partialTicks;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

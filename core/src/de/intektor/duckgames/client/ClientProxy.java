@@ -3,10 +3,9 @@ package de.intektor.duckgames.client;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.entity.EntityPlayerSP;
 import de.intektor.duckgames.client.gui.guis.GuiDownloadingMap;
-import de.intektor.duckgames.client.gui.guis.play_state.GuiPlayState;
 import de.intektor.duckgames.client.gui.guis.lobby.GuiLobby;
+import de.intektor.duckgames.client.gui.guis.play_state.GuiPlayState;
 import de.intektor.duckgames.common.IProxy;
-import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.chat.ChatMessage;
 import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.client_to_server.IdentificationPacketToServer;
@@ -14,6 +13,7 @@ import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.game.GameProfile;
 import de.intektor.duckgames.game.damage.DamageSource;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.world.World;
@@ -22,6 +22,7 @@ import de.intektor.network.IPacket;
 
 import java.lang.reflect.Constructor;
 import java.net.Socket;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -94,6 +95,11 @@ public class ClientProxy implements IProxy {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Map<UUID, GameProfile> getGameProfiles() {
+        return duckGames.getClientConnection().getPlayerProfiles();
     }
 
     private void handleBasicEntityUpdateInformationPacketToClient(final BasicEntityUpdateInformationPacketToClient packet) {
@@ -229,7 +235,7 @@ public class ClientProxy implements IProxy {
         duckGames.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                duckGames.sendPacketToServer(new IdentificationPacketToServer("Intektor"));
+                duckGames.sendPacketToServer(new IdentificationPacketToServer(duckGames.getUsername()));
             }
         });
     }
@@ -268,7 +274,7 @@ public class ClientProxy implements IProxy {
             @Override
             public void run() {
                 if (duckGames.getCurrentGui() instanceof GuiLobby) {
-                    PlayerProfile messengersProfile = duckGames.getClientConnection().getPlayerProfiles().get(packet.profileUUID);
+                    GameProfile messengersProfile = duckGames.getClientConnection().getPlayerProfiles().get(packet.profileUUID);
                     GuiLobby lobby = (GuiLobby) duckGames.getCurrentGui();
                     lobby.addMessage(new ChatMessage(messengersProfile, packet.message));
                 }

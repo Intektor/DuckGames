@@ -3,6 +3,8 @@ package de.intektor.duckgames.common;
 import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.common.net.lan.ThreadLanServerPing;
 import de.intektor.duckgames.common.net.server_to_client.*;
+import de.intektor.duckgames.game.GameProfile;
+import de.intektor.duckgames.game.GameScore;
 import de.intektor.duckgames.world.WorldServer;
 import de.intektor.network.IPacket;
 import de.intektor.network.PacketOnWrongSideException;
@@ -138,7 +140,7 @@ public class DuckGamesServer implements Closeable {
     private void shareToInternet(int port) {
         try {
             upnpService = new UpnpServiceImpl();
-            RegistryListener registryListener = new PortMappingListener(new PortMapping(true, new UnsignedIntegerFourBytes(60*60*4),
+            RegistryListener registryListener = new PortMappingListener(new PortMapping(true, new UnsignedIntegerFourBytes(60 * 60 * 4),
                     null, new UnsignedIntegerTwoBytes(port), new UnsignedIntegerTwoBytes(this.port),
                     InetAddress.getLocalHost().getHostAddress(), PortMapping.Protocol.TCP, "Port Mapping"));
             upnpService.getRegistry().addListener(registryListener);
@@ -196,6 +198,8 @@ public class DuckGamesServer implements Closeable {
 
         private volatile long lastTimeTick;
 
+        private GameScore currentGameScore;
+
         WorldServer world;
         EditableGameMap backup;
 
@@ -221,15 +225,15 @@ public class DuckGamesServer implements Closeable {
 
         public void registrationMessageFromClient(Socket socket, String username) {
             if (serverState == ServerState.CONNECT_STATE || serverState == ServerState.LOBBY_STATE) {
-                PlayerProfile profile = new PlayerProfile(username, socket, UUID.randomUUID());
+                PlayerProfile profile = new PlayerProfile(new GameProfile(UUID.randomUUID(), username), socket);
                 profileMap.put(socket, profile);
                 packetHelper.sendPacket(new IdentificationSuccessfulPacketToClient(), socket);
-                DuckGamesServer.this.broadcast(new PlayerProfilesPacketToClient(profile));
+                DuckGamesServer.this.broadcast(new PlayerProfilesPacketToClient(profile.gameProfile));
                 if (serverState == ServerState.LOBBY_STATE) {
-                    DuckGamesServer.this.broadcast(new PlayerJoinLobbyPacketToClient(profile.profileUUID));
+                    DuckGamesServer.this.broadcast(new PlayerJoinLobbyPacketToClient(profile.gameProfile.profileUUID));
                 }
                 for (PlayerProfile playerProfile : profileMap.values()) {
-                    packetHelper.sendPacket(new PlayerProfilesPacketToClient(playerProfile), socket);
+                    packetHelper.sendPacket(new PlayerProfilesPacketToClient(playerProfile.gameProfile), socket);
                 }
             } else {
                 packetHelper.sendPacket(new KickClientFromServerPacketToClient("Can't join while game is running!"), socket);
@@ -248,6 +252,11 @@ public class DuckGamesServer implements Closeable {
             broadcast(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
             world.spawnPlayers();
             world.spawnEntities();
+            List<GameProfile> profileList = new ArrayList<GameProfile>();
+            for (PlayerProfile playerProfile : profileMap.values()) {
+                profileList.add(playerProfile.gameProfile);
+            }
+            currentGameScore = new GameScore(profileList);
             broadcast(new FinishedWorldTransmissionPacketToClient());
         }
 

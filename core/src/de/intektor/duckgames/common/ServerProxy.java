@@ -2,17 +2,20 @@ package de.intektor.duckgames.common;
 
 import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.game.GameProfile;
 import de.intektor.duckgames.world.World;
 import de.intektor.network.IPacket;
 
 import java.lang.reflect.Constructor;
 import java.net.Socket;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Intektor
  */
 public class ServerProxy implements IProxy {
+
+    private DuckGamesServer server = CommonCode.getDuckGamesServer();
 
     @Override
     public void handlePacket(IPacket packet, Socket socketFrom) {
@@ -39,5 +42,14 @@ public class ServerProxy implements IProxy {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Map<UUID, GameProfile> getGameProfiles() {
+        Map<UUID, GameProfile> profileMap = new HashMap<UUID, GameProfile>();
+        for (PlayerProfile profile : server.getMainServerThread().getProfileMap().values()) {
+            profileMap.put(profile.gameProfile.profileUUID, profile.gameProfile);
+        }
+        return profileMap;
     }
 }

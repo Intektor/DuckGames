@@ -9,6 +9,7 @@ import de.intektor.duckgames.client.gui.components.GuiTextField;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.HostingInfo;
+import de.intektor.duckgames.util.charlist.CharList;
 
 /**
  * @author Intektor
@@ -29,7 +30,7 @@ public class GuiCreateLobby extends Gui {
         launchGuiButton = new GuiTextBasedButton(width / 2 - width / 16, 40, width / 8, 40, "Launch Lobby!");
         switchHostTypeButton = new GuiTextBasedButton(20, height - 120, 300, 30, "Switch type!");
         switchDynamicPortButton = new GuiTextBasedButton(20, height - 160, 300, 30, "Switch use dynmaic port!");
-        specificPortTextField = new GuiTextField(530, height - 160, 150, 45, "port:", "13327");
+        specificPortTextField = new GuiTextField(530, height - 160, 150, 45, "port:", "13327", CharList.DIGITS);
 
         registerComponent(launchGuiButton);
         registerComponent(switchHostTypeButton);

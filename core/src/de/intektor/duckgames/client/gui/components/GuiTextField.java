@@ -9,6 +9,7 @@ import de.intektor.duckgames.client.gui.GuiComponent;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
+import de.intektor.duckgames.util.charlist.CharList;
 
 /**
  * @author Intektor
@@ -25,14 +26,17 @@ public class GuiTextField extends GuiComponent {
 
     private int cursorPosition;
 
-    public GuiTextField(int x, int y, int width, int height, String infoText) {
-        this(x, y, width, height, infoText, "");
+    private CharList allowedCharsList;
+
+    public GuiTextField(int x, int y, int width, int height, String infoText, CharList allowedCharsList) {
+        this(x, y, width, height, infoText, "", allowedCharsList);
     }
 
-    public GuiTextField(int x, int y, int width, int height, String infoText, String defaultText) {
+    public GuiTextField(int x, int y, int width, int height, String infoText, String defaultText, CharList allowedCharsList) {
         super(x, y, width, height);
         this.infoText = infoText;
         currentlyWritten = defaultText;
+        this.allowedCharsList = allowedCharsList;
     }
 
     @Override
@@ -99,8 +103,7 @@ public class GuiTextField extends GuiComponent {
                     }
                     break;
                 default:
-                    if (Character.isLetterOrDigit(character) || character == ' '
-                            || character == '?' || character == '!' || character == '.' || character == ',' || character == ':') {
+                    if (allowedCharsList.contains(character)) {
                         if (FontUtils.getStringWidth(currentlyWritten + character, font) <= width) {
                             currentlyWritten = currentlyWritten.substring(0, cursorPosition) + character + currentlyWritten.substring(cursorPosition);
                             cursorPosition++;

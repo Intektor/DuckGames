@@ -56,7 +56,7 @@ public class CurrentPadControllingPacketToServer implements IPacket {
                 @Override
                 public void run() {
                     PlayerProfile playerProfile = server.getMainServerThread().getProfileMap().get(socket);
-                    EntityPlayer player = playerProfile.player;
+                    EntityPlayer player = playerProfile.gameProfile.player;
                     PlayerInputHandler.handlePadControl(player, packet.movementAngle, packet.movementStrength, packet.aimingAngle, packet.aimingStrength);
                 }
             });

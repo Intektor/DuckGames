@@ -1,7 +1,7 @@
 package de.intektor.duckgames.client.net;
 
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.PlayerProfile;
+import de.intektor.duckgames.game.GameProfile;
 import de.intektor.network.IPacket;
 import de.intektor.network.PacketOnWrongSideException;
 import de.intektor.network.Side;
@@ -26,7 +26,7 @@ public class DuckGamesClientConnection implements Closeable {
     private boolean connectionFailed;
     private Throwable connectionFailedProblem;
 
-    private Map<UUID, PlayerProfile> playerProfiles = new HashMap<UUID, PlayerProfile>();
+    private Map<UUID, GameProfile> playerProfiles = new HashMap<UUID, GameProfile>();
 
     public void connect(final String ip, final int port) {
         running = true;
@@ -78,7 +78,7 @@ public class DuckGamesClientConnection implements Closeable {
         if (clientSocket != null) clientSocket.close();
     }
 
-    public Map<UUID, PlayerProfile> getPlayerProfiles() {
+    public Map<UUID, GameProfile> getPlayerProfiles() {
         return playerProfiles;
     }
 

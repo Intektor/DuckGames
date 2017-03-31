@@ -1,28 +1,20 @@
 package de.intektor.duckgames.common;
 
-import de.intektor.duckgames.entity.entities.EntityPlayer;
+import de.intektor.duckgames.game.GameProfile;
 
 import java.net.Socket;
-import java.util.UUID;
 
 /**
  * @author Intektor
  */
 public class PlayerProfile {
 
-    public String username;
-    public EntityPlayer player;
+    public GameProfile gameProfile;
     public Socket socket;
-    public final UUID profileUUID;
 
-    public PlayerProfile(String username, Socket socket, UUID profileUUID) {
-        this.username = username;
+    public PlayerProfile(GameProfile profile, Socket socket) {
+        this.gameProfile = profile;
         this.socket = socket;
-        this.profileUUID = profileUUID;
     }
 
-    public PlayerProfile(String username, UUID profileUUID) {
-        this.username = username;
-        this.profileUUID = profileUUID;
-    }
 }

@@ -79,7 +79,7 @@ public class WorldServer extends World {
             if (remainingProfiles.size() == 0) return;
             PlayerProfile profile = remainingProfiles.get(r.nextInt(remainingProfiles.size()));
             EntityPlayer player = new EntityPlayerMP(this, playerSpawn.getX(), playerSpawn.getY(), profile);
-            profile.player = player;
+            profile.gameProfile.player = player;
             spawnEntityInWorld(player);
             CommonCode.packetHelper.sendPacket(new PlayerPacketToClient(player.uuid), profile.socket);
         }

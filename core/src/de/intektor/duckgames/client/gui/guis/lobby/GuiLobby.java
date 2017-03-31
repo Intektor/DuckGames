@@ -12,8 +12,8 @@ import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.HostingInfo;
-import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.game.GameProfile;
 
 import java.net.InetSocketAddress;
 
@@ -85,7 +85,7 @@ public class GuiLobby extends Gui {
             spriteBatch.begin();
             RenderUtils.drawString("Connected Players:", font, 0, dg.getPreferredScreenHeight(), spriteBatch, Color.WHITE);
             float y = dg.getPreferredScreenHeight() - font.getLineHeight() * 1;
-            for (PlayerProfile profile : dg.getClientConnection().getPlayerProfiles().values()) {
+            for (GameProfile profile : dg.getClientConnection().getPlayerProfiles().values()) {
                 RenderUtils.drawString(profile.username, font, 0, y, spriteBatch, Color.WHITE);
                 y -= font.getLineHeight();
             }

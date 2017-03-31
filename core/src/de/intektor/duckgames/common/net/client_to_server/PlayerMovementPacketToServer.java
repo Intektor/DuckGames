@@ -49,7 +49,7 @@ public class PlayerMovementPacketToServer implements IPacket {
                 @Override
                 public void run() {
                     PlayerProfile profile = mainThread.getProfileMap().get(socketFrom);
-                    profile.player.move(packet.direction, packet.start);
+                    profile.gameProfile.player.move(packet.direction, packet.start);
                 }
             });
         }

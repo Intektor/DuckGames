@@ -43,7 +43,7 @@ public class JumpPacketToServer implements IPacket {
             main.addScheduledTask(new Runnable() {
                 @Override
                 public void run() {
-                    EntityPlayer player = main.getProfileMap().get(socketFrom).player;
+                    EntityPlayer player = main.getProfileMap().get(socketFrom).gameProfile.player;
                     player.isJumping = packet.start && player.onGround;
                     if (!packet.start && player.onGround) {
                         player.jumpTicks = player.maxJumpTicks;

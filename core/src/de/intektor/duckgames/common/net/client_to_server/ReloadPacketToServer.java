@@ -40,7 +40,7 @@ public class ReloadPacketToServer implements IPacket {
                 public void run() {
                     PlayerProfile playerProfile = thread.getProfileMap().get(socket);
                     if (playerProfile != null) {
-                        EntityPlayer player = playerProfile.player;
+                        EntityPlayer player = playerProfile.gameProfile.player;
                         ItemStack equipment = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);
                         if (equipment != null && equipment.getItem() instanceof ItemGun) {
                             ItemGun gun = (ItemGun) equipment.getItem();

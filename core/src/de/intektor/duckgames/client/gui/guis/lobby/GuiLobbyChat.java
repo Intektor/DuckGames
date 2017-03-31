@@ -17,6 +17,7 @@ import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.chat.ChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.ChatMessagePacketToServer;
+import de.intektor.duckgames.util.charlist.CharList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class GuiLobbyChat extends GuiMultiComponent {
         sendMessageButton = new GuiTextBasedButton(width - 100, 0, 100, (int) font.getLineHeight(), "Send!");
         registerGuiComponent(sendMessageButton);
 
-        chatWritingField = new GuiTextField(0, 0, width - 100, (int) font.getLineHeight(), "Type message here!");
+        chatWritingField = new GuiTextField(0, 0, width - 100, (int) font.getLineHeight(), "Type message here!", CharList.combine(CharList.LETTERS_AND_DIGITS, CharList.PUNCTUATION_MARKS, CharList.SPACE));
         registerGuiComponent(chatWritingField);
     }
 

@@ -45,7 +45,7 @@ public class ChatMessagePacketToServer implements IPacket {
                 @Override
                 public void run() {
                     PlayerProfile playerProfile = server.getMainServerThread().getProfileMap().get(socket);
-                    server.broadcast(new ChatMessagePacketToClient(playerProfile.profileUUID, chatMessagePacketToServer.message));
+                    server.broadcast(new ChatMessagePacketToClient(playerProfile.gameProfile.profileUUID, chatMessagePacketToServer.message));
                 }
             });
         }

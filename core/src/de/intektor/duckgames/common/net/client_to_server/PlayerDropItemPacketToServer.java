@@ -48,7 +48,7 @@ public class PlayerDropItemPacketToServer implements IPacket {
             mainThread.addScheduledTask(new Runnable() {
                 @Override
                 public void run() {
-                    EntityPlayer player = mainThread.getProfileMap().get(socketFrom).player;
+                    EntityPlayer player = mainThread.getProfileMap().get(socketFrom).gameProfile.player;
                     ItemStack equipment = player.getEquipment(packet.slot);
                     if (equipment != null) {
                         server.broadcast(new DropEquipmentItemStackPacketToClient(packet.slot, player.uuid));
