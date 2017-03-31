@@ -39,7 +39,7 @@ public class GuiConnectToLobby extends Gui {
     public void enterGui() {
         super.enterGui();
         BitmapFont font = dg.defaultFont28;
-        enterIPTextField = new GuiTextField(width / 2 - 300, (int) (height / 2 - font.getLineHeight() / 2), 600, (int) font.getLineHeight(), "Enter Address here!", CharList.combine(CharList.DIGITS, CharList.create(':')));
+        enterIPTextField = new GuiTextField(width / 2 - 300, (int) (height / 2 - font.getLineHeight() / 2), 600, (int) font.getLineHeight(), "Enter Address here!", CharList.combine(CharList.DIGITS, CharList.create(':', '.')));
         buttonJoinLobby = new GuiTextBasedButton(width / 2 + 300, (int) (height / 2 - font.getLineHeight() / 2), 100, (int) font.getLineHeight(), "Connect!");
         try {
             lanServerFinder = new ThreadFindLanServers();
