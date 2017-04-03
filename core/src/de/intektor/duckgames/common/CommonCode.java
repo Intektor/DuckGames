@@ -2,6 +2,12 @@ package de.intektor.duckgames.common;
 
 import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.client.ClientProxy;
+import de.intektor.duckgames.common.chat.ChatMessageRegistry;
+import de.intektor.duckgames.common.chat.PlayerChatMessage;
+import de.intektor.duckgames.common.chat.ServerInfoMessage;
+import de.intektor.duckgames.common.net.PacketHelper;
+import de.intektor.duckgames.common.net.PacketRegistry;
+import de.intektor.duckgames.common.net.Side;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.entity.Entity;
@@ -11,9 +17,6 @@ import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.entity.entities.EntityRail;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.World;
-import de.intektor.network.PacketHelper;
-import de.intektor.network.PacketRegistry;
-import de.intektor.network.Side;
 
 import java.util.UUID;
 
@@ -24,6 +27,10 @@ public class CommonCode {
 
     public static final PacketHelper packetHelper;
     public static final PacketRegistry packetRegistry;
+
+    public static Networking networking;
+
+    public static final ChatMessageRegistry chatMessageRegistry;
 
     public static final GameRegistry gameRegistry;
 
@@ -59,6 +66,13 @@ public class CommonCode {
         packetRegistry.registerPacket(PlayerProfilesPacketToClient.class, PlayerProfilesPacketToClient.Handler.class, 23, Side.CLIENT);
         packetRegistry.registerPacket(PlayerJoinLobbyPacketToClient.class, PlayerJoinLobbyPacketToClient.Handler.class, 24, Side.CLIENT);
         packetRegistry.registerPacket(CurrentPadControllingPacketToServer.class, CurrentPadControllingPacketToServer.Handler.class, 25, Side.SERVER);
+        packetRegistry.registerPacket(GameScorePacketToClient.class, GameScorePacketToClient.Handler.class, 26, Side.CLIENT);
+        packetRegistry.registerPacket(RoundEndedPacketToClient.class, RoundEndedPacketToClient.Handler.class, 27, Side.CLIENT);
+        packetRegistry.registerPacket(DisconnectPacketToServer.class, DisconnectPacketToServer.Handler.class, 28, Side.SERVER);
+
+        chatMessageRegistry = new ChatMessageRegistry();
+        chatMessageRegistry.register(PlayerChatMessage.class);
+        chatMessageRegistry.register(ServerInfoMessage.class);
 
         gameRegistry = new GameRegistry();
         gameRegistry.registerEntity(EntityPlayer.class, 0, new BiFunction<Entity, World, UUID>() {

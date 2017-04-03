@@ -1,8 +1,11 @@
+package de.intektor.duckgames;
+
 import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.HostingInfo;
-import de.intektor.tag.TagCompound;
+import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.tag.TagCompound;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -37,14 +40,14 @@ public class ServerMain {
         }
         server = new DuckGamesServer();
         CommonCode.setDuckGamesServer(server);
-        server.startServer(DuckGamesServer.ServerState.CONNECT_STATE, new HostingInfo(DuckGamesServer.HostingType.LAN, 0));
+        server.startServer(DuckGamesServer.ServerState.CONNECT_STATE, new HostingInfo(HostingType.LAN, 0));
         final EditableGameMap finalEditableGameMap = editableGameMap;
         new Thread() {
             @Override
             public void run() {
                 while (true) {
                     if (server.getMainServerThread().getProfileMap().size() > 0) {
-                        server.getMainServerThread().launchGame(finalEditableGameMap);
+                        server.getMainServerThread().launchGame(finalEditableGameMap, DuckGamesServer.GameMode.COMPETITIVE_SOLO);
                         break;
                     }
                 }

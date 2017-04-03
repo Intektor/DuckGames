@@ -6,9 +6,11 @@ import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
 import de.intektor.duckgames.client.gui.components.GuiTextField;
+import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
+import de.intektor.duckgames.client.i18n.I18n;
 import de.intektor.duckgames.client.rendering.RenderUtils;
-import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.HostingInfo;
+import de.intektor.duckgames.common.HostingType;
 import de.intektor.duckgames.util.charlist.CharList;
 
 /**
@@ -19,30 +21,34 @@ public class GuiCreateLobby extends Gui {
     private GuiButton launchGuiButton;
     private GuiButton switchHostTypeButton;
     private GuiButton switchDynamicPortButton;
+    private GuiButton buttonBack;
     private GuiTextField specificPortTextField;
 
-    private DuckGamesServer.HostingType hostingType = DuckGamesServer.HostingType.LAN;
-    private boolean useDynamicPort;
+    private HostingType hostingType = HostingType.INTERNET;
+    private boolean useDynamicPort = false;
 
     @Override
     public void enterGui() {
         super.enterGui();
-        launchGuiButton = new GuiTextBasedButton(width / 2 - width / 16, 40, width / 8, 40, "Launch Lobby!");
-        switchHostTypeButton = new GuiTextBasedButton(20, height - 120, 300, 30, "Switch type!");
-        switchDynamicPortButton = new GuiTextBasedButton(20, height - 160, 300, 30, "Switch use dynmaic port!");
-        specificPortTextField = new GuiTextField(530, height - 160, 150, 45, "port:", "13327", CharList.DIGITS);
+        launchGuiButton = new GuiTextBasedButton(width / 2 - 250, 80, 500, 80, "Launch Lobby!", true);
+        switchHostTypeButton = new GuiTextBasedButton(20, height - 120, 500, 60, "Switch type!", true);
+        switchDynamicPortButton = new GuiTextBasedButton(20, height - 200, 500, 60, "Switch use dynamic port!", true);
+        specificPortTextField = new GuiTextField(700, height - 200 + 30 - 45 / 2, 150, 45, "port:", "13327", CharList.DIGITS);
+
+        buttonBack = new GuiTextBasedButton(0, 0, 200, (int) dg.defaultFont28.getLineHeight(), I18n.translate("gui.button.back_button.text"), true);
 
         registerComponent(launchGuiButton);
         registerComponent(switchHostTypeButton);
         registerComponent(switchDynamicPortButton);
         registerComponent(specificPortTextField);
+        registerComponent(buttonBack);
     }
 
     @Override
     protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
         super.renderGui(mouseX, mouseY, camera, partialTicks);
         spriteBatch.begin();
-        RenderUtils.drawString(hostingType.name(), dg.defaultFont16, 350, height - 120, spriteBatch, Color.WHITE);
+        RenderUtils.drawString(hostingType.name(), dg.defaultFont28, 700, height - 120 + 30, spriteBatch, Color.WHITE, false, true);
         spriteBatch.end();
 
     }
@@ -63,15 +69,19 @@ public class GuiCreateLobby extends Gui {
                 e.printStackTrace();
             }
         } else if (button == switchHostTypeButton) {
-            hostingType = hostingType == DuckGamesServer.HostingType.LAN ? DuckGamesServer.HostingType.INTERNET : DuckGamesServer.HostingType.LAN;
-            boolean lanHosted = hostingType == DuckGamesServer.HostingType.LAN;
+            hostingType = hostingType == HostingType.LAN ? HostingType.INTERNET : HostingType.LAN;
+            boolean lanHosted = hostingType == HostingType.LAN;
             switchDynamicPortButton.setShown(!lanHosted);
             if (lanHosted) {
                 specificPortTextField.setShown(false);
+            } else {
+                specificPortTextField.setShown(!useDynamicPort);
             }
         } else if (button == switchDynamicPortButton) {
             useDynamicPort = !useDynamicPort;
-            specificPortTextField.setShown(useDynamicPort);
+            specificPortTextField.setShown(!useDynamicPort);
+        } else if (button == buttonBack) {
+            dg.showGui(new GuiMainMenu());
         }
     }
 

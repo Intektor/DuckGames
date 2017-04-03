@@ -59,7 +59,7 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
         sR.identity();
         sR.begin();
         sR.set(ShapeRenderer.ShapeType.Filled);
-        sR.setColor(Color.BLUE);
+        sR.setColor(new Color(0.2f, 0.2f, 0.2f, 1f));
         sR.rect(drawX, drawY, width, height);
         Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
         Gdx.gl.glScissor(GuiUtils.unscaleScreenCoordX(drawX), GuiUtils.unscaleScreenCoordY(drawY), GuiUtils.unscaleScreenCoordX(width), GuiUtils.unscaleScreenCoordY(height));

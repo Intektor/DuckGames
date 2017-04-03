@@ -3,14 +3,14 @@ package de.intektor.duckgames.common.net.client_to_server;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.util.EnumDirection;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * @author Intektor
@@ -43,7 +43,7 @@ public class PlayerMovementPacketToServer implements IPacket {
     public static class Handler implements IPacketHandler<PlayerMovementPacketToServer> {
 
         @Override
-        public void handlePacket(final PlayerMovementPacketToServer packet, final Socket socketFrom) {
+        public void handlePacket(final PlayerMovementPacketToServer packet, final AbstractSocket socketFrom) {
             final DuckGamesServer.MainServerThread mainThread = CommonCode.getDuckGamesServer().getMainServerThread();
             mainThread.addScheduledTask(new Runnable() {
                 @Override

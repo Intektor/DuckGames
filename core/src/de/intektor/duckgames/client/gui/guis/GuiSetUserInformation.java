@@ -9,7 +9,7 @@ import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
 import de.intektor.duckgames.client.gui.components.GuiTextField;
 import de.intektor.duckgames.util.charlist.CharList;
-import de.intektor.tag.TagCompound;
+import de.intektor.duckgames.tag.TagCompound;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -28,7 +28,7 @@ public class GuiSetUserInformation extends Gui {
     public void enterGui() {
         super.enterGui();
         usernameField = new GuiTextField(width / 2 - 300, (int) (height / 2 - font.getLineHeight() / 2), 600, (int) font.getLineHeight(), "Enter your username here!", CharList.combine(CharList.LETTERS_AND_DIGITS, CharList.UNDERSCORE));
-        buttonSetUsername = new GuiTextBasedButton(width / 2 + 300, (int) (height / 2 - font.getLineHeight() / 2), 150, (int) font.getLineHeight(), "Set Username!");
+        buttonSetUsername = new GuiTextBasedButton(width / 2 + 300, (int) (height / 2 - font.getLineHeight() / 2), 150, (int) font.getLineHeight(), "Set Username!", true);
 
         registerComponent(usernameField);
         registerComponent(buttonSetUsername);

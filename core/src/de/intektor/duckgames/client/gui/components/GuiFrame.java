@@ -42,9 +42,14 @@ public abstract class GuiFrame extends GuiMultiComponent {
         sR.end();
         drawBody(drawX, drawY, camera, sR, sB, partialTicks, mouseX, mouseY);
         super.renderComponent(drawX, drawY, mouseX, mouseY, camera, sR, sB, partialTicks);
+        postDrawBody(drawX, drawY, camera, sR, sB, partialTicks, mouseX, mouseY);
     }
 
     protected abstract void drawBody(float drawX, float drawY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks, int mouseX, int mouseY);
+
+    protected void postDrawBody(float drawX, float drawY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks, int mouseX, int mouseY) {
+
+    }
 
     public void setHeadline(String headline) {
         this.headline = headline;

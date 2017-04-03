@@ -1,13 +1,13 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
+import de.intektor.duckgames.common.net.AbstractSocket;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * @author Intektor
@@ -27,7 +27,7 @@ public class FinishedWorldTransmissionPacketToClient implements IPacket {
     public static class Handler implements IPacketHandler<FinishedWorldTransmissionPacketToClient> {
 
         @Override
-        public void handlePacket(FinishedWorldTransmissionPacketToClient packet, Socket socketFrom) {
+        public void handlePacket(FinishedWorldTransmissionPacketToClient packet, AbstractSocket socketFrom) {
             CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }

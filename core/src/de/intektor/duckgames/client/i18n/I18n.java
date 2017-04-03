@@ -1,9 +1,5 @@
 package de.intektor.duckgames.client.i18n;
 
-import com.badlogic.gdx.Gdx;
-
-import java.io.IOException;
-
 /**
  * @author Intektor
  */
@@ -12,16 +8,17 @@ public abstract class I18n {
     private static FallbackI18n currentTranslation;
 
     static {
-        try {
-            FileBasedI18n us = new FileBasedI18n(Gdx.files.internal("assets/lang/en_US.lang"));
-            currentTranslation = new FallbackI18n(us, us);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            FileBasedI18n us = new FileBasedI18n(Gdx.files.internal("lang/us.lang"));
+//            currentTranslation = new FallbackI18n(us, us);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     public static String translate(String s) {
-        return currentTranslation.translate0(s);
+        return s;
+//        return currentTranslation.translate0(s);
     }
 
     public static String translate(String s, Object... args) {

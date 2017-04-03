@@ -27,7 +27,7 @@ public abstract class Entity {
     public float prevPosX, prevPosY;
     public float motionX, motionY;
 
-    public float motionMultiplier = 0.2f;
+    public float motionMultiplier = 0.6f;
 
     public UUID uuid;
 
@@ -72,6 +72,7 @@ public abstract class Entity {
         ticksAlive++;
         if (posY < -64) kill();
         if (posX < -64 || posX > world.getWidth() + 64) kill();
+        if (health <= 0) kill();
     }
 
     private void move() {
@@ -153,7 +154,7 @@ public abstract class Entity {
     public abstract float getEyeHeight();
 
     public float getGravitationalVelocity() {
-        return 0.07f;
+        return 0.1f;
     }
 
     public void adjustCollision() {
@@ -236,6 +237,7 @@ public abstract class Entity {
 
     public void kill() {
         isDead = true;
+        world.entityKilled(this);
         if (!world.isRemote) {
             WorldServer serverWorld = (WorldServer) world;
             serverWorld.getServer().broadcast(new RemoveEntityPacketToClient(uuid));

@@ -14,22 +14,25 @@ import com.badlogic.gdx.math.Vector3;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.block.Blocks;
-import de.intektor.duckgames.client.editor.components.SaveWorldGuiComponent;
-import de.intektor.duckgames.client.gui.Gui;
-import de.intektor.duckgames.client.gui.components.GuiButton;
-import de.intektor.duckgames.client.gui.components.GuiScrollTool;
-import de.intektor.duckgames.client.gui.util.GuiUtils;
-import de.intektor.duckgames.client.gui.util.MousePos;
-import de.intektor.duckgames.client.rendering.RenderUtils;
-import de.intektor.duckgames.collision.Collision2D;
-import de.intektor.duckgames.common.DuckGamesServer;
-import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.client.editor.EntitySpawn;
 import de.intektor.duckgames.client.editor.EntitySpawn.EntitySpawnType;
 import de.intektor.duckgames.client.editor.EntitySpawnCreationRegistry;
 import de.intektor.duckgames.client.editor.components.ItemSpawnEditorGuiComponent;
+import de.intektor.duckgames.client.editor.components.SaveWorldGuiComponent;
+import de.intektor.duckgames.client.gui.Gui;
+import de.intektor.duckgames.client.gui.components.GuiButton;
+import de.intektor.duckgames.client.gui.components.GuiImageBasedButton;
+import de.intektor.duckgames.client.gui.components.GuiScrollTool;
+import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
+import de.intektor.duckgames.client.gui.util.GuiUtils;
+import de.intektor.duckgames.client.gui.util.MousePos;
+import de.intektor.duckgames.client.rendering.RenderUtils;
+import de.intektor.duckgames.collision.Collision2D;
+import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.HostingInfo;
+import de.intektor.duckgames.common.HostingType;
 import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
 import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 import de.intektor.duckgames.game.worlds.spawns.renderer.EntitySpawnRendererRegistry;
@@ -59,6 +62,13 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
     private SaveWorldGuiComponent saveWorldGuiComponent;
 
+    private GuiImageBasedButton buttonMenu;
+
+    private GuiTextBasedButton menuButtonContinue;
+    private GuiTextBasedButton menuButtonSaveWorld;
+    private GuiTextBasedButton menuButtonTestWorld;
+    private GuiTextBasedButton menuButtonExitLevelEditor;
+
     private Block currentSelectedBlock;
     private EntitySpawnToolEntry currentSelectedSpawnType;
 
@@ -80,12 +90,15 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
     private boolean showGrid = true;
 
+    private boolean menuShown;
+
     private static EntitySpawnCreationRegistry entitySpawnCreationRegistry;
     private static EntitySpawnRendererRegistry entitySpawnRendererRegistry;
 
-    private static Texture trashCanTexture = new Texture("assets/level_editor/trash_can.png");
-    private static Texture cursorTexture = new Texture("assets/level_editor/cursor.png");
-    private static Texture grabTexture = new Texture("assets/level_editor/grab.png");
+    private static final Texture trashCanTexture = new Texture("trash_can.png");
+    private static final Texture cursorTexture = new Texture("cursor.png");
+    private static final Texture grabTexture = new Texture("grab.png");
+    public static final Texture menuButtonTexture = new Texture(Gdx.files.internal("menu_button.png"));
 
     static {
         entitySpawnCreationRegistry = new EntitySpawnCreationRegistry();
@@ -119,6 +132,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         }
 
         registerComponent(blockBuildTool);
+
         blockBuildTool.setShown(false);
         blockBuildTool.setEnabled(false);
 
@@ -126,7 +140,9 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         currentSelectedSpawnType = new EntitySpawnToolEntry(EntitySpawnType.PLAYER_SPAWN);
         entitySpawnTool.addEntry(currentSelectedSpawnType);
         entitySpawnTool.addEntry(new EntitySpawnToolEntry(EntitySpawnType.ITEM_SPAWN));
+
         registerComponent(entitySpawnTool);
+
         entitySpawnTool.setShown(false);
         entitySpawnTool.setEnabled(false);
 
@@ -136,7 +152,23 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
         saveWorldGuiComponent = new SaveWorldGuiComponent(dg.getPreferredScreenWidth() / 2 - 250, dg.getPreferredScreenHeight() / 2 - 300, 500, 600, this);
         saveWorldGuiComponent.setShown(false);
+
         registerComponent(saveWorldGuiComponent);
+
+        buttonMenu = new GuiImageBasedButton(20, height - 90, 80, 60, menuButtonTexture);
+        int buttonHeight = 100;
+        menuButtonContinue = new GuiTextBasedButton(width / 2 - width / 6, (int) (height / 2 + buttonHeight * 1.5f), width / 3, buttonHeight, "Continue!", true);
+        menuButtonTestWorld = new GuiTextBasedButton(width / 2 - width / 6, height / 2 + buttonHeight / 2, width / 3, buttonHeight, "Test World!", true);
+        menuButtonSaveWorld = new GuiTextBasedButton(width / 2 - width / 6, height / 2 - buttonHeight / 2, width / 3, buttonHeight, "Save World!", true);
+        menuButtonExitLevelEditor = new GuiTextBasedButton(width / 2 - width / 6, (int) (height / 2 - buttonHeight * 1.5f), width / 3, buttonHeight, "Exit!", true);
+
+        registerComponent(buttonMenu);
+        registerComponent(menuButtonContinue);
+        registerComponent(menuButtonTestWorld);
+        registerComponent(menuButtonSaveWorld);
+        registerComponent(menuButtonExitLevelEditor);
+
+        showMenu(false);
     }
 
     @Override
@@ -220,7 +252,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
         shapeRenderer.begin();
         shapeRenderer.set(ShapeType.Filled);
-        shapeRenderer.setColor(new Color(0x44E3FF));
+        shapeRenderer.setColor(new Color(0.2f, 0.2f, 0.2f, 1f));
 
         shapeRenderer.rect(0, 0, width, 200);
 
@@ -300,6 +332,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             RenderUtils.drawString("Connecting to Server", dg.defaultFont20, width / 2, height / 2, spriteBatch, Color.WHITE, true);
             spriteBatch.end();
         }
+
     }
 
     @Override
@@ -326,13 +359,13 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             if (DuckGamesClient.getDuckGames().getDedicatedServer().isServerReadyForConnections()) {
                 waitingForTestServer = false;
                 waitingForClientConnection = true;
-                dg.connectToServer(new InetSocketAddress("localhost", 19473));
+                dg.connectToServer(new InetSocketAddress("localhost", CommonCode.getDuckGamesServer().getPort()), HostingType.LAN);
             }
         }
         if (waitingForClientConnection) {
             if (dg.getClientConnection().isIdentificationSuccessful()) {
                 waitingForClientConnection = false;
-                dg.getDedicatedServer().getMainServerThread().launchGame(map);
+                dg.getDedicatedServer().getMainServerThread().launchGame(map, DuckGamesServer.GameMode.TEST_WORLD);
             }
         }
         super.updateGui(mouseX, mouseY);
@@ -340,7 +373,20 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
     @Override
     public void buttonCallback(GuiButton button) {
-
+        if (button == buttonMenu) {
+            showMenu(!menuShown);
+        } else if (button == menuButtonContinue) {
+            showMenu(false);
+        } else if (button == menuButtonTestWorld) {
+            showMenu(false);
+            testMap();
+        } else if (button == menuButtonSaveWorld) {
+            showMenu(false);
+            saveWorldGuiComponent.setShown(true);
+        } else if (button == menuButtonExitLevelEditor) {
+            showMenu(false);
+            dg.showGui(new GuiMainMenu());
+        }
     }
 
     @Override
@@ -348,13 +394,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
         if (saveWorldGuiComponent.isShown()) return;
         switch (keyCode) {
             case T:
-                if (map.canBeConvertedToWorld()) {
-                    DuckGamesServer server = new DuckGamesServer();
-                    server.startServer(DuckGamesServer.ServerState.CONNECT_STATE, new HostingInfo(DuckGamesServer.HostingType.LAN, 0));
-                    dg.setDedicatedServer(server);
-                    allowInput = false;
-                    waitingForTestServer = true;
-                }
+                testMap();
                 break;
             case G:
                 showGrid = !showGrid;
@@ -479,7 +519,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     }
 
     private void changeBlock(Block block) {
-        if (input.isKeyPressed(SPACE) || blockBuildTool.isShown() || entitySpawnTool.isShown() || hoversComponent(input.getX(), input.getY()))
+        if (input.isKeyPressed(SPACE) || blockBuildTool.isShown() || entitySpawnTool.isShown() || hoversComponent(input.getX(), input.getY()) || menuShown)
             return;
         MousePos mousePos = GuiUtils.unprojectMousePosition(editorCamera);
         if (map.collisionCollidesWithEntitySpawns(new Collision2D((int) mousePos.x, (int) mousePos.y, 1, 1))) return;
@@ -490,7 +530,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     }
 
     private void spawnEntitySpawn() {
-        if (blockBuildTool.isShown() || entitySpawnTool.isShown()) return;
+        if (blockBuildTool.isShown() || entitySpawnTool.isShown() || menuShown) return;
         MousePos mP = GuiUtils.unprojectMousePosition(editorCamera);
         EntitySpawn spawn = entitySpawnCreationRegistry.createSpawn(currentSelectedSpawnType.type, mP.x, mP.y);
         if (!map.canPlaceEntitySpawnAtPosition(spawn)) return;
@@ -514,6 +554,24 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
                 renderer.line(x + 0.1f, y, x + 0.4f, y);
                 renderer.line(x + 0.6f, y, x + 0.9f, y);
             }
+        }
+    }
+
+    private void showMenu(boolean show) {
+        menuShown = show;
+        menuButtonContinue.setShown(show);
+        menuButtonSaveWorld.setShown(show);
+        menuButtonTestWorld.setShown(show);
+        menuButtonExitLevelEditor.setShown(show);
+    }
+
+    private void testMap() {
+        if (map.canBeConvertedToWorld()) {
+            DuckGamesServer server = new DuckGamesServer();
+            server.startServer(DuckGamesServer.ServerState.CONNECT_STATE, new HostingInfo(HostingType.LAN, 0));
+            dg.setDedicatedServer(server);
+            allowInput = false;
+            waitingForTestServer = true;
         }
     }
 

@@ -16,7 +16,7 @@ import de.intektor.duckgames.files.Serializable;
 import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
 import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 import de.intektor.duckgames.world.WorldServer;
-import de.intektor.tag.TagCompound;
+import de.intektor.duckgames.tag.TagCompound;
 
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;

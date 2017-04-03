@@ -36,8 +36,8 @@ public class ItemSword extends Item {
     }
 
     @Override
-    public void onAttackingWithItem(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
-        super.onAttackingWithItem(stack, player, world, posX, posY);
+    public void onAttackingWithItem(ItemStack stack, EntityPlayer player, World world, float aimAngle) {
+        super.onAttackingWithItem(stack, player, world, aimAngle);
     }
 
     @Override

@@ -25,6 +25,9 @@ public class GameScore {
         }
     }
 
+    public GameScore() {
+    }
+
     public void writeToStream(DataOutputStream out) throws IOException {
         out.writeInt(scoreMap.size());
         for (PlayerScore playerScore : scoreMap.values()) {

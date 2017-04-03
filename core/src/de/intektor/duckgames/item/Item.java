@@ -59,7 +59,7 @@ public abstract class Item {
     /**
      * Called while a player is attacking with this item
      */
-    public void onAttackingWithItem(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
+    public void onAttackingWithItem(ItemStack stack, EntityPlayer player, World world, float aimAngle) {
 
     }
 

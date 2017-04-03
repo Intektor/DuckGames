@@ -150,7 +150,7 @@ public class ItemSpawnEditorGuiComponent extends GuiFrame implements GuiScrollTo
 
     private void guiHandleNewSpawn(ItemSpawn spawn) {
         scrollBar.addAllWindowSize(entrySize);
-        GuiTextBasedButton button = new GuiTextBasedButton(0, 0, entrySize, entrySize, "-");
+        GuiTextBasedButton button = new GuiTextBasedButton(0, 0, entrySize, entrySize, "-", true);
         removeButtonMap.put(spawn, button);
         registerGuiComponent(button);
     }
@@ -219,7 +219,7 @@ public class ItemSpawnEditorGuiComponent extends GuiFrame implements GuiScrollTo
     private class AddGuiTextBasedButton extends GuiTextBasedButton {
 
         public AddGuiTextBasedButton() {
-            super(0, 0, 50, ItemSpawnEditorGuiComponent.this.entrySize, "+");
+            super(0, 0, 50, ItemSpawnEditorGuiComponent.this.entrySize, "+", true);
         }
 
         @Override

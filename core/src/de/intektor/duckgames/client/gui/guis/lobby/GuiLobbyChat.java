@@ -42,7 +42,7 @@ public class GuiLobbyChat extends GuiMultiComponent {
         messageScrollBar = new GuiScrollBar(width - 20, 0, 20, height, GuiScrollBar.Direction.VERTICAL, 0, (int) (height - font.getLineHeight()));
         registerGuiComponent(messageScrollBar);
 
-        sendMessageButton = new GuiTextBasedButton(width - 100, 0, 100, (int) font.getLineHeight(), "Send!");
+        sendMessageButton = new GuiTextBasedButton(width - 100, 0, 100, (int) font.getLineHeight(), "Send!", true);
         registerGuiComponent(sendMessageButton);
 
         chatWritingField = new GuiTextField(0, 0, width - 100, (int) font.getLineHeight(), "Type message here!", CharList.combine(CharList.LETTERS_AND_DIGITS, CharList.PUNCTUATION_MARKS, CharList.SPACE));
@@ -52,7 +52,7 @@ public class GuiLobbyChat extends GuiMultiComponent {
     @Override
     protected void renderComponent(float drawX, float drawY, int mouseX, int mouseY, OrthographicCamera camera, ShapeRenderer sR, SpriteBatch sB, float partialTicks) {
         sR.begin(Filled);
-        sR.setColor(Color.BLUE);
+        sR.setColor(new Color(0.1f, 0.1f, 0.1f, 1f));
         sR.rect(drawX, drawY, width, height);
         sR.end();
         sB.begin();
@@ -65,8 +65,8 @@ public class GuiLobbyChat extends GuiMultiComponent {
         }
         for (int i = messages.size() - 1; i >= 0; i--) {
             ChatMessage message = messages.get(i);
-            String text = String.format("%s: %s", message.getPlayerProfile().username, message.getMessage());
-            RenderUtils.drawString(text, font, drawX, y, sB, Color.WHITE);
+            String text = message.getMessage();
+            RenderUtils.drawString(text, font, drawX, y, sB, message.getMessageColor());
             y += font.getLineHeight();
         }
         sB.end();

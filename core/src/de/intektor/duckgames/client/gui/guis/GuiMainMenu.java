@@ -1,11 +1,14 @@
 package de.intektor.duckgames.client.gui.guis;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
+import de.intektor.duckgames.client.gui.guis.connect_to_lobby.GuiConnectToLobby;
 import de.intektor.duckgames.client.gui.guis.lobby.GuiCreateLobby;
+import de.intektor.duckgames.client.rendering.RenderUtils;
 
 /**
  * @author Intektor
@@ -20,12 +23,12 @@ public class GuiMainMenu extends Gui {
     public void enterGui() {
         super.enterGui();
         int x = width / 2 - 600;
-        int y = (int) ((height / 2) + 200 * 1.5f);
-        joinLobbyButton = new GuiTextBasedButton(x, y, 1200, 200, "Join Lobby");
+        int y = height / 2;
+        joinLobbyButton = new GuiTextBasedButton(x, y, 1200, 200, "Join Lobby", true);
         y -= 200;
-        createLobbyButton = new GuiTextBasedButton(x, y, 1200, 200, "Create Lobby");
+        createLobbyButton = new GuiTextBasedButton(x, y, 1200, 200, "Create Lobby", true);
         y -= 200;
-        levelEditorButton = new GuiTextBasedButton(x, y, 1200, 200, "Enter Level Editor");
+        levelEditorButton = new GuiTextBasedButton(x, y, 1200, 200, "Enter Level Editor", true);
 
         registerComponent(joinLobbyButton);
         registerComponent(createLobbyButton);
@@ -35,6 +38,9 @@ public class GuiMainMenu extends Gui {
     @Override
     protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
         super.renderGui(mouseX, mouseY, camera, partialTicks);
+        spriteBatch.begin();
+        RenderUtils.drawString("Awesome Game!", dg.defaultFont72, width / 2, height / 2 + height / 3, spriteBatch, Color.WHITE, true, true);
+        spriteBatch.end();
     }
 
     @Override

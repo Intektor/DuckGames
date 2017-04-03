@@ -8,11 +8,14 @@ import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
+import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
+import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.HostingInfo;
 import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.net.client_to_server.DisconnectPacketToServer;
 import de.intektor.duckgames.game.GameProfile;
 
 import java.net.InetSocketAddress;
@@ -46,13 +49,18 @@ public class GuiLobby extends Gui {
         super.enterGui();
         chatComponent = new GuiLobbyChat(width / 2 - 600, height / 2 - 400, 1200, 800);
         registerComponent(chatComponent);
+
+        leaveLobbyButton = new GuiTextBasedButton(0, 0, 200, 80, "Leave Lobby!", true);
+        registerComponent(leaveLobbyButton);
+
         if (isHost) {
             selectWorldToPlayGuiComponent = new SelectWorldToPlayGuiComponent(0, 0, 500, 600, this);
             selectWorldToPlayGuiComponent.setShown(false);
 
-            selectWorldButton = new GuiTextBasedButton(width - 100, (int) (height - font.getLineHeight()), 100, (int) font.getLineHeight(), "Select World");
+            selectWorldButton = new GuiTextBasedButton(width - 200, height - 80, 200, 80, "Select World", true);
 
-            startGameButton = new GuiTextBasedButton(width - 200, 0, 200, (int) font.getLineHeight(), "Start Game!");
+            startGameButton = new GuiTextBasedButton(width - 200, 0, 200, 80, "Start Game!", true);
+
 
             registerComponent(selectWorldToPlayGuiComponent);
             registerComponent(selectWorldButton);
@@ -114,7 +122,7 @@ public class GuiLobby extends Gui {
         if (isHost) {
             DuckGamesServer server = dg.getDedicatedServer();
             if (server.isServerReadyForConnections() && dg.getClientConnection() == null) {
-                dg.connectToServer(new InetSocketAddress("localhost", 19473));
+                dg.connectToServer(new InetSocketAddress("localhost", server.getPort()), hostingInfo.hostingType);
             }
         }
     }
@@ -143,11 +151,22 @@ public class GuiLobby extends Gui {
     public void buttonCallback(GuiButton button) {
         if (button == selectWorldButton) {
             selectWorldToPlayGuiComponent.setShown(true);
+            selectWorldToPlayGuiComponent.setPosition(width / 2 - selectWorldToPlayGuiComponent.getWidth() / 2, height / 2 - selectWorldToPlayGuiComponent.getHeight() / 2);
         } else if (button == startGameButton) {
             if (getSelectedMap() != null) {
                 DuckGamesServer dedicatedServer = dg.getDedicatedServer();
-                dedicatedServer.getMainServerThread().launchGame(getSelectedMap());
+                dedicatedServer.getMainServerThread().launchGame(getSelectedMap(), DuckGamesServer.GameMode.COMPETITIVE_SOLO);
             }
+        } else if (button == leaveLobbyButton) {
+            DuckGamesServer server = CommonCode.getDuckGamesServer();
+            if (server == null) {
+                dg.sendPacketToServer(new DisconnectPacketToServer());
+                dg.disconnect();
+            } else {
+                dg.disconnect();
+                dg.setDedicatedServer(null);
+            }
+            dg.showGui(new GuiMainMenu());
         }
     }
 

@@ -1,5 +1,7 @@
 package de.intektor.duckgames.client.gui.components;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -76,9 +78,15 @@ public class GuiTextField extends GuiComponent {
     }
 
     @Override
+    protected void updateComponent(int mouseX, int mouseY, float drawX, float drawY) {
+        super.updateComponent(mouseX, mouseY, drawX, drawY);
+    }
+
+    @Override
     public void clickDown(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
         super.clickDown(mouseX, mouseY, pointer, button, drawX, drawY);
         isActive = GuiUtils.isPointInRegion(x, y, width, height, mouseX, mouseY);
+        Gdx.input.setOnscreenKeyboardVisible(isActive);
         if (isActive) {
             cursorPosition = FontUtils.getCharPosition(currentlyWritten, font, mouseX);
         }
@@ -87,6 +95,14 @@ public class GuiTextField extends GuiComponent {
     @Override
     public void clickUp(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
         super.clickUp(mouseX, mouseY, pointer, button, drawX, drawY);
+    }
+
+    @Override
+    public void keyDown(int mouseX, int mouseY, int keyCode) {
+        super.keyDown(mouseX, mouseY, keyCode);
+        if (keyCode == Input.Keys.V && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+            currentlyWritten += Gdx.app.getClipboard().getContents();
+        }
     }
 
     @Override

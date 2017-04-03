@@ -18,7 +18,7 @@ public class DefaultTextureBlockRenderer implements IBlockRenderer {
     private Texture fullTexture;
 
     public DefaultTextureBlockRenderer(String fileName) {
-        fullTexture = new Texture("assets/" + fileName + ".png");
+        fullTexture = new Texture(fileName + ".png");
         fullTexture.getTextureData().prepare();
         Pixmap map = new Pixmap(fullTexture.getWidth() + 2, fullTexture.getHeight() + 2, Pixmap.Format.RGBA8888);
         map.setColor(new Color(0x000000));

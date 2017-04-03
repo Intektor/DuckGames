@@ -3,17 +3,17 @@ package de.intektor.duckgames.common.net.client_to_server;
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.Status;
+import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.server_to_client.PlayerAttackWithItemPacketToClient;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.ItemStack;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * @author Intektor
@@ -50,7 +50,7 @@ public class PlayerAttackWithItemPacketToServer implements IPacket {
     public static class Handler implements IPacketHandler<PlayerAttackWithItemPacketToServer> {
 
         @Override
-        public void handlePacket(final PlayerAttackWithItemPacketToServer packet, final Socket socketFrom) {
+        public void handlePacket(final PlayerAttackWithItemPacketToServer packet, final AbstractSocket socketFrom) {
             final DuckGamesServer server = CommonCode.getDuckGamesServer();
             final DuckGamesServer.MainServerThread mainServerThread = server.getMainServerThread();
             mainServerThread.addScheduledTask(new Runnable() {
@@ -59,7 +59,7 @@ public class PlayerAttackWithItemPacketToServer implements IPacket {
                     EntityPlayer player = mainServerThread.getProfileMap().get(socketFrom).gameProfile.player;
                     ItemStack mainHand = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);
                     if (mainHand != null) {
-                        player.setAttacking(packet.status, packet.ingameClickX, packet.ingameClickY);
+                        player.setAttacking(packet.status, packet.ingameClickX);
                         switch (packet.status) {
                             case START:
                                 mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);

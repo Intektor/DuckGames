@@ -20,19 +20,20 @@ import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
 import de.intektor.duckgames.client.gui.guis.GuiSetUserInformation;
 import de.intektor.duckgames.client.net.DuckGamesClientConnection;
-import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
 import de.intektor.duckgames.client.rendering.entity.EntityRendererRegistry;
 import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
 import de.intektor.duckgames.client.rendering.utils.FutureTextureRegistry;
-import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.common.Networking;
+import de.intektor.duckgames.common.net.IPacket;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Items;
+import de.intektor.duckgames.tag.TagCompound;
 import de.intektor.duckgames.world.WorldClient;
-import de.intektor.network.IPacket;
-import de.intektor.tag.TagCompound;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -83,11 +84,16 @@ public class DuckGamesClient extends ApplicationAdapter {
     public volatile WorldClient theWorld;
     public volatile EntityPlayer thePlayer;
 
+
     private float partialTicks;
+
+    public DuckGamesClient(Networking networking) {
+        dg = this;
+        CommonCode.networking = networking;
+    }
 
     @Override
     public void create() {
-        dg = this;
         camera = new OrthographicCamera(preferredScreenWidth, preferredScreenHeight);
         viewport = new FillViewport(preferredScreenWidth, preferredScreenHeight, camera);
         viewport.apply(false);
@@ -104,7 +110,7 @@ public class DuckGamesClient extends ApplicationAdapter {
         blockRendererRegistry = new BlockRendererRegistry();
         itemRendererRegistry = new ItemRendererRegistry();
 
-        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("assets/font.ttf"));
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
         parameter.size = 12;
         defaultFont12 = gen.generateFont(parameter);
@@ -123,7 +129,7 @@ public class DuckGamesClient extends ApplicationAdapter {
         Blocks.initClient();
         Items.initClient();
 
-        outlineShaderProgram = new ShaderProgram(Gdx.files.internal("assets/shader/outline_shader_vertex.glsl"), Gdx.files.internal("assets/shader/outline_shader_fragment.glsl"));
+        outlineShaderProgram = new ShaderProgram(Gdx.files.internal("shader/outline_shader_vertex.glsl"), Gdx.files.internal("shader/outline_shader_fragment.glsl"));
 
         entityRendererRegistry = new EntityRendererRegistry();
         entityRendererRegistry.initDefaultEntities();
@@ -150,7 +156,7 @@ public class DuckGamesClient extends ApplicationAdapter {
     public void render() {
         super.render();
         camera.update();
-        if (System.nanoTime() - lastTickTime >= 15625000D) {
+        if (System.nanoTime() - lastTickTime >= 50000000D) {
             lastTickTime = System.nanoTime();
             updateGame();
         }
@@ -158,7 +164,7 @@ public class DuckGamesClient extends ApplicationAdapter {
     }
 
     /**
-     * The updateWorld method of the game: Called 64 times per second
+     * The updateWorld method of the game: Called 20 times per second
      */
     private void updateGame() {
         Runnable r;
@@ -166,7 +172,6 @@ public class DuckGamesClient extends ApplicationAdapter {
             r.run();
         }
         if (currentGui != null) currentGui.update(Gdx.input.getX(), Gdx.input.getY());
-        FontUtils.splitString("ienieinnievv", defaultFont28, 5);
     }
 
     /**
@@ -179,7 +184,7 @@ public class DuckGamesClient extends ApplicationAdapter {
         camera.update();
         defaultShapeRenderer.setProjectionMatrix(camera.combined);
         defaultSpriteBatch.setProjectionMatrix(camera.combined);
-        partialTicks = (System.nanoTime() - lastTickTime) / (15625000f);
+        partialTicks = (System.nanoTime() - lastTickTime) / (50000000f);
         SpriteBatch spriteBatch = new SpriteBatch();
         spriteBatch.begin();
         RenderUtils.drawString("fps: " + Gdx.graphics.getFramesPerSecond(), defaultFont12, 0, Gdx.graphics.getHeight(), spriteBatch, Color.WHITE);
@@ -249,18 +254,18 @@ public class DuckGamesClient extends ApplicationAdapter {
         return clientConnection;
     }
 
-    public void connectToServer(InetSocketAddress address) {
-        connectToServer(address.getHostName(), address.getPort());
+    public void connectToServer(InetSocketAddress address, HostingType hostingType) {
+        connectToServer(address.getHostName(), address.getPort(), hostingType);
     }
 
-    public void connectToServer(String ip, int port) {
+    public void connectToServer(String ip, int port, HostingType hostingType) {
         try {
             if (this.clientConnection != null) this.clientConnection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         this.clientConnection = new DuckGamesClientConnection();
-        this.clientConnection.connect(ip, port);
+        this.clientConnection.connect(ip, port, hostingType);
     }
 
     public void sendPacketToServer(IPacket packet) {
@@ -270,6 +275,7 @@ public class DuckGamesClient extends ApplicationAdapter {
     public void disconnect() {
         try {
             if (this.clientConnection != null) this.clientConnection.close();
+            this.clientConnection = null;
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,26 +1,22 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.net.NetworkUtils;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
-
+import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.net.AbstractSocket;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-import java.util.UUID;
 
 /**
  * @author Intektor
  */
 public class ChatMessagePacketToClient implements IPacket {
 
-    public UUID profileUUID;
-    public String message;
+    public ChatMessage message;
 
-    public ChatMessagePacketToClient(UUID profileUUID, String message) {
-        this.profileUUID = profileUUID;
+    public ChatMessagePacketToClient(ChatMessage message) {
         this.message = message;
     }
 
@@ -29,20 +25,24 @@ public class ChatMessagePacketToClient implements IPacket {
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        NetworkUtils.writeUUID(out, profileUUID);
-        out.writeUTF(message);
+        out.writeInt(CommonCode.chatMessageRegistry.getIdentifier(message.getClass()));
+        message.writeToStream(out);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        profileUUID = NetworkUtils.readUUID(in);
-        message = in.readUTF();
+        try {
+            message = CommonCode.chatMessageRegistry.createMessage(in.readInt());
+            message.readFromStream(in);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static class Handler implements IPacketHandler<ChatMessagePacketToClient> {
 
         @Override
-        public void handlePacket(ChatMessagePacketToClient packet, Socket socket) {
+        public void handlePacket(ChatMessagePacketToClient packet, AbstractSocket socket) {
             CommonCode.proxy.handlePacket(packet, socket);
         }
     }

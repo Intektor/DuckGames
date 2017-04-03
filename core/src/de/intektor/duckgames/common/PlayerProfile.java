@@ -1,8 +1,7 @@
 package de.intektor.duckgames.common;
 
+import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.game.GameProfile;
-
-import java.net.Socket;
 
 /**
  * @author Intektor
@@ -10,9 +9,9 @@ import java.net.Socket;
 public class PlayerProfile {
 
     public GameProfile gameProfile;
-    public Socket socket;
+    public AbstractSocket socket;
 
-    public PlayerProfile(GameProfile profile, Socket socket) {
+    public PlayerProfile(GameProfile profile, AbstractSocket socket) {
         this.gameProfile = profile;
         this.socket = socket;
     }

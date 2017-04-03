@@ -1,25 +1,21 @@
 package de.intektor.duckgames.common.chat;
 
-import de.intektor.duckgames.game.GameProfile;
+import com.badlogic.gdx.graphics.Color;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * @author Intektor
  */
-public class ChatMessage {
+public interface ChatMessage {
 
-    private final GameProfile playerProfile;
-    private final String message;
+    Color getMessageColor();
 
-    public ChatMessage(GameProfile playerProfile, String message) {
-        this.playerProfile = playerProfile;
-        this.message = message;
-    }
+    String getMessage();
 
-    public GameProfile getPlayerProfile() {
-        return playerProfile;
-    }
+    void writeToStream(DataOutputStream out) throws IOException;
 
-    public String getMessage() {
-        return message;
-    }
+    void readFromStream(DataInputStream in) throws IOException;
 }

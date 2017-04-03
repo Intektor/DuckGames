@@ -2,7 +2,7 @@ package de.intektor.duckgames.util;
 
 import de.intektor.duckgames.item.DTagCompound;
 import de.intektor.duckgames.item.ItemStack;
-import de.intektor.tag.TagCompound;
+import de.intektor.duckgames.tag.TagCompound;
 
 /**
  * @author Intektor

@@ -12,6 +12,6 @@ public class DesktopLauncher {
         config.vSyncEnabled = false;
         config.foregroundFPS = 0;
         config.backgroundFPS = 0;
-        new LwjglApplication(new DuckGamesClient(), config);
+        new LwjglApplication(new DuckGamesClient(new DesktopNetworkingImpl()), config);
     }
 }

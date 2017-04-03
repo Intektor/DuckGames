@@ -43,6 +43,24 @@ public class WorldServer extends World {
     }
 
     @Override
+    public void entityKilled(Entity entity) {
+        super.entityKilled(entity);
+        if (entity instanceof EntityPlayer) {
+            int alive = 0;
+            EntityPlayer lastAlive = null;
+            for (EntityPlayer player : playerList) {
+                if (!player.isDead) {
+                    alive++;
+                    lastAlive = player;
+                }
+            }
+            if (alive == 1) {
+                server.getMainServerThread().endRound(this, (EntityPlayerMP) lastAlive);
+            }
+        }
+    }
+
+    @Override
     public void spawnEntityInWorld(Entity entity) {
         server.broadcast(new SpawnEntityPacketToClient(entity));
         super.spawnEntityInWorld(entity);

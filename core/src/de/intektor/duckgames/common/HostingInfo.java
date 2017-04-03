@@ -5,10 +5,10 @@ package de.intektor.duckgames.common;
  */
 public class HostingInfo {
 
-    public final DuckGamesServer.HostingType hostingType;
+    public final HostingType hostingType;
     public final int port;
 
-    public HostingInfo(DuckGamesServer.HostingType hostingType, int port) {
+    public HostingInfo(HostingType hostingType, int port) {
         this.hostingType = hostingType;
         this.port = port;
     }

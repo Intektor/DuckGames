@@ -1,14 +1,15 @@
 package de.intektor.duckgames.common;
 
+import com.badlogic.gdx.graphics.Color;
 import de.intektor.duckgames.client.editor.EditableGameMap;
+import de.intektor.duckgames.common.chat.ServerInfoMessage;
+import de.intektor.duckgames.common.entity.EntityPlayerMP;
+import de.intektor.duckgames.common.net.*;
 import de.intektor.duckgames.common.net.lan.ThreadLanServerPing;
 import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.game.GameProfile;
 import de.intektor.duckgames.game.GameScore;
 import de.intektor.duckgames.world.WorldServer;
-import de.intektor.network.IPacket;
-import de.intektor.network.PacketOnWrongSideException;
-import de.intektor.network.Side;
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceImpl;
 import org.fourthline.cling.model.types.UnsignedIntegerFourBytes;
@@ -21,8 +22,6 @@ import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,13 +34,13 @@ import static de.intektor.duckgames.common.CommonCode.packetHelper;
  */
 public class DuckGamesServer implements Closeable {
 
-    private volatile ServerSocket serverSocket;
+    private volatile AbstractServerSocket serverSocket;
 
     private final int port;
 
     private volatile boolean serverRunning;
 
-    private volatile List<Socket> socketList = Collections.synchronizedList(new ArrayList<Socket>());
+    private volatile List<AbstractSocket> socketList = Collections.synchronizedList(new ArrayList<AbstractSocket>());
 
     private volatile ServerState serverState;
 
@@ -59,10 +58,10 @@ public class DuckGamesServer implements Closeable {
     }
 
     public DuckGamesServer() {
-        port = 19473;
+        port = HttpUtils.getSuitableLanPort();
     }
 
-    public void startServer(ServerState state, HostingInfo hostingInfo) {
+    public void startServer(ServerState state, final HostingInfo hostingInfo) {
         this.hostingInfo = hostingInfo;
         serverRunning = true;
         serverState = state;
@@ -70,10 +69,10 @@ public class DuckGamesServer implements Closeable {
             @Override
             public void run() {
                 try {
-                    serverSocket = new ServerSocket(port);
+                    serverSocket = CommonCode.networking.createServerSocket(hostingInfo.hostingType, port);
                     serverSocket.setSoTimeout(0);
                     while (serverRunning) {
-                        Socket clientSocket = serverSocket.accept();
+                        AbstractSocket clientSocket = serverSocket.accept();
                         registerConnection(clientSocket);
                     }
                 } catch (IOException e) {
@@ -81,25 +80,33 @@ public class DuckGamesServer implements Closeable {
                 }
             }
         }.start();
+
         mainServerThread = new MainServerThread(this);
         mainServerThread.start();
 
         shareToLan();
+
         if (hostingInfo.hostingType == HostingType.INTERNET) {
             shareToInternet(hostingInfo.port);
         }
     }
 
-    private void registerConnection(final Socket clientSocket) {
+    private void registerConnection(final AbstractSocket clientSocket) {
         socketList.add(clientSocket);
         new Thread("Server Socket Client Thread -> " + clientSocket.getInetAddress()) {
             @Override
             public void run() {
                 try {
+                    boolean socketRunning = true;
                     DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-                    while (serverRunning && !clientSocket.isClosed()) {
-                        IPacket packet = packetHelper.readPacket(in, Side.SERVER);
-                        CommonCode.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
+                    while (serverRunning && !clientSocket.isClosed() && socketRunning) {
+                        try {
+                            IPacket packet = packetHelper.readPacket(in, Side.SERVER);
+                            CommonCode.packetRegistry.getHandlerForPacketClass(packet.getClass()).newInstance().handlePacket(packet, clientSocket);
+                        } catch (SocketException e) {
+                            e.printStackTrace();
+                            socketRunning = false;
+                        }
                     }
                 } catch (PacketOnWrongSideException e) {
                     System.out.println("Client sent a server-to-client packet the server! Kicking client!");
@@ -112,7 +119,7 @@ public class DuckGamesServer implements Closeable {
         CommonCode.packetHelper.sendPacket(new RequestIdentificationPacketToClient(), clientSocket);
     }
 
-    public void kickClient(Socket socket) {
+    public void kickClient(AbstractSocket socket) {
         socketList.remove(socket);
         try {
             socket.close();
@@ -122,7 +129,7 @@ public class DuckGamesServer implements Closeable {
     }
 
     public void broadcast(IPacket packet) {
-        for (Socket socket : socketList) {
+        for (AbstractSocket socket : socketList) {
             packetHelper.sendPacket(packet, socket);
         }
     }
@@ -167,8 +174,12 @@ public class DuckGamesServer implements Closeable {
     @Override
     public void close() throws IOException {
         serverRunning = false;
-        serverSocket.close();
-        upnpService.shutdown();
+        if (upnpService != null) upnpService.shutdown();
+        try {
+            serverSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public enum ServerState {
@@ -177,9 +188,10 @@ public class DuckGamesServer implements Closeable {
         LOBBY_STATE
     }
 
-    public enum HostingType {
-        LAN,
-        INTERNET
+    public enum GameMode {
+        COMPETITIVE_SOLO,
+        TEST_WORLD,
+        NONE
     }
 
     public MainServerThread getMainServerThread() {
@@ -190,31 +202,34 @@ public class DuckGamesServer implements Closeable {
 
         private volatile Queue<Runnable> scheduledTasks = new LinkedBlockingQueue<Runnable>();
 
-        private Map<Socket, PlayerProfile> profileMap = new ConcurrentHashMap<Socket, PlayerProfile>();
-
-        MainServerThread(DuckGamesServer server) {
-            super("Main Server Thread");
-        }
+        private Map<AbstractSocket, PlayerProfile> profileMap = new ConcurrentHashMap<AbstractSocket, PlayerProfile>();
 
         private volatile long lastTimeTick;
 
         private GameScore currentGameScore;
 
+        private GameMode gameMode = GameMode.NONE;
+
         WorldServer world;
         EditableGameMap backup;
+
+        private long ticksAtRoundEnd;
+        private boolean startNextRound;
+
+        MainServerThread(DuckGamesServer server) {
+            super("Main Server Thread");
+        }
 
         @Override
         public void run() {
             while (serverRunning) {
-                if (System.currentTimeMillis() - lastTimeTick >= 15.625D) {
-                    lastTimeTick = System.currentTimeMillis();
+                if (System.nanoTime() - lastTimeTick >= 50000000D) {
+                    lastTimeTick = System.nanoTime();
                     Runnable task;
                     while ((task = scheduledTasks.poll()) != null) {
                         task.run();
                     }
-                    if (world != null) {
-                        world.updateWorld();
-                    }
+                    serverTick();
                 }
             }
         }
@@ -223,7 +238,17 @@ public class DuckGamesServer implements Closeable {
             scheduledTasks.offer(task);
         }
 
-        public void registrationMessageFromClient(Socket socket, String username) {
+        public void serverTick() {
+            if (world != null) {
+                world.updateWorld();
+                if (startNextRound && world.getWorldTime() - ticksAtRoundEnd >= 60) {
+                    startNextRound = false;
+                    startNextRound(backup);
+                }
+            }
+        }
+
+        public void registrationMessageFromClient(AbstractSocket socket, String username) {
             if (serverState == ServerState.CONNECT_STATE || serverState == ServerState.LOBBY_STATE) {
                 PlayerProfile profile = new PlayerProfile(new GameProfile(UUID.randomUUID(), username), socket);
                 profileMap.put(socket, profile);
@@ -235,33 +260,60 @@ public class DuckGamesServer implements Closeable {
                 for (PlayerProfile playerProfile : profileMap.values()) {
                     packetHelper.sendPacket(new PlayerProfilesPacketToClient(playerProfile.gameProfile), socket);
                 }
+                if (profileMap.size() == 1)
+                    broadcast(new ChatMessagePacketToClient(new ServerInfoMessage("This server is running on port: " + port, Color.CYAN)));
+                broadcast(new ChatMessagePacketToClient(new ServerInfoMessage(username + " joined the server.", Color.GREEN)));
             } else {
                 packetHelper.sendPacket(new KickClientFromServerPacketToClient("Can't join while game is running!"), socket);
                 socketList.remove(socket);
             }
         }
 
-        public Map<Socket, PlayerProfile> getProfileMap() {
+        public Map<AbstractSocket, PlayerProfile> getProfileMap() {
             return profileMap;
         }
 
-        public void launchGame(EditableGameMap map) {
+        public void launchGame(EditableGameMap map, GameMode gameMode) {
+            this.gameMode = gameMode;
             backup = map;
             serverState = ServerState.PLAY_STATE;
-            world = map.convertToWorld(DuckGamesServer.this);
-            broadcast(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
-            world.spawnPlayers();
-            world.spawnEntities();
             List<GameProfile> profileList = new ArrayList<GameProfile>();
             for (PlayerProfile playerProfile : profileMap.values()) {
                 profileList.add(playerProfile.gameProfile);
             }
             currentGameScore = new GameScore(profileList);
+
+            startNextRound(map);
+        }
+
+        void startNextRound(EditableGameMap map) {
+            world = map.convertToWorld(DuckGamesServer.this);
+            broadcast(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
+
+            world.spawnPlayers();
+            world.spawnEntities();
+
+            broadcast(new GameScorePacketToClient(currentGameScore));
             broadcast(new FinishedWorldTransmissionPacketToClient());
+        }
+
+        public void endRound(WorldServer world, EntityPlayerMP winner) {
+            if (gameMode != GameMode.TEST_WORLD && !startNextRound) {
+                GameScore.PlayerScore winnersScore = currentGameScore.getScoreForProfile(winner.getProfile().gameProfile);
+                winnersScore.setWonRounds(winnersScore.getWonRounds() + 1);
+                broadcast(new GameScorePacketToClient(currentGameScore));
+                broadcast(new RoundEndedPacketToClient(winner.getProfile().gameProfile));
+                ticksAtRoundEnd = world.getWorldTime();
+                startNextRound = true;
+            }
         }
 
         public EditableGameMap getBackup() {
             return backup;
+        }
+
+        public GameMode getGameMode() {
+            return gameMode;
         }
     }
 }

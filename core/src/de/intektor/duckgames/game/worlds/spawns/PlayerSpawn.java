@@ -2,7 +2,7 @@ package de.intektor.duckgames.game.worlds.spawns;
 
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.client.editor.EntitySpawn;
-import de.intektor.tag.TagCompound;
+import de.intektor.duckgames.tag.TagCompound;
 
 /**
  * @author Intektor

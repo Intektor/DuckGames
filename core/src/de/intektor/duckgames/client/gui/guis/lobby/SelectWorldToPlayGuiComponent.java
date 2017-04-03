@@ -12,7 +12,7 @@ import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiFrame;
 import de.intektor.duckgames.client.gui.components.GuiScrollBar;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
-import de.intektor.tag.TagCompound;
+import de.intektor.duckgames.tag.TagCompound;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -39,7 +39,7 @@ public class SelectWorldToPlayGuiComponent extends GuiFrame {
                 TagCompound tag = new TagCompound();
                 tag.readFromStream(new DataInputStream(new FileInputStream(fileHandle.file())));
                 EditableGameMap editableGameMap = EditableGameMap.readMapFromCompound(tag);
-                GuiTextBasedButton button = new GuiTextBasedButton(0, 0, width, (int) font.getLineHeight(), editableGameMap.getSaveName());
+                GuiTextBasedButton button = new GuiTextBasedButton(0, 0, width, 80, editableGameMap.getSaveName(), true);
                 buttonMap.put(button, editableGameMap);
                 registerGuiComponent(button);
             }
@@ -58,7 +58,7 @@ public class SelectWorldToPlayGuiComponent extends GuiFrame {
         sR.rect(drawX, drawY, width, height - topBarHeight);
         sR.end();
 
-        int y = (int) (height - topBarHeight - font.getLineHeight());
+        int y = height - topBarHeight - 80;
 
         for (GuiTextBasedButton button : buttonMap.keySet()) {
             button.setPosition(0, y);
@@ -69,7 +69,6 @@ public class SelectWorldToPlayGuiComponent extends GuiFrame {
     @Override
     public void buttonCallback(GuiButton button) {
         super.buttonCallback(button);
-        System.out.println("callback");
         if (button instanceof GuiTextBasedButton) {
             EditableGameMap editableGameMap = buttonMap.get(button);
             lobby.setSelectedMap(editableGameMap);

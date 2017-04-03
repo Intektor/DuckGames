@@ -110,6 +110,10 @@ public abstract class World {
         uuidToEntityMap.put(entity.uuid, entity);
     }
 
+    public void entityKilled(Entity entity) {
+
+    }
+
     public void removeEntity(Entity entity) {
         removeEntitiesNextUpdate.add(entity);
     }

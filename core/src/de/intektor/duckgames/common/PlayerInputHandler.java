@@ -15,5 +15,8 @@ public class PlayerInputHandler {
 
         player.motionX = (float) (Math.cos(movementAngle) * movementStrength);
         player.isJumping = shouldJump;
+
+        player.setAim(aimingAngle, aimingStrength);
+
     }
 }

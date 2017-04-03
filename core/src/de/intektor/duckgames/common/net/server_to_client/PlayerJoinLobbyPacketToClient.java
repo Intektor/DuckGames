@@ -1,14 +1,13 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
 import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.NetworkUtils;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
-
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.UUID;
 
 /**
@@ -38,7 +37,7 @@ public class PlayerJoinLobbyPacketToClient implements IPacket {
     public static class Handler implements IPacketHandler<PlayerJoinLobbyPacketToClient> {
 
         @Override
-        public void handlePacket(PlayerJoinLobbyPacketToClient packet, Socket socket) {
+        public void handlePacket(PlayerJoinLobbyPacketToClient packet, AbstractSocket socket) {
             CommonCode.proxy.handlePacket(packet, socket);
         }
     }

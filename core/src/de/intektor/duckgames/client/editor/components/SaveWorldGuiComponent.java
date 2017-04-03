@@ -32,7 +32,7 @@ public class SaveWorldGuiComponent extends GuiFrame {
     public SaveWorldGuiComponent(int x, int y, int width, int height, GuiLevelEditor levelEditor) {
         super(x, y, width, height, I18n.translate("level_editor.save_world.frame_name"));
         worldNameTextField = new GuiTextField(20, (int) (height - topBarHeight - font.getLineHeight() * 2), width - 40, (int) font.getLineHeight(), I18n.translate("level_editor.save_world.text_field_world_name_hint"), CharList.combine(CharList.LETTERS, CharList.SPACE));
-        saveWorldButton = new GuiTextBasedButton(20, 0, width - 40, (int) font.getLineHeight(), I18n.translate("level_editor.save_world.save_world_button_description"));
+        saveWorldButton = new GuiTextBasedButton(20, 0, width - 40, (int) font.getLineHeight(), I18n.translate("level_editor.save_world.save_world_button_description"), true);
         registerGuiComponent(worldNameTextField);
         registerGuiComponent(saveWorldButton);
         this.levelEditor = levelEditor;

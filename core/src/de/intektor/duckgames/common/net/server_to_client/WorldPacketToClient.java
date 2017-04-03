@@ -5,13 +5,13 @@ import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.common.GameRegistry;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
+import de.intektor.duckgames.common.net.AbstractSocket;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * @author Intektor
@@ -60,7 +60,7 @@ public class WorldPacketToClient implements IPacket {
     public static class Handler implements IPacketHandler<WorldPacketToClient> {
 
         @Override
-        public void handlePacket(final WorldPacketToClient packet, Socket socketFrom) {
+        public void handlePacket(final WorldPacketToClient packet, AbstractSocket socketFrom) {
             CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }

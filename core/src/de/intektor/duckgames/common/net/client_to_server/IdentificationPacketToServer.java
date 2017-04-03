@@ -2,13 +2,13 @@ package de.intektor.duckgames.common.net.client_to_server;
 
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
+import de.intektor.duckgames.common.net.AbstractSocket;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * @author Intektor
@@ -37,7 +37,7 @@ public class IdentificationPacketToServer implements IPacket {
     public static class Handler implements IPacketHandler<IdentificationPacketToServer> {
 
         @Override
-        public void handlePacket(final IdentificationPacketToServer packet, final Socket socketFrom) {
+        public void handlePacket(final IdentificationPacketToServer packet, final AbstractSocket socketFrom) {
             final DuckGamesServer.MainServerThread mainServerThread = CommonCode.getDuckGamesServer().getMainServerThread();
             mainServerThread.addScheduledTask(new Runnable() {
                 @Override

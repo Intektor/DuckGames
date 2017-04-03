@@ -8,7 +8,7 @@ import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.util.TagUtils;
 import de.intektor.duckgames.world.World;
-import de.intektor.tag.TagCompound;
+import de.intektor.duckgames.tag.TagCompound;
 
 import java.util.Random;
 
@@ -45,14 +45,14 @@ public abstract class ItemGun extends Item {
     @Override
     public void onAttackWithItemBegin(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
         super.onAttackWithItemBegin(stack, player, world, posX, posY);
-        prepareShoot(stack, player, world, posX, posY);
+        prepareShoot(stack, player, world, posX);
     }
 
     @Override
-    public void onAttackingWithItem(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
-        super.onAttackingWithItem(stack, player, world, posX, posY);
+    public void onAttackingWithItem(ItemStack stack, EntityPlayer player, World world, float aimAngle) {
+        super.onAttackingWithItem(stack, player, world, aimAngle);
         if (getFireMode(stack, player, world) == FireMode.AUTO) {
-            prepareShoot(stack, player, world, posX, posY);
+            prepareShoot(stack, player, world, aimAngle);
         }
     }
 
@@ -62,19 +62,16 @@ public abstract class ItemGun extends Item {
 
     }
 
-    protected void prepareShoot(ItemStack stack, EntityPlayer player, World world, float posX, float posY) {
+    protected void prepareShoot(ItemStack stack, EntityPlayer player, World world, float aimingAngle) {
         int remainingBullets = getRemainingBullets(stack, player, world);
         if (canShoot(stack, player, world) && remainingBullets > 0 && !world.isRemote) {
             setTimeAtLastShot(stack, player, world, world.getWorldTime());
 
-            player.setDirection(posX > player.posX + player.getWidth() / 2 ? EntityDirection.RIGHT : EntityDirection.LEFT);
+//            player.setDirection(aimingAngle > player.posX + player.getWidth() / 2 ? EntityDirection.RIGHT : EntityDirection.LEFT);
 
             setRemainingBullets(stack, player, world, remainingBullets - 1);
 
-            float dX = posX - (player.posX + (player.getWidth() / 2));
-            float dY = posY - (player.posY + player.getEyeHeight());
-
-            float angle = (float) (Math.atan2(dY, dX) + (player.getDirection() == EntityDirection.LEFT ? -1 : 1) * (player.recoilAngle / 180f * Math.PI));
+            float angle = (float) (aimingAngle + (player.getDirection() == EntityDirection.LEFT ? -1 : 1) * (player.recoilAngle / 180f * Math.PI));
 
             if (player.getDirection() == EntityDirection.RIGHT) {
                 angle = (float) Math.min(angle, Math.PI / 2);

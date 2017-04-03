@@ -2,18 +2,18 @@ package de.intektor.duckgames.common.net.client_to_server;
 
 import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.server_to_client.DropEquipmentItemStackPacketToClient;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.entities.EntityItem;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.ItemStack;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * @author Intektor
@@ -42,7 +42,7 @@ public class PlayerDropItemPacketToServer implements IPacket {
     public static class Handler implements IPacketHandler<PlayerDropItemPacketToServer> {
 
         @Override
-        public void handlePacket(final PlayerDropItemPacketToServer packet, final Socket socketFrom) {
+        public void handlePacket(final PlayerDropItemPacketToServer packet, final AbstractSocket socketFrom) {
             final DuckGamesServer server = CommonCode.getDuckGamesServer();
             final DuckGamesServer.MainServerThread mainThread = server.getMainServerThread();
             mainThread.addScheduledTask(new Runnable() {

@@ -20,7 +20,7 @@ public class ThreadFindLanServers extends Thread {
         super("Find Lan Servers Thread");
         this.broadcastAddress = InetAddress.getByName("225.0.2.60");
         this.socket = new MulticastSocket(4446);
-        this.socket.setSoTimeout(5000);
+        this.socket.setSoTimeout(0);
         this.socket.joinGroup(this.broadcastAddress);
     }
 

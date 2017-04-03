@@ -16,7 +16,7 @@ public class PlayerSpawnRenderer implements IEntitySpawnRenderer<PlayerSpawn> {
     private Texture texture;
 
     public PlayerSpawnRenderer() {
-        this.texture = new Texture("assets/duck.png");
+        this.texture = new Texture("duck.png");
     }
 
     @Override

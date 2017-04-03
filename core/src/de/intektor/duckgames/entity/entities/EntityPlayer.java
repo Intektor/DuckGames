@@ -27,11 +27,11 @@ public abstract class EntityPlayer extends Entity {
     private boolean movingLeft, movingRight;
 
     public boolean isJumping;
-    public int maxJumpTicks = 50;
+    public int maxJumpTicks = 1;
     public int jumpTicks;
 
     private boolean isAttacking;
-    private float attackPosX, attackPosY;
+    private float aimingAngle;
 
     public float recoilAngle;
     public long worldTimeAtLastShot;
@@ -57,14 +57,14 @@ public abstract class EntityPlayer extends Entity {
 
     @Override
     protected void updateEntity() {
-        maxJumpTicks = 10;
+        maxJumpTicks = 3;
         if (movingLeft) motionX = -1;
         if (movingRight) motionX = 1;
         if ((movingLeft && movingRight) || (!movingLeft && !movingRight)) motionX = 0;
         if (onGround) jumpTicks = 0;
         if (isJumping && jumpTicks <= maxJumpTicks) {
             jumpTicks++;
-            motionY += 0.275f;
+            motionY += 0.375f;
         }
         if (!world.isRemote) {
             List<EntityItem> entitiesInRegion = world.getEntitiesInRegion(EntityItem.class, new Collision2D(posX - 1, posY, 2, 1));
@@ -89,7 +89,7 @@ public abstract class EntityPlayer extends Entity {
         }
         if (isAttacking) {
             ItemStack equipment = getEquipment(EntityEquipmentSlot.MAIN_HAND);
-            equipment.getItem().onAttackingWithItem(equipment, this, world, attackPosX, attackPosY);
+            equipment.getItem().onAttackingWithItem(equipment, this, world, aimingAngle);
         }
     }
 
@@ -160,10 +160,25 @@ public abstract class EntityPlayer extends Entity {
         return equipment[slot.ordinal()];
     }
 
-    public void setAttacking(Status status, float posX, float posY) {
+    public void setAttacking(Status status, float aimingAngle) {
         isAttacking = status != Status.END;
-        attackPosX = posX;
-        attackPosY = posY;
+    }
+
+    public float getAimingAngle() {
+        return aimingAngle;
+    }
+
+    public void setAim(float aimingAngle, float aimingStrength) {
+        float prevAimingAngle = this.aimingAngle;
+        this.aimingAngle = aimingAngle;
+        direction = aimingAngle > Math.PI / 2 || aimingAngle < -Math.PI / 2 ? EntityDirection.LEFT : EntityDirection.RIGHT;
+        if (aimingStrength < 0.5f) {
+            if (isAttacking) {
+                setAttacking(Status.END, aimingAngle);
+            }
+        } else {
+            setAttacking(!isAttacking ? Status.START : Status.UPDATE, aimingAngle);
+        }
     }
 
     public boolean isAttacking() {

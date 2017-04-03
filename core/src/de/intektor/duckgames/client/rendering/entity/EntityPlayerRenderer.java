@@ -24,7 +24,7 @@ public class EntityPlayerRenderer implements IEntityRenderer<EntityPlayerSP> {
     private DuckGamesClient dg = DuckGamesClient.getDuckGames();
 
     EntityPlayerRenderer() {
-        playerTexture = new Texture("assets/duck.png");
+        playerTexture = new Texture("duck.png");
     }
 
     @Override

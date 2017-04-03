@@ -1,14 +1,14 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
 import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.NetworkUtils;
-import de.intektor.network.IPacket;
-import de.intektor.network.IPacketHandler;
+import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.net.IPacketHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.UUID;
 
 /**
@@ -38,7 +38,7 @@ public class RemoveEntityPacketToClient implements IPacket {
     public static class Handler implements IPacketHandler<RemoveEntityPacketToClient> {
 
         @Override
-        public void handlePacket(final RemoveEntityPacketToClient packet, Socket socketFrom) {
+        public void handlePacket(final RemoveEntityPacketToClient packet, AbstractSocket socketFrom) {
             CommonCode.proxy.handlePacket(packet, socketFrom);
         }
     }
