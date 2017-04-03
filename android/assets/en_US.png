@@ -1,0 +1,18 @@
+item.sword.name=Sword
+item.pistol.name=Pistol
+item.tommy_gun.name=Tommy Gun
+item.rail_gun.name=Rail Gun
+
+block.dirt.name=Dirt
+block.grass.name=Grass
+block.ice.name=Ice
+block.stone_brick.name=Stone Brick
+block.marble_cobblestone.name=Marble Cobblestone
+block.clay_brick.name=Bricks
+block.air.name=Air
+
+gui.button.back_button.text=Back
+level_editor.save_world.text_field_world_name_hint=World Name
+level_editor.save_world.missing_world_name=Missing World Name:
+level_editor.save_world.frame_name=Save World!
+level_editor.save_world.save_world_button_description=Save!
