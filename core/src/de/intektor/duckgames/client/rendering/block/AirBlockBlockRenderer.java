@@ -22,7 +22,7 @@ public class AirBlockBlockRenderer implements IBlockRenderer {
     }
 
     @Override
-    public void renderBlockInScrollTool(Block block, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks) {
+    public void renderBlockInScrollTool(Block block, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks, Color gColor) {
         sR.begin();
         sR.setColor(Color.WHITE);
         sR.line(x, y, x + width, y);

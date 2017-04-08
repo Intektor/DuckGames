@@ -32,7 +32,7 @@ public class GuiConnectToLobby extends Gui {
     private GuiTextBasedButton buttonBack;
     private GuiTextField enterIPTextField;
 
-    private GuiComponentFoundGames gameFinderComponent;
+    private GuiGameFinder gameFinderComponent;
 
     private boolean tryingConnection;
     private boolean connectionFailed;
@@ -58,7 +58,7 @@ public class GuiConnectToLobby extends Gui {
             e.printStackTrace();
         }
 
-        gameFinderComponent = new GuiComponentFoundGames(0, 0, 1000, 800);
+        gameFinderComponent = new GuiGameFinder(0, 0, 1000, 800);
         gameFinderComponent.setShown(false);
 
         registerComponent(enterIPTextField);

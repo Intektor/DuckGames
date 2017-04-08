@@ -130,7 +130,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseX = GuiUtils.scaleMouseX();
         int mouseY = GuiUtils.scaleMouseY();
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.keyDown(mouseX, mouseY, keycode);
             }
         }
@@ -154,7 +154,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseX = GuiUtils.scaleMouseX();
         int mouseY = GuiUtils.scaleMouseY();
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.keyReleased(mouseX, mouseY, keycode);
             }
         }
@@ -178,7 +178,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseX = GuiUtils.scaleMouseX();
         int mouseY = GuiUtils.scaleMouseY();
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.charTyped(mouseX, mouseY, character);
             }
         }
@@ -202,7 +202,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseX = GuiUtils.scaleMouseX(screenX);
         int mouseY = GuiUtils.scaleMouseY(screenY);
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.clickDown(mouseX, mouseY, pointer, button, component.x, component.y);
             }
         }
@@ -227,7 +227,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseX = GuiUtils.scaleMouseX(screenX);
         int mouseY = GuiUtils.scaleMouseY(screenY);
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.clickUp(mouseX, mouseY, pointer, button, component.x, component.y);
             }
         }
@@ -252,7 +252,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseY = GuiUtils.scaleMouseY(screenY);
         Point2i point2i = lastPointerPositionMap.get(pointer);
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.clickDragged(mouseX, mouseY, point2i.x, point2i.y, pointer);
             }
         }
@@ -278,7 +278,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseY = GuiUtils.scaleMouseY(screenY);
         Point2i point2i = lastPointerPositionMap.get(0);
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.mouseMoved(mouseX, mouseY, point2i.x, point2i.y);
             }
         }
@@ -303,7 +303,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         int mouseX = GuiUtils.scaleMouseX();
         int mouseY = GuiUtils.scaleMouseY();
         for (GuiComponent component : componentList) {
-            if (component.isEnabled()) {
+            if (component.isEnabled() && component.isShown()) {
                 component.scroll(mouseX, mouseY, amount);
             }
         }

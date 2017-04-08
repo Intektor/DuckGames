@@ -3,8 +3,10 @@ package de.intektor.duckgames.client.rendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.entity.Entity;
 
@@ -34,15 +36,23 @@ public class RenderUtils {
         spriteBatch.disableBlending();
     }
 
+    public static void drawRotatedTexture(Texture texture, SpriteBatch sB, float x, float y, float scale, float rotation) {
+        sB.draw(new TextureRegion(texture), x, y, scale / 2, scale / 2, scale, scale, 1, 1, rotation);
+    }
+
     /**
      * @return the interpolated point using {@link DuckGamesClient#getPartialTicks()}
      */
     public static Point2f getInterpolatedPoint(double prevX, double prevY, double x, double y) {
-        return new Point2f((float) (prevX + (x - prevX) * dg.getPartialTicks()), (float) (prevY + (y - prevY) * dg.getPartialTicks()));
+        return getInterpolatedPoint(prevX, prevY, x, y, dg.getPartialTicks());
     }
 
-    public static Point2f getInterpolatedEntityPos(Entity entity) {
-        return getInterpolatedPoint(entity.prevPosX, entity.prevPosY, entity.posX, entity.posY);
+    public static Point2f getInterpolatedPoint(double prevX, double prevY, double x, double y, float partialTicks) {
+        return new Point2f((float) (prevX + (x - prevX) * partialTicks), (float) (prevY + (y - prevY) * partialTicks));
+    }
+
+    public static Point2f getInterpolatedEntityPos(Entity entity, float partialTicks) {
+        return getInterpolatedPoint(entity.prevPosX, entity.prevPosY, entity.posX, entity.posY, partialTicks);
     }
 
     public static void enableBlending() {
@@ -53,4 +63,5 @@ public class RenderUtils {
     public static void disableBlending() {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
+
 }

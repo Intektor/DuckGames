@@ -49,6 +49,8 @@ public class DuckGamesServer implements Closeable {
 
     private volatile UpnpService upnpService;
 
+    private AbstractSocket host;
+
     private boolean openedToLan;
 
     private HostingInfo hostingInfo;
@@ -171,8 +173,17 @@ public class DuckGamesServer implements Closeable {
         return serverSocket != null && serverSocket.isBound();
     }
 
+    public AbstractSocket getHost() {
+        return host;
+    }
+
     @Override
     public void close() throws IOException {
+        try {
+            broadcast(new KickClientFromServerPacketToClient("Server Shut Down!"));
+        } catch (Exception e) {
+
+        }
         serverRunning = false;
         if (upnpService != null) upnpService.shutdown();
         try {
@@ -250,7 +261,8 @@ public class DuckGamesServer implements Closeable {
 
         public void registrationMessageFromClient(AbstractSocket socket, String username) {
             if (serverState == ServerState.CONNECT_STATE || serverState == ServerState.LOBBY_STATE) {
-                PlayerProfile profile = new PlayerProfile(new GameProfile(UUID.randomUUID(), username), socket);
+                boolean isHost = profileMap.size() == 0;
+                PlayerProfile profile = new PlayerProfile(new GameProfile(UUID.randomUUID(), username, isHost), socket);
                 profileMap.put(socket, profile);
                 packetHelper.sendPacket(new IdentificationSuccessfulPacketToClient(), socket);
                 DuckGamesServer.this.broadcast(new PlayerProfilesPacketToClient(profile.gameProfile));
@@ -260,8 +272,10 @@ public class DuckGamesServer implements Closeable {
                 for (PlayerProfile playerProfile : profileMap.values()) {
                     packetHelper.sendPacket(new PlayerProfilesPacketToClient(playerProfile.gameProfile), socket);
                 }
-                if (profileMap.size() == 1)
+                if (isHost) {
+                    host = socket;
                     broadcast(new ChatMessagePacketToClient(new ServerInfoMessage("This server is running on port: " + port, Color.CYAN)));
+                }
                 broadcast(new ChatMessagePacketToClient(new ServerInfoMessage(username + " joined the server.", Color.GREEN)));
             } else {
                 packetHelper.sendPacket(new KickClientFromServerPacketToClient("Can't join while game is running!"), socket);

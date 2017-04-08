@@ -9,6 +9,8 @@ public class AndroidLauncher extends AndroidApplication {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+        config.useWakelock = true;
+        config.useGLSurfaceView20API18 = true;
         initialize(new DuckGamesClient(new AndroidNetworkImpl()), config);
     }
 }

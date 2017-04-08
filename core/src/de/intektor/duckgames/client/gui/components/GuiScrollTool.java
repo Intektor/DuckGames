@@ -77,8 +77,7 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
             int x = (int) (drawX + offsetX + entryWidth * currentColumn);
             int y = (int) (drawY + height - (offsetY + entryHeight * currentRow + entryHeight));
             boolean highlighted = GuiUtils.isPointInRegion(x, y, entryWidth, entryHeight, GuiUtils.scaleMouseX(), GuiUtils.scaleMouseY());
-            entryList.get(i).
-                    render(camera, sR, sB, x, y, entryWidth, entryHeight, highlighted, partialTicks);
+            entryList.get(i).render(camera, sR, sB, x, y, entryWidth, entryHeight, highlighted, partialTicks);
             if (currentColumn + 1 == entryColumns) {
                 currentColumn = -1;
                 currentRow++;
@@ -91,7 +90,7 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
     @Override
     public void clickDragged(int mouseX, int mouseY, int prevX, int prevY, int pointer) {
         super.clickDragged(mouseX, mouseY, prevX, prevY, pointer);
-        if (isTouch) {
+        if (isTouch && GuiUtils.isPointInRegion(x, y, width, height, mouseX, mouseY)) {
             int dX = mouseX - prevX;
             int dY = mouseY - prevY;
             offsetX += dX;
@@ -99,9 +98,11 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
 
             int[] rac = calculateRowsAndColumns(entryList.size());
             int maxX = -entryWidth * (rac[1]) + width;
+            int maxY = -entryHeight * (rac[0] - 1);
             if (offsetX < maxX) offsetX = maxX;
             if (offsetX > 0) offsetX = 0;
             if (offsetY > 0) offsetY = 0;
+            if (offsetY < maxY) offsetY = maxY;
         }
     }
 
@@ -163,6 +164,10 @@ public class GuiScrollTool<T extends GuiScrollTool.ScrollToolEntry> extends GuiM
             }
         }
         return new int[]{row, maxColumn};
+    }
+
+    public List<T> getEntryList() {
+        return entryList;
     }
 
     public interface ScrollToolEntry {

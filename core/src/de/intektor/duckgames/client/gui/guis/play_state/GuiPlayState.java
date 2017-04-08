@@ -163,6 +163,8 @@ public class GuiPlayState extends Gui {
     protected void updateGui(int mouseX, int mouseY) {
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
+        if (player == null) return;
+
         world.updateWorld();
 
         if (player.isDead && !postMortemMode) {
@@ -191,11 +193,9 @@ public class GuiPlayState extends Gui {
         switch (keyCode) {
             case Keys.A:
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.LEFT));
-                dg.thePlayer.move(EnumDirection.LEFT, true);
                 break;
             case Keys.D:
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.RIGHT));
-                dg.thePlayer.move(EnumDirection.RIGHT, true);
                 break;
             case Keys.SPACE:
                 dg.sendPacketToServer(new JumpPacketToServer(true));
@@ -343,6 +343,7 @@ public class GuiPlayState extends Gui {
             if (server == null) {
                 dg.sendPacketToServer(new DisconnectPacketToServer());
                 dg.disconnect();
+                dg.showGui(new GuiMainMenu());
             } else {
                 dg.disconnect();
                 if (server.getMainServerThread().getGameMode() == DuckGamesServer.GameMode.TEST_WORLD) {

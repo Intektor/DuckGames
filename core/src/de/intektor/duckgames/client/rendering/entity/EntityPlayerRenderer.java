@@ -29,7 +29,7 @@ public class EntityPlayerRenderer implements IEntityRenderer<EntityPlayerSP> {
 
     @Override
     public void renderEntityInWorld(EntityPlayerSP entity, OrthographicCamera camera, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, float partialTicks, float scaleX, float scaleY) {
-        Point2f pos = RenderUtils.getInterpolatedEntityPos(entity);
+        Point2f pos = RenderUtils.getInterpolatedEntityPos(entity, partialTicks);
         float drawX = pos.x;
         float drawY = pos.y;
         spriteBatch.begin();
@@ -37,12 +37,11 @@ public class EntityPlayerRenderer implements IEntityRenderer<EntityPlayerSP> {
         region.flip(entity.getDirection() == EntityDirection.LEFT, false);
         spriteBatch.draw(region, drawX * scaleX, drawY * scaleY, entity.getWidth() * scaleX, entity.getHeight() * scaleY);
         spriteBatch.end();
-
     }
 
     @Override
     public void renderEntityOnScreen(EntityPlayerSP entity, OrthographicCamera screenCamera, OrthographicCamera worldCamera, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, float partialTicks, float scaleX, float scaleY) {
-        Point2f pos = RenderUtils.getInterpolatedEntityPos(entity);
+        Point2f pos = RenderUtils.getInterpolatedEntityPos(entity, partialTicks);
         Point2f p = GuiUtils.projectWorldPosition(worldCamera, pos.x, pos.y);
         spriteBatch.begin();
         RenderUtils.drawString(entity.getHealth() + "", dg.defaultFont16, p.x, p.y, spriteBatch, Color.WHITE);

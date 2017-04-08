@@ -29,7 +29,7 @@ void main() {
        {
           float newAlpha = texture2D(u_texture, T + vec2(ix, iy) * u_viewportInverse).a;
           allin = allin && newAlpha > ALPHA_VALUE_BORDER;
-          if (newAlpha > ALPHA_VALUE_BORDER && newAlpha >= alpha)
+          if (newAlpha >= alpha)
           {
              alpha = newAlpha;
           }

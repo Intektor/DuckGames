@@ -57,16 +57,16 @@ public abstract class EntityPlayer extends Entity {
 
     @Override
     protected void updateEntity() {
-        maxJumpTicks = 3;
-        if (movingLeft) motionX = -1;
-        if (movingRight) motionX = 1;
-        if ((movingLeft && movingRight) || (!movingLeft && !movingRight)) motionX = 0;
-        if (onGround) jumpTicks = 0;
-        if (isJumping && jumpTicks <= maxJumpTicks) {
-            jumpTicks++;
-            motionY += 0.375f;
-        }
         if (!world.isRemote) {
+            maxJumpTicks = 3;
+            if (movingLeft) motionX = -1;
+            if (movingRight) motionX = 1;
+            if ((movingLeft && movingRight) || (!movingLeft && !movingRight)) motionX = 0;
+            if (onGround) jumpTicks = 0;
+            if (isJumping && jumpTicks <= maxJumpTicks) {
+                jumpTicks++;
+                motionY += 0.375f;
+            }
             List<EntityItem> entitiesInRegion = world.getEntitiesInRegion(EntityItem.class, new Collision2D(posX - 1, posY, 2, 1));
             for (EntityItem entityItem : entitiesInRegion) {
                 if (entityItem.canBePickedUpByPlayer(this)) {
@@ -89,7 +89,9 @@ public abstract class EntityPlayer extends Entity {
         }
         if (isAttacking) {
             ItemStack equipment = getEquipment(EntityEquipmentSlot.MAIN_HAND);
-            equipment.getItem().onAttackingWithItem(equipment, this, world, aimingAngle);
+            if (equipment != null) {
+                equipment.getItem().onAttackingWithItem(equipment, this, world, aimingAngle);
+            }
         }
     }
 

@@ -16,6 +16,7 @@ public class GuiThumbPad extends GuiComponent {
     private int sX, sY;
     private int radius;
     private int thumbPadX, thumbPadY;
+    private int currentPointer;
 
     public GuiThumbPad(int x, int y, int radius) {
         super(x - radius, y - radius, radius, radius);
@@ -44,22 +45,25 @@ public class GuiThumbPad extends GuiComponent {
             setPosition(mouseX, mouseY);
             thumbPadX = mouseX;
             thumbPadY = mouseY;
+            currentPointer = pointer;
         }
     }
 
     @Override
     public void clickDragged(int mouseX, int mouseY, int prevX, int prevY, int pointer) {
         super.clickDragged(mouseX, mouseY, prevX, prevY, pointer);
-        int midX = x + radius;
-        int midY = y + radius;
-        if (currentlyUsed) {
-            if (new Point2f(mouseX, mouseY).distance(new Point2f(midX, midY)) <= radius) {
-                thumbPadX = mouseX;
-                thumbPadY = mouseY;
-            } else {
-                double angle = Math.atan2(mouseY - midY, mouseX - midX);
-                thumbPadX = (int) (midX + Math.cos(angle) * radius);
-                thumbPadY = (int) (midY + Math.sin(angle) * radius);
+        if (pointer == currentPointer) {
+            int midX = x + radius;
+            int midY = y + radius;
+            if (currentlyUsed) {
+                if (new Point2f(mouseX, mouseY).distance(new Point2f(midX, midY)) <= radius) {
+                    thumbPadX = mouseX;
+                    thumbPadY = mouseY;
+                } else {
+                    double angle = Math.atan2(mouseY - midY, mouseX - midX);
+                    thumbPadX = (int) (midX + Math.cos(angle) * radius);
+                    thumbPadY = (int) (midY + Math.sin(angle) * radius);
+                }
             }
         }
     }
@@ -67,10 +71,12 @@ public class GuiThumbPad extends GuiComponent {
     @Override
     public void clickUp(int mouseX, int mouseY, int pointer, int button, float drawX, float drawY) {
         super.clickUp(mouseX, mouseY, pointer, button, drawX, drawY);
-        setPosition(sX, sY);
-        thumbPadX = x + radius;
-        thumbPadY = y + radius;
-        currentlyUsed = false;
+        if (button == currentPointer) {
+            setPosition(sX, sY);
+            thumbPadX = x + radius;
+            thumbPadY = y + radius;
+            currentlyUsed = false;
+        }
     }
 
     @Override

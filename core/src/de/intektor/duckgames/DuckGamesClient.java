@@ -37,7 +37,6 @@ import de.intektor.duckgames.world.WorldClient;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -83,7 +82,6 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     public volatile WorldClient theWorld;
     public volatile EntityPlayer thePlayer;
-
 
     private float partialTicks;
 
@@ -197,11 +195,7 @@ public class DuckGamesClient extends ApplicationAdapter {
     @Override
     public void dispose() {
         disconnect();
-        try {
-            getDedicatedServer().close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setDedicatedServer(null);
     }
 
     public void addScheduledTask(Runnable task) {

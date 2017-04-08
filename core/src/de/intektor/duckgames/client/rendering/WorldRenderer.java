@@ -35,22 +35,20 @@ public class WorldRenderer {
     }
 
     public void renderWorld(World world, OrthographicCamera camera, ShapeRenderer shapeRenderer, SpriteBatch spriteBatch, EntityPlayer player, float partialTicks) {
-        Point2f drawPos = RenderUtils.getInterpolatedEntityPos(player);
+        Point2f drawPos = RenderUtils.getInterpolatedEntityPos(player, partialTicks);
         float drawX = drawPos.x;
         float drawY = drawPos.y;
 
         camera.position.set(drawX, drawY, 0);
         camera.zoom = 0.0225f;
 
+        camera.update();
+
         shapeRenderer.setProjectionMatrix(camera.combined);
         spriteBatch.setProjectionMatrix(camera.combined);
 
-        camera.update();
-
         Vector3 v00 = camera.unproject(new Vector3(0, 0, 0));
         Vector3 v11 = camera.unproject(new Vector3(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0));
-
-        camera.update();
 
         spriteBatch.begin();
         for (int x = (int) Math.max(v00.x - 1, 0); x < Math.min(v11.x + 1, world.getWidth()); x++) {

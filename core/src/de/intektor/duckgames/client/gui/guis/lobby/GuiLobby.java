@@ -16,6 +16,7 @@ import de.intektor.duckgames.common.DuckGamesServer;
 import de.intektor.duckgames.common.HostingInfo;
 import de.intektor.duckgames.common.chat.ChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.DisconnectPacketToServer;
+import de.intektor.duckgames.common.net.client_to_server.LobbyChangeMapPacketToServer;
 import de.intektor.duckgames.game.GameProfile;
 
 import java.net.InetSocketAddress;
@@ -36,6 +37,8 @@ public class GuiLobby extends Gui {
     private SelectWorldToPlayGuiComponent selectWorldToPlayGuiComponent;
 
     private EditableGameMap selectedMap;
+
+    private String selectedMapName;
 
     private BitmapFont font = dg.defaultFont28;
 
@@ -94,7 +97,7 @@ public class GuiLobby extends Gui {
             RenderUtils.drawString("Connected Players:", font, 0, dg.getPreferredScreenHeight(), spriteBatch, Color.WHITE);
             float y = dg.getPreferredScreenHeight() - font.getLineHeight() * 1;
             for (GameProfile profile : dg.getClientConnection().getPlayerProfiles().values()) {
-                RenderUtils.drawString(profile.username, font, 0, y, spriteBatch, Color.WHITE);
+                RenderUtils.drawString(profile.username, font, 0, y, spriteBatch, isHost ? Color.RED : Color.WHITE);
                 y -= font.getLineHeight();
             }
             spriteBatch.end();
@@ -105,11 +108,11 @@ public class GuiLobby extends Gui {
         RenderUtils.drawString(s, font, width - FontUtils.getStringWidth(s, font), height / 2, spriteBatch, Color.WHITE);
         String text;
         Color color;
-        if (getSelectedMap() == null) {
+        if (selectedMapName == null) {
             text = "No map selected!";
             color = Color.RED;
         } else {
-            text = getSelectedMap().getSaveName();
+            text = selectedMapName;
             color = Color.GREEN;
         }
         RenderUtils.drawString(text, font, width - FontUtils.getStringWidth(text, font), height / 2 - FontUtils.getStringHeight(text, font), spriteBatch, color);
@@ -180,5 +183,11 @@ public class GuiLobby extends Gui {
 
     public void setSelectedMap(EditableGameMap selectedMap) {
         this.selectedMap = selectedMap;
+        this.selectedMapName = selectedMap.getSaveName();
+        if (isHost) dg.sendPacketToServer(new LobbyChangeMapPacketToServer(selectedMapName));
+    }
+
+    public void setSelectedMapName(String selectedMapName) {
+        this.selectedMapName = selectedMapName;
     }
 }

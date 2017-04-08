@@ -1,5 +1,6 @@
 package de.intektor.duckgames.client.rendering.item;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,9 +18,9 @@ public interface IItemRenderer<T extends Item> {
 
     void renderItemOnPlayer(ItemStack stack, T item, EntityPlayer player, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks);
 
-    void renderItemInEditor(ItemStack stack, T item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks);
+    void renderItemInEditor(ItemStack stack, T item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks, Color gColor);
 
-    void renderItemInScrollTool(ItemStack stack, T item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float rotation, float partialTicks);
+    void renderItemInScrollTool(ItemStack stack, T item, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float rotation, float partialTicks, Color gColor);
 
     Texture getItemTexture();
 }

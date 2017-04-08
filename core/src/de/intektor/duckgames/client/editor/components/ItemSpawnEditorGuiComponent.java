@@ -179,7 +179,7 @@ public class ItemSpawnEditorGuiComponent extends GuiFrame implements GuiScrollTo
 
     private void renderItemSpawn(ItemSpawn spawn, float drawX, float drawY, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float partialTicks) {
         dg.getItemRendererRegistry().getRenderer(spawn.getItem()).
-                renderItemInScrollTool(spawn.generateStack(), spawn.getItem(), sR, sB, camera, drawX, drawY, entrySize, entrySize, 0, partialTicks);
+                renderItemInScrollTool(spawn.generateStack(), spawn.getItem(), sR, sB, camera, drawX, drawY, entrySize, entrySize, 0, partialTicks, null);
 
         sR.begin();
         sR.setColor(Color.BLACK);
@@ -212,7 +212,9 @@ public class ItemSpawnEditorGuiComponent extends GuiFrame implements GuiScrollTo
                 angle = 45;
                 r = highlighted ? 0 : 10;
             }
-            renderer.renderItemInScrollTool(new ItemStack(item), item, sR, sB, camera, x + r, y + r, width - r * 2, rHeight - r * 2, angle, partialTicks);
+            sB.enableBlending();
+            renderer.renderItemInScrollTool(new ItemStack(item), item, sR, sB, camera, x + r, y + r, width - r * 2, rHeight - r * 2, angle, partialTicks, null);
+            sB.disableBlending();
         }
     }
 

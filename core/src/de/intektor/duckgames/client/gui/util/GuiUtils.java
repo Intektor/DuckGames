@@ -23,9 +23,19 @@ public class GuiUtils {
         return (int) (x / scale);
     }
 
+    public static float scaleScreenCoordX(float x) {
+        double scale = dg.getPreferredScreenWidth() / (double) Gdx.graphics.getWidth();
+        return (float) (x * scale);
+    }
+
     public static int unscaleScreenCoordY(float y) {
         double scale = dg.getPreferredScreenHeight() / (double) Gdx.graphics.getHeight();
         return (int) (y / scale);
+    }
+
+    public static float scaleScreenCoordY(float y) {
+        double scale = dg.getPreferredScreenHeight() / (double) Gdx.graphics.getHeight();
+        return (float) (y * scale);
     }
 
     public static MousePos unprojectMousePosition(OrthographicCamera camera, int mouseX, int mouseY) {
@@ -37,7 +47,7 @@ public class GuiUtils {
         return unprojectMousePosition(camera, Gdx.input.getX(), Gdx.input.getY());
     }
 
-    public static Point2f projectWorldPosition(OrthographicCamera camera, float posX, float posY) {
+    public static Point2f  projectWorldPosition(OrthographicCamera camera, float posX, float posY) {
         Vector3 project = camera.project(new Vector3(posX, posY, 0));
         float scaleX = (float) (dg.getPreferredScreenWidth() / (double) Gdx.graphics.getWidth());
         float scaleY = (float) (dg.getPreferredScreenHeight() / (double) Gdx.graphics.getHeight());
@@ -61,4 +71,6 @@ public class GuiUtils {
         double scale = DuckGamesClient.getDuckGames().getPreferredScreenHeight() / (double) Gdx.graphics.getHeight();
         return DuckGamesClient.getDuckGames().getPreferredScreenHeight() - (int) ((mouseY * scale));
     }
+
+
 }

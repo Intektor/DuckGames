@@ -69,6 +69,9 @@ public class CommonCode {
         packetRegistry.registerPacket(GameScorePacketToClient.class, GameScorePacketToClient.Handler.class, 26, Side.CLIENT);
         packetRegistry.registerPacket(RoundEndedPacketToClient.class, RoundEndedPacketToClient.Handler.class, 27, Side.CLIENT);
         packetRegistry.registerPacket(DisconnectPacketToServer.class, DisconnectPacketToServer.Handler.class, 28, Side.SERVER);
+        packetRegistry.registerPacket(LobbyChangeMapPacketToServer.class, LobbyChangeMapPacketToServer.Handler.class, 29, Side.SERVER);
+        packetRegistry.registerPacket(LobbyChangeMapPacketToClient.class, LobbyChangeMapPacketToClient.Handler.class, 30, Side.CLIENT);
+        packetRegistry.registerPacket(RemoveProfilePacketToClient.class, RemoveProfilePacketToClient.Handler.class, 31, Side.CLIENT);
 
         chatMessageRegistry = new ChatMessageRegistry();
         chatMessageRegistry.register(PlayerChatMessage.class);

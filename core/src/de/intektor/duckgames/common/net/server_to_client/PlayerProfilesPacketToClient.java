@@ -29,11 +29,12 @@ public class PlayerProfilesPacketToClient implements IPacket {
     public void write(DataOutputStream out) throws IOException {
         NetworkUtils.writeUUID(out, profile.profileUUID);
         out.writeUTF(profile.username);
+        out.writeBoolean(profile.isHost);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        profile = new GameProfile(NetworkUtils.readUUID(in), in.readUTF());
+        profile = new GameProfile(NetworkUtils.readUUID(in), in.readUTF(), in.readBoolean());
     }
 
     public static class Handler implements IPacketHandler<PlayerProfilesPacketToClient> {

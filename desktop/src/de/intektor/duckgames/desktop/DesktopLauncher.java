@@ -10,7 +10,7 @@ public class DesktopLauncher {
         config.width = 1280;
         config.height = 720;
         config.vSyncEnabled = false;
-        config.foregroundFPS = 0;
+        config.foregroundFPS = 60;
         config.backgroundFPS = 0;
         new LwjglApplication(new DuckGamesClient(new DesktopNetworkingImpl()), config);
     }
