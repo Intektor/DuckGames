@@ -93,3 +93,6 @@ core/src/de/intektor/duckgames/client/net/handler/
 !/android/libs/x86_64/
 !/android/assets/shader/
 /android/saves/user/
+!/android/res/
+/android/assets/saves/user/
+/android/assets/user/
