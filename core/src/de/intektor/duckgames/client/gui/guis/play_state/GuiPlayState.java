@@ -255,7 +255,7 @@ public class GuiPlayState extends Gui {
 
         if (postMortemMode) {
             int i = world.getPlayerList().indexOf(currentlySpectating) + 1;
-            i = i == world.getPlayerList().size() ? i = 0 : i;
+            i = i == world.getPlayerList().size() ? 0 : i;
             currentlySpectating = world.getPlayerList().get(i);
         }
 

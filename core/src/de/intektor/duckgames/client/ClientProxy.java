@@ -210,7 +210,7 @@ public class ClientProxy implements IProxy {
                 EntityPlayer player = (EntityPlayer) duckGames.theWorld.getEntityByUUID(packet.playerID);
                 ItemStack mainHand = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);
                 if (mainHand != null) {
-                    player.setAttacking(packet.status, packet.ingameClickX);
+                    player.setAttacking(packet.status);
                     switch (packet.status) {
                         case START:
                             mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);

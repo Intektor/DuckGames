@@ -11,6 +11,8 @@ import de.intektor.duckgames.client.entity.EntityPlayerSP;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.entity.EntityDirection;
+import de.intektor.duckgames.entity.EntityEquipmentSlot;
+import de.intektor.duckgames.item.ItemStack;
 
 import javax.vecmath.Point2f;
 
@@ -37,6 +39,10 @@ public class EntityPlayerRenderer implements IEntityRenderer<EntityPlayerSP> {
         region.flip(entity.getDirection() == EntityDirection.LEFT, false);
         spriteBatch.draw(region, drawX * scaleX, drawY * scaleY, entity.getWidth() * scaleX, entity.getHeight() * scaleY);
         spriteBatch.end();
+        ItemStack mainHand = entity.getEquipment(EntityEquipmentSlot.MAIN_HAND);
+        if (mainHand != null) {
+            dg.getItemRendererRegistry().getRenderer(mainHand.getItem()).renderItemOnPlayer(mainHand, mainHand.getItem(), entity, shapeRenderer, spriteBatch, camera, partialTicks);
+        }
     }
 
     @Override

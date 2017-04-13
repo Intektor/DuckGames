@@ -67,8 +67,6 @@ public abstract class ItemGun extends Item {
         if (canShoot(stack, player, world) && remainingBullets > 0 && !world.isRemote) {
             setTimeAtLastShot(stack, player, world, world.getWorldTime());
 
-//            player.setDirection(aimingAngle > player.posX + player.getWidth() / 2 ? EntityDirection.RIGHT : EntityDirection.LEFT);
-
             setRemainingBullets(stack, player, world, remainingBullets - 1);
 
             float angle = (float) (aimingAngle + (player.getDirection() == EntityDirection.LEFT ? -1 : 1) * (player.recoilAngle / 180f * Math.PI));

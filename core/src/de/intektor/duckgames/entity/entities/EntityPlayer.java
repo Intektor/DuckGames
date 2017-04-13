@@ -162,7 +162,7 @@ public abstract class EntityPlayer extends Entity {
         return equipment[slot.ordinal()];
     }
 
-    public void setAttacking(Status status, float aimingAngle) {
+    public void setAttacking(Status status) {
         isAttacking = status != Status.END;
     }
 
@@ -176,10 +176,10 @@ public abstract class EntityPlayer extends Entity {
         direction = aimingAngle > Math.PI / 2 || aimingAngle < -Math.PI / 2 ? EntityDirection.LEFT : EntityDirection.RIGHT;
         if (aimingStrength < 0.5f) {
             if (isAttacking) {
-                setAttacking(Status.END, aimingAngle);
+                setAttacking(Status.END);
             }
         } else {
-            setAttacking(!isAttacking ? Status.START : Status.UPDATE, aimingAngle);
+            setAttacking(!isAttacking ? Status.START : Status.UPDATE);
         }
     }
 

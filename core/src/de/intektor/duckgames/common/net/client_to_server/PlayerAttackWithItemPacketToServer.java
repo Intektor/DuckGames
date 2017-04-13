@@ -59,7 +59,8 @@ public class PlayerAttackWithItemPacketToServer implements IPacket {
                     EntityPlayer player = mainServerThread.getProfileMap().get(socketFrom).gameProfile.player;
                     ItemStack mainHand = player.getEquipment(EntityEquipmentSlot.MAIN_HAND);
                     if (mainHand != null) {
-                        player.setAttacking(packet.status, packet.ingameClickX);
+                        float angle = (float) Math.atan2(packet.ingameClickY - (player.posY + player.getEyeHeight()), packet.ingameClickX - (player.posX + (player.getWidth() / 2)));
+                        player.setAim(angle, 1);
                         switch (packet.status) {
                             case START:
                                 mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);

@@ -7,11 +7,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import de.intektor.duckgames.client.entity.EntityPlayerSP;
+import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.utils.TextureUtils;
-import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 
+import javax.vecmath.Point2f;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,9 +45,13 @@ public class DefaultTextureItemRenderer implements IItemRenderer {
     }
 
     @Override
-    public void renderItemOnPlayer(ItemStack stack, Item item, EntityPlayer player, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float x, float y, float width, float height, float partialTicks) {
+    public void renderItemOnPlayer(ItemStack stack, Item item, EntityPlayerSP player, ShapeRenderer sR, SpriteBatch sB, OrthographicCamera camera, float partialTicks) {
+        float aimingAngle = player.getAimingAngle();
+        Point2f pos = RenderUtils.getInterpolatedEntityPos(player, partialTicks);
+        float x = pos.x + player.getWidth() / 2;
+        float y = pos.y + player.getHeight() / 2;
         sB.begin();
-        sB.draw(scaledTexture, x, y, width, height);
+        RenderUtils.drawRotatedTexture(fullTexture, sB, x, y, 3, aimingAngle);
         sB.end();
     }
 
