@@ -1,6 +1,6 @@
 package de.intektor.duckgames;
 
-import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.common.server.HostingType;
 import de.intektor.duckgames.common.Networking;
 import de.intektor.duckgames.common.net.AbstractServerSocket;
 import de.intektor.duckgames.common.net.AbstractSocket;

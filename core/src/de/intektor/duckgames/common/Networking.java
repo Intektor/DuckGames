@@ -2,6 +2,7 @@ package de.intektor.duckgames.common;
 
 import de.intektor.duckgames.common.net.AbstractServerSocket;
 import de.intektor.duckgames.common.net.AbstractSocket;
+import de.intektor.duckgames.common.server.HostingType;
 
 import java.io.IOException;
 

@@ -3,6 +3,7 @@ package de.intektor.duckgames.common;
 import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.GameProfile;
 import de.intektor.duckgames.world.World;

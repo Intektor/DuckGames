@@ -1,4 +1,4 @@
-package de.intektor.duckgames.common;
+package de.intektor.duckgames.common.server;
 
 /**
  * @author Intektor

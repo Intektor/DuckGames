@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.lan;
 
-import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 
 import java.io.IOException;
 import java.net.*;

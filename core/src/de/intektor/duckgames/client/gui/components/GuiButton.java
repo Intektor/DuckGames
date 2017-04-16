@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.GuiComponent;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
@@ -76,6 +77,12 @@ public abstract class GuiButton extends GuiComponent {
 
     public void setCallback(GuiButtonCallback callback) {
         this.callback = callback;
+    }
+
+    @Override
+    public void setCurrentGui(Gui currentGui) {
+        super.setCurrentGui(currentGui);
+        setCallback(currentGui);
     }
 
     public interface GuiButtonCallback {

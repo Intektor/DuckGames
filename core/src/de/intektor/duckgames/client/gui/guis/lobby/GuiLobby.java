@@ -7,16 +7,19 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.client.gui.Gui;
 import de.intektor.duckgames.client.gui.components.GuiButton;
+import de.intektor.duckgames.client.gui.components.GuiInfoComponent;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
+import de.intektor.duckgames.client.gui.guis.GuiEmpty;
 import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.DuckGamesServer;
-import de.intektor.duckgames.common.HostingInfo;
 import de.intektor.duckgames.common.chat.ChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.DisconnectPacketToServer;
 import de.intektor.duckgames.common.net.client_to_server.LobbyChangeMapPacketToServer;
+import de.intektor.duckgames.common.server.DuckGamesServer;
+import de.intektor.duckgames.common.server.HostingInfo;
+import de.intektor.duckgames.common.server.ServerStartingInfo;
 import de.intektor.duckgames.game.GameProfile;
 
 import java.net.InetSocketAddress;
@@ -64,14 +67,27 @@ public class GuiLobby extends Gui {
 
             startGameButton = new GuiTextBasedButton(width - 200, 0, 200, 80, "Start Game!", true);
 
-
             registerComponent(selectWorldToPlayGuiComponent);
             registerComponent(selectWorldButton);
             registerComponent(startGameButton);
 
             DuckGamesServer dedicatedServer = new DuckGamesServer();
             dg.setDedicatedServer(dedicatedServer);
-            dedicatedServer.startServer(DuckGamesServer.ServerState.LOBBY_STATE, hostingInfo);
+            ServerStartingInfo info = dedicatedServer.startServer(DuckGamesServer.ServerState.LOBBY_STATE, hostingInfo);
+            if (!info.started) {
+                GuiEmpty newGui = new GuiEmpty();
+                dg.showGui(newGui);
+                GuiInfoComponent infoComponent = new GuiInfoComponent("ERROR!",
+                        "Server failed to start!\n" +
+                                (!info.upnpSuccessful() ? info.upnpException.getLocalizedMessage() : ""));
+                newGui.registerComponent(infoComponent);
+                infoComponent.setOkAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        dg.showGui(new GuiMainMenu());
+                    }
+                });
+            }
         }
     }
 

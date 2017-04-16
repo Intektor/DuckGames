@@ -1,7 +1,7 @@
 package de.intektor.duckgames.common.net.lan;
 
 import de.intektor.duckgames.client.DeviceUtils;
-import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.util.StringUtils;
 
 import java.net.UnknownHostException;

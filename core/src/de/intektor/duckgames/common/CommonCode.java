@@ -10,6 +10,7 @@ import de.intektor.duckgames.common.net.PacketRegistry;
 import de.intektor.duckgames.common.net.Side;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.*;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityBullet;
 import de.intektor.duckgames.entity.entities.EntityItem;

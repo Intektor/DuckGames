@@ -28,9 +28,10 @@ import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.utils.TextureUtils;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.DuckGamesServer;
-import de.intektor.duckgames.common.HostingInfo;
-import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.common.server.DuckGamesServer;
+import de.intektor.duckgames.common.server.HostingInfo;
+import de.intektor.duckgames.common.server.HostingType;
+import de.intektor.duckgames.common.server.ServerStartingInfo;
 import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;
 import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
 import de.intektor.duckgames.game.worlds.spawns.renderer.EntitySpawnRendererRegistry;
@@ -529,7 +530,7 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     private void testMap() {
         if (map.canBeConvertedToWorld()) {
             DuckGamesServer server = new DuckGamesServer();
-            server.startServer(DuckGamesServer.ServerState.CONNECT_STATE, new HostingInfo(HostingType.LAN, 0));
+            ServerStartingInfo info = server.startServer(DuckGamesServer.ServerState.CONNECT_STATE, new HostingInfo(HostingType.LAN, 0));
             dg.setDedicatedServer(server);
             allowInput = false;
             waitingForTestServer = true;

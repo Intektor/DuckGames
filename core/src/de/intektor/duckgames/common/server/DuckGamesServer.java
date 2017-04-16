@@ -1,7 +1,9 @@
-package de.intektor.duckgames.common;
+package de.intektor.duckgames.common.server;
 
 import com.badlogic.gdx.graphics.Color;
 import de.intektor.duckgames.client.editor.EditableGameMap;
+import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.chat.ServerInfoMessage;
 import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.*;
@@ -63,10 +65,16 @@ public class DuckGamesServer implements Closeable {
         port = HttpUtils.getSuitableLanPort();
     }
 
-    public void startServer(ServerState state, final HostingInfo hostingInfo) {
+    public ServerStartingInfo startServer(ServerState state, final HostingInfo hostingInfo) {
+        ServerStartingInfo info = new ServerStartingInfo();
         this.hostingInfo = hostingInfo;
         serverRunning = true;
         serverState = state;
+
+        if (hostingInfo.hostingType == HostingType.INTERNET) {
+            shareToInternet(hostingInfo.port, info);
+        }
+
         new Thread("Server Thread") {
             @Override
             public void run() {
@@ -88,9 +96,8 @@ public class DuckGamesServer implements Closeable {
 
         shareToLan();
 
-        if (hostingInfo.hostingType == HostingType.INTERNET) {
-            shareToInternet(hostingInfo.port);
-        }
+        info.started = true;
+        return info;
     }
 
     private void registerConnection(final AbstractSocket clientSocket) {
@@ -146,7 +153,7 @@ public class DuckGamesServer implements Closeable {
         }
     }
 
-    private void shareToInternet(int port) {
+    private void shareToInternet(int port, ServerStartingInfo info) {
         try {
             upnpService = new UpnpServiceImpl();
             RegistryListener registryListener = new PortMappingListener(new PortMapping(true, new UnsignedIntegerFourBytes(60 * 60 * 4),
@@ -156,6 +163,7 @@ public class DuckGamesServer implements Closeable {
 
             upnpService.getControlPoint().search();
         } catch (Exception e) {
+            info.upnpException = e;
             e.printStackTrace();
         }
     }
@@ -191,6 +199,7 @@ public class DuckGamesServer implements Closeable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        pingThread.interrupt();
     }
 
     public enum ServerState {

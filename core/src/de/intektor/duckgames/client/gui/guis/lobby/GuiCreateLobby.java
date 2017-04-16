@@ -9,8 +9,8 @@ import de.intektor.duckgames.client.gui.components.GuiTextField;
 import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
 import de.intektor.duckgames.client.i18n.I18n;
 import de.intektor.duckgames.client.rendering.RenderUtils;
-import de.intektor.duckgames.common.HostingInfo;
-import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.common.server.HostingInfo;
+import de.intektor.duckgames.common.server.HostingType;
 import de.intektor.duckgames.util.charlist.CharList;
 
 /**

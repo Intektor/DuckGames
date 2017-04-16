@@ -1,9 +1,7 @@
 package de.intektor.duckgames.client.rendering;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.utils.Align;
 
 /**
  * @author Intektor
@@ -22,8 +20,30 @@ public class FontUtils {
         return layout.height;
     }
 
-    public static void splitString(String text, BitmapFont font, float maxWidth) {
-        layout.setText(font, text, Color.WHITE, maxWidth, Align.left, true);
+    /**
+     * Splits the String at the given width with \n
+     *
+     * @param text     the text to be split
+     * @param font     the font used
+     * @param maxWidth the max width of the string per line
+     * @return a string containing the source text split by \n
+     */
+    public static String splitString(String text, BitmapFont font, float maxWidth) {
+        StringBuilder builder = new StringBuilder();
+        int currentIndex = 1;
+        while (getStringWidth(text, font) > maxWidth) {
+            while (getStringWidth(text.substring(0, currentIndex), font) < maxWidth) {
+                currentIndex++;
+            }
+            CharSequence local = text.substring(0, currentIndex);
+            builder.append(local).append("\n");
+            text = text.substring(currentIndex, text.length());
+            currentIndex = 0;
+        }
+        if (text.trim().length() > 0) {
+            builder.append(text);
+        }
+        return builder.toString();
     }
 
     public static int getCharPosition(String text, BitmapFont font, int x) {

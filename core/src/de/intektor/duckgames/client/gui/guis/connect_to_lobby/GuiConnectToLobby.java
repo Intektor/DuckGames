@@ -14,7 +14,7 @@ import de.intektor.duckgames.client.i18n.I18n;
 import de.intektor.duckgames.client.net.DuckGamesClientConnection;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
-import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.common.server.HostingType;
 import de.intektor.duckgames.common.net.lan.ThreadFindLanServers;
 import de.intektor.duckgames.util.charlist.CharList;
 

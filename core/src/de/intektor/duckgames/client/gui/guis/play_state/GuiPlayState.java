@@ -21,7 +21,7 @@ import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.WorldRenderer;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.RoundEndedPacketToClient;

@@ -7,6 +7,8 @@ import de.intektor.duckgames.DuckGamesClient;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 
 /**
+ * A {@link GuiComponent} can only be in one gui
+ *
  * @author Intektor
  */
 public class GuiComponent {
@@ -15,6 +17,8 @@ public class GuiComponent {
     protected int width, height;
     protected boolean isShown = true;
     protected boolean isEnabled = true;
+
+    protected Gui gui;
 
     protected final DuckGamesClient dg = DuckGamesClient.getDuckGames();
 
@@ -123,6 +127,16 @@ public class GuiComponent {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Called by {@link Gui#registerComponent(GuiComponent)} to set the current gui.
+     * A GuiComponent can only function in one {@link Gui} at once, otherwise problems might occur!
+     *
+     * @param currentGui the new gui instance
+     */
+    public void setCurrentGui(Gui currentGui) {
+        this.gui = currentGui;
     }
 
     /**

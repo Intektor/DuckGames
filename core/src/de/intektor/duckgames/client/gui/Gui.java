@@ -27,6 +27,7 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
     protected OrthographicCamera camera;
 
     protected List<GuiComponent> componentList = new ArrayList<GuiComponent>();
+    protected List<GuiComponent> componentsToBeRemoved = new ArrayList<GuiComponent>();
 
     protected Input input;
     protected Graphics graphics;
@@ -117,6 +118,8 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
      * Updates the gui components of this gui, default called by {@link Gui#updateGui(int, int)}
      */
     protected void updateGuiComponents(int mouseX, int mouseY) {
+        componentList.removeAll(componentsToBeRemoved);
+        componentsToBeRemoved.clear();
         for (GuiComponent guiComponent : componentList) {
             if (guiComponent.isEnabled()) {
                 guiComponent.updateComponent(mouseX, mouseY, guiComponent.x, guiComponent.y);
@@ -331,11 +334,14 @@ public class Gui implements InputProcessor, GuiButton.GuiButtonCallback {
         return (int) ((mouseY / scale) - offsetY);
     }
 
-    protected final void registerComponent(GuiComponent guiComponent) {
-        if (guiComponent instanceof GuiButton) {
-            ((GuiButton) guiComponent).setCallback(this);
-        }
+    public void registerComponent(GuiComponent guiComponent) {
+        guiComponent.setCurrentGui(this);
         componentList.add(guiComponent);
+    }
+
+    public void removeGuiComponent(GuiComponent component) {
+        componentsToBeRemoved.add(component);
+        component.setCurrentGui(null);
     }
 
     /**

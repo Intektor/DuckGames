@@ -15,7 +15,7 @@ import de.intektor.duckgames.client.gui.guis.lobby.GuiLobby;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.common.server.HostingType;
 import de.intektor.duckgames.common.net.lan.ServerInfo;
 import de.intektor.duckgames.common.net.lan.ThreadFindLanServers;
 

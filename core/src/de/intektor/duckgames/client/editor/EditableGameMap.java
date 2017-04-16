@@ -10,7 +10,7 @@ import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.block.Blocks;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.common.GameRegistry;
 import de.intektor.duckgames.files.Serializable;
 import de.intektor.duckgames.game.worlds.spawns.ItemSpawner;

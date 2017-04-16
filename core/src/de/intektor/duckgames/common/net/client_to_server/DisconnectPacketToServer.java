@@ -2,7 +2,7 @@ package de.intektor.duckgames.common.net.client_to_server;
 
 import com.badlogic.gdx.graphics.Color;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.chat.ServerInfoMessage;
 import de.intektor.duckgames.common.net.AbstractSocket;

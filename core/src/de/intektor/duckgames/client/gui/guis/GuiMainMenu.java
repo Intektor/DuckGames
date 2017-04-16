@@ -37,10 +37,10 @@ public class GuiMainMenu extends Gui {
 
     @Override
     protected void renderGui(int mouseX, int mouseY, OrthographicCamera camera, float partialTicks) {
-        super.renderGui(mouseX, mouseY, camera, partialTicks);
         spriteBatch.begin();
         RenderUtils.drawString("Awesome Game!", dg.defaultFont72, width / 2, height / 2 + height / 3, spriteBatch, Color.WHITE, true, true);
         spriteBatch.end();
+        super.renderGui(mouseX, mouseY, camera, partialTicks);
     }
 
     @Override

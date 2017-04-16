@@ -102,6 +102,7 @@ public class GuiTextField extends GuiComponent {
         super.keyDown(mouseX, mouseY, keyCode);
         if (keyCode == Input.Keys.V && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
             currentlyWritten += Gdx.app.getClipboard().getContents();
+            cursorPosition += Gdx.app.getClipboard().getContents().length();
         }
     }
 

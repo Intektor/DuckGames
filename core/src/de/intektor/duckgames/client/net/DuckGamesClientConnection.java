@@ -1,7 +1,7 @@
 package de.intektor.duckgames.client.net;
 
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.HostingType;
+import de.intektor.duckgames.common.server.HostingType;
 import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.IPacket;
 import de.intektor.duckgames.common.net.PacketOnWrongSideException;

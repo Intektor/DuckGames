@@ -1,6 +1,6 @@
 package de.intektor.duckgames.common.net.client_to_server;
 
-import de.intektor.duckgames.common.DuckGamesServer;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.AbstractSocket;
