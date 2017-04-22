@@ -9,6 +9,7 @@ import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.*;
 import de.intektor.duckgames.common.net.lan.ThreadLanServerPing;
 import de.intektor.duckgames.common.net.server_to_client.*;
+import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.GameProfile;
 import de.intektor.duckgames.game.GameScore;
 import de.intektor.duckgames.world.WorldServer;
@@ -91,7 +92,7 @@ public class DuckGamesServer implements Closeable {
             }
         }.start();
 
-        mainServerThread = new MainServerThread(this);
+        mainServerThread = new MainServerThread();
         mainServerThread.start();
 
         shareToLan();
@@ -224,7 +225,7 @@ public class DuckGamesServer implements Closeable {
 
         private Map<AbstractSocket, PlayerProfile> profileMap = new ConcurrentHashMap<AbstractSocket, PlayerProfile>();
 
-        private volatile long lastTimeTick;
+        private long lastTimeTick;
 
         private GameScore currentGameScore;
 
@@ -236,20 +237,26 @@ public class DuckGamesServer implements Closeable {
         private long ticksAtRoundEnd;
         private boolean startNextRound;
 
-        MainServerThread(DuckGamesServer server) {
+        MainServerThread() {
             super("Main Server Thread");
         }
 
         @Override
         public void run() {
             while (serverRunning) {
-                if (System.nanoTime() - lastTimeTick >= 50000000D) {
-                    lastTimeTick = System.nanoTime();
-                    Runnable task;
-                    while ((task = scheduledTasks.poll()) != null) {
-                        task.run();
+                lastTimeTick = System.nanoTime();
+                Runnable task;
+                while ((task = scheduledTasks.poll()) != null) {
+                    task.run();
+                }
+                serverTick();
+                long nanos = (lastTimeTick + 50000000) - System.nanoTime();
+                if (nanos > 0) {
+                    try {
+                        Thread.sleep(nanos / 1000000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    serverTick();
                 }
             }
         }
@@ -258,9 +265,19 @@ public class DuckGamesServer implements Closeable {
             scheduledTasks.offer(task);
         }
 
+        private double angle;
+
         public void serverTick() {
             if (world != null) {
-                world.updateWorld();
+                if (!world.getPlayerList().isEmpty()) {
+                    EntityPlayer player =world.getPlayerList().get(0);
+                    player.posX = (float) (world.getWidth() / 2 + Math.cos(angle) * 5);
+                    player.posY = (float) (world.getHeight() / 2 + Math.sin(angle) * 5);
+                    angle += 0.05;
+                    packetHelper.sendPacket(new BasicEntityUpdateInformationPacketToClient(player), socketList.get(0));
+                } else {
+                    world.updateWorld();
+                }
                 if (startNextRound && world.getWorldTime() - ticksAtRoundEnd >= 60) {
                     startNextRound = false;
                     startNextRound(backup);
@@ -274,9 +291,9 @@ public class DuckGamesServer implements Closeable {
                 PlayerProfile profile = new PlayerProfile(new GameProfile(UUID.randomUUID(), username, isHost), socket);
                 profileMap.put(socket, profile);
                 packetHelper.sendPacket(new IdentificationSuccessfulPacketToClient(), socket);
-                DuckGamesServer.this.broadcast(new PlayerProfilesPacketToClient(profile.gameProfile));
+                broadcast(new PlayerProfilesPacketToClient(profile.gameProfile));
                 if (serverState == ServerState.LOBBY_STATE) {
-                    DuckGamesServer.this.broadcast(new PlayerJoinLobbyPacketToClient(profile.gameProfile.profileUUID));
+                    broadcast(new PlayerJoinLobbyPacketToClient(profile.gameProfile.profileUUID));
                 }
                 for (PlayerProfile playerProfile : profileMap.values()) {
                     packetHelper.sendPacket(new PlayerProfilesPacketToClient(playerProfile.gameProfile), socket);

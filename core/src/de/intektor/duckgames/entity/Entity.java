@@ -66,10 +66,10 @@ public abstract class Entity {
     }
 
     public final void update() {
-        if (!world.isRemote) {
+//        if (!world.isRemote) {
             motionY -= getGravitationalVelocity();
             move();
-        }
+//        }
         updateEntity();
         ticksAlive++;
         if (posY < -64) kill();

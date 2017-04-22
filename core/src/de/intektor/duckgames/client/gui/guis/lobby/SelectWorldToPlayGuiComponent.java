@@ -1,7 +1,5 @@
 package de.intektor.duckgames.client.gui.guis.lobby;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,11 +10,10 @@ import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiFrame;
 import de.intektor.duckgames.client.gui.components.GuiScrollBar;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.util.WorldUtils;
 
-import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,13 +31,10 @@ public class SelectWorldToPlayGuiComponent extends GuiFrame {
     public SelectWorldToPlayGuiComponent(int x, int y, int width, int height, GuiLobby lobby) {
         super(x, y, width, height, "Select World!");
         try {
-            FileHandle handle = Gdx.files.local("saves/user");
-            for (FileHandle fileHandle : handle.list()) {
-                TagCompound tag = new TagCompound();
-                tag.readFromStream(new DataInputStream(new FileInputStream(fileHandle.file())));
-                EditableGameMap editableGameMap = EditableGameMap.readMapFromCompound(tag);
-                GuiTextBasedButton button = new GuiTextBasedButton(0, 0, width, 80, editableGameMap.getSaveName(), true);
-                buttonMap.put(button, editableGameMap);
+            List<EditableGameMap> worldList = WorldUtils.getWorldList("Saves/user");
+            for (EditableGameMap map : worldList) {
+                GuiTextBasedButton button = new GuiTextBasedButton(0, 0, width, 80, map.getSaveName(), true);
+                buttonMap.put(button, map);
                 registerGuiComponent(button);
             }
         } catch (Exception e) {

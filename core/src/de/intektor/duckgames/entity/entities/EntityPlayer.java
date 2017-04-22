@@ -55,13 +55,15 @@ public abstract class EntityPlayer extends Entity {
         stepHeight = 1.5f;
     }
 
+    private double angle;
+
     @Override
     protected void updateEntity() {
         if (!world.isRemote) {
             maxJumpTicks = 3;
-            if (movingLeft) motionX = -1;
-            if (movingRight) motionX = 1;
-            if ((movingLeft && movingRight) || (!movingLeft && !movingRight)) motionX = 0;
+//            if (movingLeft) motionX = -1;
+//            if (movingRight) motionX = 1;
+//            if ((movingLeft && movingRight) || (!movingLeft && !movingRight)) motionX = 0;
             if (onGround) jumpTicks = 0;
             if (isJumping && jumpTicks <= maxJumpTicks) {
                 jumpTicks++;
@@ -180,6 +182,13 @@ public abstract class EntityPlayer extends Entity {
             }
         } else {
             setAttacking(!isAttacking ? Status.START : Status.UPDATE);
+        }
+    }
+
+    public void setJumping(boolean start) {
+        isJumping = start && onGround;
+        if (!start && onGround) {
+            jumpTicks = maxJumpTicks;
         }
     }
 

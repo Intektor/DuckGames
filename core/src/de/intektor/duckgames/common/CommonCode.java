@@ -104,4 +104,8 @@ public class CommonCode {
     public static void setDuckGamesServer(DuckGamesServer server) {
         CommonCode.server = server;
     }
+
+    public static void init() {
+
+    }
 }

@@ -35,7 +35,6 @@ public class ClientProxy implements IProxy {
 
     @Override
     public void handlePacket(IPacket packet, AbstractSocket socketFrom) {
-        System.out.println(packet);
         if (packet instanceof BasicEntityUpdateInformationPacketToClient) {
             handleBasicEntityUpdateInformationPacketToClient((BasicEntityUpdateInformationPacketToClient) packet);
         } else if (packet instanceof DamageEntityPacketToClient) {
@@ -119,8 +118,8 @@ public class ClientProxy implements IProxy {
                 WorldClient theWorld = duckGames.theWorld;
                 Entity entity = theWorld.getEntityByUUID(packet.entityUUID);
                 if (entity == null) return;
-                entity.prevPosX = packet.prevPosX;
-                entity.prevPosY = packet.prevPosY;
+                entity.prevPosX = entity.posX;
+                entity.prevPosY = entity.posY;
                 entity.posX = packet.posX;
                 entity.posY = packet.posY;
                 entity.motionX = packet.motionX;

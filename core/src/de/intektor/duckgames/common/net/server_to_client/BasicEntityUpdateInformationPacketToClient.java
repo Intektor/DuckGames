@@ -20,15 +20,13 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
 
     public UUID entityUUID;
 
-    public float posX, posY, prevPosX, prevPosY, motionX, motionY, motionMultiplier, health;
+    public float posX, posY, motionX, motionY, motionMultiplier, health;
     public EntityDirection direction;
 
     public BasicEntityUpdateInformationPacketToClient(Entity entity) {
         this.entityUUID = entity.uuid;
         this.posX = entity.posX;
         this.posY = entity.posY;
-        this.prevPosX = entity.prevPosX;
-        this.prevPosY = entity.prevPosY;
         this.motionX = entity.motionX;
         this.motionY = entity.motionY;
         this.motionMultiplier = entity.motionMultiplier;
@@ -44,8 +42,6 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         NetworkUtils.writeUUID(out, entityUUID);
         out.writeFloat(posX);
         out.writeFloat(posY);
-        out.writeFloat(prevPosX);
-        out.writeFloat(prevPosY);
         out.writeFloat(motionX);
         out.writeFloat(motionY);
         out.writeFloat(motionMultiplier);
@@ -58,8 +54,6 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         entityUUID = NetworkUtils.readUUID(in);
         posX = in.readFloat();
         posY = in.readFloat();
-        prevPosX = in.readFloat();
-        prevPosY = in.readFloat();
         motionX = in.readFloat();
         motionY = in.readFloat();
         motionMultiplier = in.readFloat();

@@ -124,6 +124,8 @@ public class DuckGamesClient extends ApplicationAdapter {
         defaultFont72 = gen.generateFont(parameter);
         gen.dispose();
 
+        CommonCode.init();
+
         Blocks.initClient();
         Items.initClient();
 
@@ -153,6 +155,10 @@ public class DuckGamesClient extends ApplicationAdapter {
     @Override
     public void render() {
         super.render();
+        Runnable r;
+        while ((r = scheduledTasks.poll()) != null) {
+            r.run();
+        }
         camera.update();
         if (System.nanoTime() - lastTickTime >= 50000000D) {
             lastTickTime = System.nanoTime();
@@ -165,10 +171,6 @@ public class DuckGamesClient extends ApplicationAdapter {
      * The updateWorld method of the game: Called 20 times per second
      */
     private void updateGame() {
-        Runnable r;
-        while ((r = scheduledTasks.poll()) != null) {
-            r.run();
-        }
         if (currentGui != null) currentGui.update(Gdx.input.getX(), Gdx.input.getY());
     }
 

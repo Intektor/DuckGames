@@ -193,12 +193,15 @@ public class GuiPlayState extends Gui {
         switch (keyCode) {
             case Keys.A:
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.LEFT));
+                dg.thePlayer.move(EnumDirection.LEFT, true);
                 break;
             case Keys.D:
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.RIGHT));
+                dg.thePlayer.move(EnumDirection.RIGHT, true);
                 break;
             case Keys.SPACE:
                 dg.sendPacketToServer(new JumpPacketToServer(true));
+                dg.thePlayer.setJumping(true);
                 break;
             case Keys.ESCAPE:
                 try {
@@ -236,6 +239,7 @@ public class GuiPlayState extends Gui {
                 break;
             case Keys.SPACE:
                 dg.sendPacketToServer(new JumpPacketToServer(false));
+                dg.thePlayer.setJumping(false);
                 break;
         }
     }

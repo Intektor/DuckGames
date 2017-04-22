@@ -4,13 +4,13 @@ import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.client.editor.EntitySpawn;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.common.PlayerProfile;
 import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.server_to_client.BasicEntityUpdateInformationPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.PlayerPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RemoveEntityPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.SpawnEntityPacketToClient;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.worlds.spawns.PlayerSpawn;
@@ -35,6 +35,7 @@ public class WorldServer extends World {
     public void updateWorld() {
         super.updateWorld();
     }
+
 
     @Override
     protected void updateEntity(Entity entity) {
@@ -70,12 +71,6 @@ public class WorldServer extends World {
     public void removeEntity(Entity entity) {
         server.broadcast(new RemoveEntityPacketToClient(entity.uuid));
         super.removeEntity(entity);
-    }
-
-    public static void main(String[] args) {
-        for (int i = 0; i < 40; i++) {
-
-        }
     }
 
     /**
