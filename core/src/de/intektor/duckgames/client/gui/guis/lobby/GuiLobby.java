@@ -35,7 +35,7 @@ public class GuiLobby extends Gui {
     private GuiTextBasedButton startGameButton;
     private GuiTextBasedButton leaveLobbyButton;
     private GuiTextBasedButton selectWorldButton;
-    private GuiLobbyChat chatComponent;
+    private GuiChat chatComponent;
 
     private SelectWorldToPlayGuiComponent selectWorldToPlayGuiComponent;
 
@@ -53,7 +53,7 @@ public class GuiLobby extends Gui {
     @Override
     public void enterGui() {
         super.enterGui();
-        chatComponent = new GuiLobbyChat(width / 2 - 600, height / 2 - 400, 1200, 800);
+        chatComponent = new GuiChat(width / 2 - 600, height / 2 - 400, 1200, 800);
         registerComponent(chatComponent);
 
         leaveLobbyButton = new GuiTextBasedButton(0, 0, 200, 80, "Leave Lobby!", true);

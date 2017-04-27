@@ -15,6 +15,7 @@ import de.intektor.duckgames.client.gui.components.GuiImageBasedButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
 import de.intektor.duckgames.client.gui.guis.GuiLevelEditor;
 import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
+import de.intektor.duckgames.client.gui.guis.lobby.GuiChat;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.gui.util.MousePos;
 import de.intektor.duckgames.client.rendering.FontUtils;
@@ -23,6 +24,7 @@ import de.intektor.duckgames.client.rendering.WorldRenderer;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.Status;
+import de.intektor.duckgames.common.chat.ChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.NewRoundPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RoundEndedPacketToClient;
@@ -56,10 +58,15 @@ public class GuiPlayState extends Gui {
     private GuiTextBasedButton buttonMenuChat;
     private GuiTextBasedButton buttonMenuExit;
 
+    private GuiTextBasedButton buttonShowChat;
+
     private boolean menuShown;
+    private boolean chatShown;
 
     private GuiThumbPad movementPad;
     private GuiThumbPad aimingPad;
+
+    private GuiChat chat;
 
     private GameProfile winningProfile;
     private long timeShowingWinner;
@@ -91,7 +98,7 @@ public class GuiPlayState extends Gui {
 
         touchMode = DeviceUtils.isDeviceTouch();
 
-        buttonMenu = new GuiImageBasedButton(width - 100, height - 90, 80, 60, menuButtonTexture);
+        buttonMenu = new GuiImageBasedButton(width - 110, height - 90, 80, 60, menuButtonTexture);
 
         Color color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
         Color hoveredColor = new Color(0.25f, 0.25f, 0.25f, 0.5f);
@@ -114,6 +121,14 @@ public class GuiPlayState extends Gui {
             registerComponent(aimingPad);
         }
 
+        if (dg.theWorld.getGameMode() == DuckGamesServer.GameMode.TEST_WORLD) {
+            buttonShowChat = new GuiTextBasedButton(width - 200, height - 90, 80, 60, "Chat", true);
+            registerComponent(buttonShowChat);
+
+            chat = new GuiChat(width / 2 - width / 6, height - 320, width / 3, 300);
+            registerComponent(chat);
+            chat.setShown(false);
+        }
     }
 
     @Override
@@ -219,7 +234,7 @@ public class GuiPlayState extends Gui {
 
     @Override
     public void keyPushed(int keyCode, int mouseX, int mouseY) {
-        if (menuShown) return;
+        if (menuShown || chatShown) return;
         ItemStack mainHand = dg.thePlayer.getEquipment(EntityEquipmentSlot.MAIN_HAND);
         switch (keyCode) {
             case Keys.A:
@@ -261,7 +276,7 @@ public class GuiPlayState extends Gui {
 
     @Override
     public void keyReleased(int keyCode, int mouseX, int mouseY) {
-        if (menuShown) return;
+        if (menuShown || chatShown) return;
         switch (keyCode) {
             case Keys.A:
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(false, EnumDirection.LEFT));
@@ -291,7 +306,7 @@ public class GuiPlayState extends Gui {
         super.pointerDown(mouseX, mouseY, pointer, button);
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
-        if (menuShown) return;
+        if (menuShown || chatShown) return;
         if (player == null || world == null) return;
 
         if (postMortemMode) {
@@ -339,7 +354,7 @@ public class GuiPlayState extends Gui {
     @Override
     protected void pointerUp(int mouseX, int mouseY, int pointer, int button) {
         super.pointerUp(mouseX, mouseY, pointer, button);
-        if (touchMode || menuShown) return;
+        if (touchMode || menuShown || chatShown) return;
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
         MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
@@ -429,6 +444,9 @@ public class GuiPlayState extends Gui {
                 }
                 dg.setDedicatedServer(null);
             }
+        } else if (button == buttonShowChat) {
+            chat.setShown(!chatShown);
+            chatShown = !chatShown;
         }
     }
 
@@ -437,5 +455,9 @@ public class GuiPlayState extends Gui {
         buttonMenuContinue.setShown(show);
         buttonMenuChat.setShown(show);
         buttonMenuExit.setShown(show);
+    }
+
+    public void addChatMessage(ChatMessage message) {
+        chat.addMessage(message);
     }
 }

@@ -8,6 +8,7 @@ import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.IPacket;
 import de.intektor.duckgames.common.net.IPacketHandler;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,14 +23,17 @@ public class WorldPacketToClient implements IPacket {
     public int height;
     public Table<Integer, Integer, Block> blockTable;
 
+    public DuckGamesServer.GameMode gameMode;
+
     public WorldPacketToClient() {
         blockTable = HashBasedTable.create();
     }
 
-    public WorldPacketToClient(int width, int height, Table<Integer, Integer, Block> blockTable) {
+    public WorldPacketToClient(int width, int height, Table<Integer, Integer, Block> blockTable, DuckGamesServer.GameMode gameMode) {
         this.width = width;
         this.height = height;
         this.blockTable = blockTable;
+        this.gameMode = gameMode;
     }
 
     @Override
@@ -42,6 +46,7 @@ public class WorldPacketToClient implements IPacket {
                 out.writeByte(gameRegistry.getBlockID(blockTable.get(x, y)));
             }
         }
+        out.writeInt(gameMode.ordinal());
     }
 
     @Override
@@ -55,6 +60,7 @@ public class WorldPacketToClient implements IPacket {
                 blockTable.put(x, y, block);
             }
         }
+        gameMode = DuckGamesServer.GameMode.values()[in.readInt()];
     }
 
     public static class Handler implements IPacketHandler<WorldPacketToClient> {

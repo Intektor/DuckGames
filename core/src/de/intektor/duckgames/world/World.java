@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.collision.Collision2D;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.util.BlockPos;
@@ -25,6 +26,8 @@ public abstract class World {
 
     private Table<Integer, Integer, Block> blockTable;
 
+    private DuckGamesServer.GameMode gameMode;
+
     protected long worldTime;
 
     public final boolean isRemote;
@@ -36,11 +39,12 @@ public abstract class World {
 
     protected final int width, height;
 
-    public World(Table<Integer, Integer, Block> blockTable, int width, int height, boolean isRemote) {
+    public World(Table<Integer, Integer, Block> blockTable, int width, int height, boolean isRemote, DuckGamesServer.GameMode gameMode) {
         this.blockTable = blockTable;
         this.width = width;
         this.height = height;
         this.isRemote = isRemote;
+        this.gameMode = gameMode;
         initWorld();
     }
 
@@ -182,5 +186,9 @@ public abstract class World {
 
         }
         return null;
+    }
+
+    public DuckGamesServer.GameMode getGameMode() {
+        return gameMode;
     }
 }

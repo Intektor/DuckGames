@@ -25,8 +25,8 @@ public class WorldServer extends World {
     private DuckGamesServer server;
     private List<EntitySpawn> entitySpawns;
 
-    public WorldServer(Table<Integer, Integer, Block> blockTable, List<EntitySpawn> entitySpawns, int width, int height, DuckGamesServer server) {
-        super(blockTable, width, height, false);
+    public WorldServer(Table<Integer, Integer, Block> blockTable, List<EntitySpawn> entitySpawns, int width, int height, DuckGamesServer server, DuckGamesServer.GameMode gameMode) {
+        super(blockTable, width, height, false, gameMode);
         this.server = server;
         this.entitySpawns = entitySpawns;
     }

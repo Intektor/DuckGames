@@ -266,7 +266,7 @@ public class ClientProxy implements IProxy {
     }
 
     private void handleWorldPacketToClient(final WorldPacketToClient packet) {
-        duckGames.theWorld = new WorldClient(packet.blockTable, packet.width, packet.height);
+        duckGames.theWorld = new WorldClient(packet.blockTable, packet.width, packet.height, packet.gameMode);
         duckGames.addScheduledTask(new Runnable() {
             @Override
             public void run() {
@@ -292,6 +292,9 @@ public class ClientProxy implements IProxy {
                 if (duckGames.getCurrentGui() instanceof GuiLobby) {
                     GuiLobby lobby = (GuiLobby) duckGames.getCurrentGui();
                     lobby.addMessage(packet.message);
+                } else if (duckGames.getCurrentGui() instanceof GuiPlayState) {
+                    GuiPlayState playState = (GuiPlayState) duckGames.getCurrentGui();
+                    playState.addChatMessage(packet.message);
                 }
             }
         });

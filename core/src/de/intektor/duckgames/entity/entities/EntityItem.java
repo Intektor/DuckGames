@@ -95,6 +95,6 @@ public class EntityItem extends Entity {
     }
 
     public boolean canBePickedUpByPlayer(EntityPlayer player) {
-        return !player.uuid.equals(lastThrower) || world.getWorldTime() - tickTimeAtThrowAway >= 64;
+        return !player.uuid.equals(lastThrower) || world.getWorldTime() - tickTimeAtThrowAway >= 20;
     }
 }

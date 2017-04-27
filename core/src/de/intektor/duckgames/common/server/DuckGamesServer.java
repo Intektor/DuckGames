@@ -321,7 +321,7 @@ public class DuckGamesServer implements Closeable {
 
         void startNextRound(EditableGameMap map) {
             world = map.convertToWorld(DuckGamesServer.this);
-            broadcast(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable()));
+            broadcast(new WorldPacketToClient(world.getWidth(), world.getHeight(), world.getBlockTable(), gameMode));
 
             world.spawnPlayers();
             world.spawnEntities();

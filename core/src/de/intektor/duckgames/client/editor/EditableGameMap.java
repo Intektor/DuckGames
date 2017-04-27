@@ -252,7 +252,7 @@ public class EditableGameMap implements Serializable {
                 if (blockTable.get(x, y) == null) blockTable.put(x, y, Blocks.AIR);
             }
         }
-        return new WorldServer(blockTable, entitySpawnList, width, height, server);
+        return new WorldServer(blockTable, entitySpawnList, width, height, server, server.getMainServerThread().getGameMode());
     }
 
     public boolean canBeConvertedToWorld() {

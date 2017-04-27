@@ -27,7 +27,7 @@ import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 /**
  * @author Intektor
  */
-public class GuiLobbyChat extends GuiMultiComponent {
+public class GuiChat extends GuiMultiComponent {
 
     private GuiScrollBar messageScrollBar;
     private GuiTextBasedButton sendMessageButton;
@@ -37,7 +37,7 @@ public class GuiLobbyChat extends GuiMultiComponent {
 
     private List<ChatMessage> messages = new ArrayList<ChatMessage>();
 
-    public GuiLobbyChat(int x, int y, int width, int height) {
+    public GuiChat(int x, int y, int width, int height) {
         super(x, y, width, height);
         messageScrollBar = new GuiScrollBar(width - 20, 0, 20, height, GuiScrollBar.Direction.VERTICAL, 0, (int) (height - font.getLineHeight()));
         registerGuiComponent(messageScrollBar);
@@ -61,7 +61,7 @@ public class GuiLobbyChat extends GuiMultiComponent {
                 GuiUtils.unscaleScreenCoordX(width), GuiUtils.unscaleScreenCoordX(height - font.getLineHeight()));
         float y = drawY + chatWritingField.getHeight() + font.getLineHeight();
         if (messages.size() * font.getLineHeight() > height - font.getLineHeight()) {
-            y += (font.getLineHeight() * messages.size() - height + font.getLineHeight()) * messageScrollBar.getScrollPercent();
+            y -= (font.getLineHeight() * messages.size() - height + font.getLineHeight()) * (1 - messageScrollBar.getScrollPercent());
         }
         for (int i = messages.size() - 1; i >= 0; i--) {
             ChatMessage message = messages.get(i);

@@ -2,6 +2,7 @@ package de.intektor.duckgames.world;
 
 import com.google.common.collect.Table;
 import de.intektor.duckgames.block.Block;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.entity.Entity;
 
 /**
@@ -9,8 +10,8 @@ import de.intektor.duckgames.entity.Entity;
  */
 public class WorldClient extends World {
 
-    public WorldClient(Table<Integer, Integer, Block> blockTable, int width, int height) {
-        super(blockTable, width, height, true);
+    public WorldClient(Table<Integer, Integer, Block> blockTable, int width, int height, DuckGamesServer.GameMode gameMode) {
+        super(blockTable, width, height, true, gameMode);
     }
 
     @Override
