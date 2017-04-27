@@ -6,6 +6,7 @@ import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.NetworkUtils;
 import de.intektor.duckgames.common.net.server_to_client.DamageEntityPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RemoveEntityPacketToClient;
+import de.intektor.duckgames.data_storage.box.DataBox;
 import de.intektor.duckgames.game.damage.DamageSource;
 import de.intektor.duckgames.util.EnumAxis;
 import de.intektor.duckgames.world.World;
@@ -39,7 +40,7 @@ public abstract class Entity {
     public long ticksAlive;
     public boolean isDead;
 
-    protected Collision2D collision;
+    protected Collision2D hitbox;
 
     protected EntityDirection direction = EntityDirection.RIGHT;
 
@@ -62,14 +63,14 @@ public abstract class Entity {
     }
 
     protected void initEntity() {
-        collision = new Collision2D(posX, posY, getWidth(), getHeight());
+        hitbox = new Collision2D(posX, posY, getWidth(), getHeight());
     }
 
     public final void update() {
-//        if (!world.isRemote) {
+        if (!world.isRemote) {
             motionY -= getGravitationalVelocity();
             move();
-//        }
+        }
         updateEntity();
         ticksAlive++;
         if (posY < -64) kill();
@@ -81,8 +82,8 @@ public abstract class Entity {
         prevPosX = posX;
         prevPosY = posY;
 
-        Collision2D potentialCollisionX = collision.copy().move(motionX * motionMultiplier, 0);
-        Collision2D potentialCollisionY = collision.copy().move(0, motionY * motionMultiplier);
+        Collision2D potentialCollisionX = hitbox.copy().move(motionX * motionMultiplier, 0);
+        Collision2D potentialCollisionY = hitbox.copy().move(0, motionY * motionMultiplier);
 
         List<Collision2D> xCollided = new ArrayList<Collision2D>();
         List<Collision2D> yCollided = new ArrayList<Collision2D>();
@@ -160,7 +161,7 @@ public abstract class Entity {
     }
 
     public void adjustCollision() {
-        collision.set(posX, posY);
+        hitbox.set(posX, posY);
     }
 
     public void damageEntity(DamageSource source) {
@@ -207,6 +208,26 @@ public abstract class Entity {
 
     }
 
+    /**
+     * Writes this data to the default entity update packet
+     * Always called by {@link de.intektor.duckgames.common.net.Side#SERVER}
+     *
+     * @see de.intektor.duckgames.common.net.server_to_client.BasicEntityUpdateInformationPacketToClient
+     */
+    public void writeAdditionalUpdateData(DataBox box) {
+
+    }
+
+    /**
+     * Reads this data to the default entity update packet
+     * Always called by {@link de.intektor.duckgames.common.net.Side#CLIENT}
+     *
+     * @see de.intektor.duckgames.common.net.server_to_client.BasicEntityUpdateInformationPacketToClient
+     */
+    public void readAdditionalUpdateData(DataBox box) {
+
+    }
+
     public EntityDirection getDirection() {
         return direction;
     }
@@ -233,8 +254,8 @@ public abstract class Entity {
         return (float) Math.sqrt(getDistanceToEntitySq(entity));
     }
 
-    public Collision2D getCollision() {
-        return collision;
+    public Collision2D getHitbox() {
+        return hitbox;
     }
 
     public void kill() {

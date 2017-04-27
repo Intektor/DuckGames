@@ -36,8 +36,12 @@ public class RenderUtils {
         spriteBatch.disableBlending();
     }
 
+    public static void drawRotatedTexture(TextureRegion texture, SpriteBatch sB, float x, float y, float scale, float rotation) {
+        sB.draw(texture, x, y, scale / 2, scale / 2, scale, scale, 1, 1, rotation);
+    }
+
     public static void drawRotatedTexture(Texture texture, SpriteBatch sB, float x, float y, float scale, float rotation) {
-        sB.draw(new TextureRegion(texture), x, y, scale / 2, scale / 2, scale, scale, 1, 1, rotation);
+        drawRotatedTexture(new TextureRegion(texture), sB, x, y, scale, rotation);
     }
 
     /**

@@ -1,6 +1,8 @@
 package de.intektor.duckgames.block;
 
 import de.intektor.duckgames.DuckGamesClient;
+import de.intektor.duckgames.block.blocks.BlockAir;
+import de.intektor.duckgames.block.blocks.BlockIce;
 import de.intektor.duckgames.client.rendering.block.AirBlockBlockRenderer;
 import de.intektor.duckgames.client.rendering.block.BlockRendererRegistry;
 import de.intektor.duckgames.client.rendering.block.DefaultTextureBlockRenderer;
@@ -23,7 +25,7 @@ public class Blocks {
     static {
         DIRT = new Block("dirt");
         GRASS = new Block("grass");
-        ICE = new Block("ice");
+        ICE = new BlockIce("ice");
         MARBLE_COBBLESTONE = new Block("marble_cobblestone");
         CLAY_BRICK = new Block("clay_brick");
         AIR = new BlockAir("air");

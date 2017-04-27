@@ -12,6 +12,7 @@ import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.utils.TextureUtils;
 import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
+import de.intektor.duckgames.world.WorldClient;
 
 import javax.vecmath.Point2f;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import java.util.Map;
 /**
  * @author Intektor
  */
-public class DefaultTextureItemRenderer implements IItemRenderer {
+public abstract class DefaultTextureItemRenderer implements IItemRenderer {
 
     private Texture fullTexture;
     private Texture scaledTexture;
@@ -50,8 +51,10 @@ public class DefaultTextureItemRenderer implements IItemRenderer {
         Point2f pos = RenderUtils.getInterpolatedEntityPos(player, partialTicks);
         float x = pos.x + player.getWidth() / 2;
         float y = pos.y + player.getHeight() / 2;
+        TextureRegion region = new TextureRegion(fullTexture);
+        region.flip(reverseTexture(player, (WorldClient) player.world), false);
         sB.begin();
-        RenderUtils.drawRotatedTexture(fullTexture, sB, x, y, 3, aimingAngle);
+        RenderUtils.drawRotatedTexture(region, sB, x, y, getTextureSizeForPlayerRendering(player, (WorldClient) player.world), (float) Math.toDegrees(aimingAngle));
         sB.end();
     }
 
@@ -80,5 +83,11 @@ public class DefaultTextureItemRenderer implements IItemRenderer {
             glowingTextures.put(color.toIntBits(), TextureUtils.generateGlowingTexture(texture, color.toIntBits()));
         }
         return glowingTextures.get(color.toIntBits());
+    }
+
+    protected abstract float getTextureSizeForPlayerRendering(EntityPlayerSP player, WorldClient world);
+
+    protected boolean reverseTexture(EntityPlayerSP player, WorldClient world) {
+        return false;
     }
 }

@@ -32,7 +32,7 @@ import de.intektor.duckgames.common.Networking;
 import de.intektor.duckgames.common.net.IPacket;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Items;
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 import de.intektor.duckgames.world.WorldClient;
 
 import java.io.DataInputStream;
@@ -155,10 +155,6 @@ public class DuckGamesClient extends ApplicationAdapter {
     @Override
     public void render() {
         super.render();
-        Runnable r;
-        while ((r = scheduledTasks.poll()) != null) {
-            r.run();
-        }
         camera.update();
         if (System.nanoTime() - lastTickTime >= 50000000D) {
             lastTickTime = System.nanoTime();
@@ -171,6 +167,10 @@ public class DuckGamesClient extends ApplicationAdapter {
      * The updateWorld method of the game: Called 20 times per second
      */
     private void updateGame() {
+        Runnable r;
+        while ((r = scheduledTasks.poll()) != null) {
+            r.run();
+        }
         if (currentGui != null) currentGui.update(Gdx.input.getX(), Gdx.input.getY());
     }
 

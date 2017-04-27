@@ -1,8 +1,10 @@
 package de.intektor.duckgames.entity.entities;
 
+import de.intektor.duckgames.block.Block;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.server_to_client.PickupEquipmentItemStackPacketToClient;
+import de.intektor.duckgames.data_storage.box.DataBox;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.EntityDirection;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
@@ -30,6 +32,8 @@ public abstract class EntityPlayer extends Entity {
     public int maxJumpTicks = 1;
     public int jumpTicks;
 
+    public boolean isCrouching;
+
     private boolean isAttacking;
     private float aimingAngle;
 
@@ -39,6 +43,9 @@ public abstract class EntityPlayer extends Entity {
     private ItemStack[] equipment = new ItemStack[EntityEquipmentSlot.values().length];
 
     private String displayName;
+
+    private Collision2D standingHitbox;
+    private Collision2D crouchingHitbox;
 
     public EntityPlayer(World world, float posX, float posY, String displayName) {
         super(world, posX, posY);
@@ -53,22 +60,44 @@ public abstract class EntityPlayer extends Entity {
     protected void initEntity() {
         super.initEntity();
         stepHeight = 1.5f;
-    }
+        standingHitbox = new Collision2D(0, 0, getWidth(), getHeight());
+        crouchingHitbox = new Collision2D(0, 0, getWidth(), getHeight() / 2);
 
-    private double angle;
+    }
 
     @Override
     protected void updateEntity() {
         if (!world.isRemote) {
             maxJumpTicks = 3;
-//            if (movingLeft) motionX = -1;
-//            if (movingRight) motionX = 1;
-//            if ((movingLeft && movingRight) || (!movingLeft && !movingRight)) motionX = 0;
+            Block block = world.getBlock((int) (posX + getWidth() / 2), (int) posY - 1);
+
+            if (isMoving()) {
+                if (movingLeft) {
+                    if (!block.hasAcceleratedMovement(this, world)) {
+                        motionX = -block.getMaxMotion(this, world);
+                    } else {
+                        motionX = Math.max(motionX - block.getMotionAccelerationAdditionWhenMoving(this, world), -block.getMaxMotion(this, world));
+                    }
+                }
+                if (movingRight) {
+                    if (!block.hasAcceleratedMovement(this, world)) {
+                        motionX = block.getMaxMotion(this, world);
+                    } else {
+                        motionX = Math.min(motionX + block.getMotionAccelerationAdditionWhenMoving(this, world), block.getMaxMotion(this, world));
+                    }
+                }
+            }
+
+            if ((movingLeft && movingRight) || (!movingLeft && !movingRight)) {
+                motionX = motionX * block.getMotionStopFactorOnStep(this, world);
+            }
+
             if (onGround) jumpTicks = 0;
             if (isJumping && jumpTicks <= maxJumpTicks) {
                 jumpTicks++;
-                motionY += 0.375f;
+                motionY += 0.75f * (1 - jumpTicks / maxJumpTicks);
             }
+
             List<EntityItem> entitiesInRegion = world.getEntitiesInRegion(EntityItem.class, new Collision2D(posX - 1, posY, 2, 1));
             for (EntityItem entityItem : entitiesInRegion) {
                 if (entityItem.canBePickedUpByPlayer(this)) {
@@ -101,14 +130,16 @@ public abstract class EntityPlayer extends Entity {
     protected void collidedInAxis(EnumAxis axis, float collisionPointX, float collisionPointY, float motionX, float motionY) {
         super.collidedInAxis(axis, collisionPointX, collisionPointY, motionX, motionY);
         if (!world.isRemote) {
-            if (axis == EnumAxis.X && onGround) {
-                float cX = posX + motionX;
-                int cY = (int) posY;
-                for (int y = cY; y <= cY + stepHeight; y++) {
-                    if (canBeAtPosition(cX, y)) {
-                        posX = cX;
-                        posY = y;
-                        break;
+            if (isMoving()) {
+                if (axis == EnumAxis.X && onGround) {
+                    float cX = posX + motionX;
+                    int cY = (int) posY;
+                    for (int y = cY; y <= cY + stepHeight; y++) {
+                        if (canBeAtPosition(cX, y)) {
+                            posX = cX;
+                            posY = y;
+                            break;
+                        }
                     }
                 }
             }
@@ -122,7 +153,7 @@ public abstract class EntityPlayer extends Entity {
 
     @Override
     public float getHeight() {
-        return 2.4f;
+        return !isCrouching ? 2.4f : 1.2f;
     }
 
     @Override
@@ -173,7 +204,6 @@ public abstract class EntityPlayer extends Entity {
     }
 
     public void setAim(float aimingAngle, float aimingStrength) {
-        float prevAimingAngle = this.aimingAngle;
         this.aimingAngle = aimingAngle;
         direction = aimingAngle > Math.PI / 2 || aimingAngle < -Math.PI / 2 ? EntityDirection.LEFT : EntityDirection.RIGHT;
         if (aimingStrength < 0.5f) {
@@ -200,6 +230,10 @@ public abstract class EntityPlayer extends Entity {
         return displayName;
     }
 
+    public boolean isMoving() {
+        return movingLeft || movingRight;
+    }
+
     @Override
     protected void writeAdditionalSpawnData(DataOutputStream out) throws IOException {
         super.writeAdditionalSpawnData(out);
@@ -210,5 +244,19 @@ public abstract class EntityPlayer extends Entity {
     protected void readAdditionalSpawnData(DataInputStream in) throws IOException {
         super.readAdditionalSpawnData(in);
         displayName = in.readUTF();
+    }
+
+    @Override
+    public void writeAdditionalUpdateData(DataBox box) {
+        super.writeAdditionalUpdateData(box);
+        box.writeFloat(aimingAngle);
+        box.writeBoolean(isCrouching);
+    }
+
+    @Override
+    public void readAdditionalUpdateData(DataBox box) {
+        super.readAdditionalUpdateData(box);
+        aimingAngle = box.readFloat();
+        isCrouching = box.readBoolean();
     }
 }

@@ -9,7 +9,6 @@ import de.intektor.duckgames.common.entity.EntityPlayerMP;
 import de.intektor.duckgames.common.net.*;
 import de.intektor.duckgames.common.net.lan.ThreadLanServerPing;
 import de.intektor.duckgames.common.net.server_to_client.*;
-import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.GameProfile;
 import de.intektor.duckgames.game.GameScore;
 import de.intektor.duckgames.world.WorldServer;
@@ -43,7 +42,7 @@ public class DuckGamesServer implements Closeable {
 
     private volatile boolean serverRunning;
 
-    private volatile List<AbstractSocket> socketList = Collections.synchronizedList(new ArrayList<AbstractSocket>());
+    private volatile Set<AbstractSocket> socketList = Collections.newSetFromMap(new ConcurrentHashMap<AbstractSocket, Boolean>());
 
     private volatile ServerState serverState;
 
@@ -269,15 +268,9 @@ public class DuckGamesServer implements Closeable {
 
         public void serverTick() {
             if (world != null) {
-                if (!world.getPlayerList().isEmpty()) {
-                    EntityPlayer player =world.getPlayerList().get(0);
-                    player.posX = (float) (world.getWidth() / 2 + Math.cos(angle) * 5);
-                    player.posY = (float) (world.getHeight() / 2 + Math.sin(angle) * 5);
-                    angle += 0.05;
-                    packetHelper.sendPacket(new BasicEntityUpdateInformationPacketToClient(player), socketList.get(0));
-                } else {
-                    world.updateWorld();
-                }
+
+                world.updateWorld();
+
                 if (startNextRound && world.getWorldTime() - ticksAtRoundEnd >= 60) {
                     startNextRound = false;
                     startNextRound(backup);
@@ -335,6 +328,7 @@ public class DuckGamesServer implements Closeable {
 
             broadcast(new GameScorePacketToClient(currentGameScore));
             broadcast(new FinishedWorldTransmissionPacketToClient());
+            broadcast(new NewRoundPacketToClient());
         }
 
         public void endRound(WorldServer world, EntityPlayerMP winner) {

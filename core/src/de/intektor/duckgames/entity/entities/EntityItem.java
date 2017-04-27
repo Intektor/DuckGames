@@ -46,7 +46,7 @@ public class EntityItem extends Entity {
 
     @Override
     protected void updateEntity() {
-        if (collision.getWidth() == 0) collision = new Collision2D(posX, posY, getWidth(), getHeight());
+        if (hitbox.getWidth() == 0) hitbox = new Collision2D(posX, posY, getWidth(), getHeight());
     }
 
     @Override

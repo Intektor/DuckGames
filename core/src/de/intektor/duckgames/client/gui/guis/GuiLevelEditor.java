@@ -38,7 +38,9 @@ import de.intektor.duckgames.game.worlds.spawns.renderer.EntitySpawnRendererRegi
 import de.intektor.duckgames.game.worlds.spawns.renderer.ItemSpawnRenderer;
 import de.intektor.duckgames.game.worlds.spawns.renderer.PlayerSpawnRenderer;
 
+import javax.vecmath.Point2i;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Keys.*;
@@ -79,6 +81,9 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     private float lastInEditorClickX;
     private float lastInEditorClickY;
     private boolean lastClickInEditor;
+
+    private int lastPosBlockChangeX;
+    private int lastPosBlockChangeY;
 
     private boolean deleteEntitySpawnToolSelecting;
 
@@ -280,7 +285,6 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             RenderUtils.drawString("Connecting to Server", dg.defaultFont20, width / 2, height / 2, spriteBatch, Color.WHITE, true);
             spriteBatch.end();
         }
-
     }
 
     @Override
@@ -425,15 +429,18 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
 
     @Override
     protected void pointerDragged(int mouseX, int mouseY, int prevMouseX, int prevMouseY, int pointer) {
+        MousePos mousePos = GuiUtils.unprojectMousePosition(editorCamera);
         if ((!hoversComponent(mouseX, mouseY) || !blockBuildTool.isEnabled()) && input.isKeyPressed(SPACE) && !itemSpawnEditorGuiComponent.isActive()) {
-            MousePos mousePos = GuiUtils.unprojectMousePosition(editorCamera);
             MousePos prevMousePos = GuiUtils.unprojectMousePosition(editorCamera, input.getX() - input.getDeltaX(), Gdx.graphics.getHeight() - unscaleMouseY(prevMouseY));
             editorCamera.position.add(prevMousePos.x - mousePos.x, prevMousePos.y - mousePos.y, 0);
         }
         if (itemSpawnEditorGuiComponent.isActive() || hoversComponent(mouseX, mouseY)) return;
         switch (currentTool) {
             case PLACE_BLOCK:
-                changeBlock(currentSelectedBlock);
+                List<Point2i> line = getLine(lastPosBlockChangeX, lastPosBlockChangeY, (int) mousePos.x, (int) mousePos.y);
+                for (Point2i point2i : line) {
+                    changeBlock(currentSelectedBlock, point2i.x, point2i.y);
+                }
                 break;
         }
     }
@@ -466,13 +473,19 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
     }
 
     private void changeBlock(Block block) {
+        MousePos mousePos = GuiUtils.unprojectMousePosition(editorCamera);
+        changeBlock(block, (int) mousePos.x, (int) mousePos.y);
+    }
+
+    private void changeBlock(Block block, int x, int y) {
         if (input.isKeyPressed(SPACE) || blockBuildTool.isShown() || entitySpawnTool.isShown() || hoversComponent(input.getX(), input.getY()) || menuShown)
             return;
-        MousePos mousePos = GuiUtils.unprojectMousePosition(editorCamera);
-        if (map.collisionCollidesWithEntitySpawns(new Collision2D((int) mousePos.x, (int) mousePos.y, 1, 1))) return;
-        if (!(mousePos.x >= 0 && mousePos.x <= map.getWidth() + 1 && mousePos.y >= 0 && mousePos.y <= map.getHeight() + 1))
+        if (map.collisionCollidesWithEntitySpawns(new Collision2D(x, y, 1, 1))) return;
+        if (!(x >= 0 && x <= map.getWidth() + 1 && y >= 0 && y <= map.getHeight() + 1))
             return;
-        map.setBlock((int) (mousePos.x), (int) (mousePos.y), block);
+        lastPosBlockChangeX = x;
+        lastPosBlockChangeY = y;
+        map.setBlock(x, y, block);
 
     }
 
@@ -535,6 +548,38 @@ public class GuiLevelEditor extends Gui implements GuiScrollTool.ScrollToolCallb
             allowInput = false;
             waitingForTestServer = true;
         }
+    }
+
+    private List<Point2i> getLine(int x1, int y1, int x2, int y2) {
+        List<Point2i> list = new ArrayList<Point2i>();
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+
+        int sx = (x1 < x2) ? 1 : -1;
+        int sy = (y1 < y2) ? 1 : -1;
+
+        int err = dx - dy;
+
+        while (true) {
+            list.add(new Point2i(x1, y1));
+
+            if (x1 == x2 && y1 == y2) {
+                break;
+            }
+
+            int e2 = 2 * err;
+
+            if (e2 > -dy) {
+                err = err - dy;
+                x1 = x1 + sx;
+            }
+
+            if (e2 < dx) {
+                err = err + dx;
+                y1 = y1 + sy;
+            }
+        }
+        return list;
     }
 
     public EditableGameMap getMap() {

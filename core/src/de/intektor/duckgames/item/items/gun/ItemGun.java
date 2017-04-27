@@ -8,7 +8,7 @@ import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.util.TagUtils;
 import de.intektor.duckgames.world.World;
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 
 import java.util.Random;
 

@@ -3,6 +3,8 @@ package de.intektor.duckgames.collision;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 
+import javax.vecmath.Point2f;
+
 /**
  * @author Intektor
  */
@@ -25,6 +27,14 @@ public class Collision2D {
 
     private boolean collides(Collision2D rect) {
         return Intersector.intersectRectangles(toRectangle(), rect.toRectangle(), new Rectangle());
+    }
+
+    public boolean isPointInside(Point2f p) {
+        return isPointInside(p.x, p.y);
+    }
+
+    public boolean isPointInside(float x, float y) {
+        return collidesWith(new Collision2D(x, y, 1, 1));
     }
 
     private void update() {

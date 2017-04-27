@@ -77,6 +77,8 @@ public class ClientProxy implements IProxy {
             handleLobbyChangeMapPacketToClient((LobbyChangeMapPacketToClient) packet);
         } else if (packet instanceof RemoveProfilePacketToClient) {
             handleRemoveProfilePacketToClient((RemoveProfilePacketToClient) packet);
+        } else if (packet instanceof NewRoundPacketToClient) {
+            handleNewRoundPacketToClient((NewRoundPacketToClient) packet);
         }
     }
 
@@ -128,6 +130,7 @@ public class ClientProxy implements IProxy {
                 entity.adjustCollision();
                 entity.setDirection(packet.direction);
                 entity.setHealth(packet.health);
+                entity.readAdditionalUpdateData(packet.additionalUpdateData);
             }
         });
     }
@@ -298,7 +301,6 @@ public class ClientProxy implements IProxy {
         duckGames.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                System.out.println(packet.profile.isHost);
                 duckGames.getClientConnection().getPlayerProfiles().put(packet.profile.profileUUID, packet.profile);
             }
         });
@@ -344,6 +346,19 @@ public class ClientProxy implements IProxy {
             @Override
             public void run() {
                 getGameProfiles().remove(packet.profile.profileUUID);
+            }
+        });
+    }
+
+    public void handleNewRoundPacketToClient(final NewRoundPacketToClient packet) {
+        duckGames.addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                Gui currentGui = duckGames.getCurrentGui();
+                if (currentGui instanceof GuiPlayState) {
+                    GuiPlayState gui = (GuiPlayState) currentGui;
+                    gui.newRound(packet);
+                }
             }
         });
     }

@@ -20,11 +20,13 @@ import de.intektor.duckgames.client.gui.util.MousePos;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.client.rendering.WorldRenderer;
+import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.common.Status;
 import de.intektor.duckgames.common.net.client_to_server.*;
+import de.intektor.duckgames.common.net.server_to_client.NewRoundPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RoundEndedPacketToClient;
+import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.entity.EntityEquipmentSlot;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.game.GameProfile;
@@ -67,6 +69,10 @@ public class GuiPlayState extends Gui {
     private boolean postMortemMode;
     private EntityPlayer currentlySpectating;
 
+    private boolean isInventoryShown;
+
+    private EntityEquipmentSlot lastClickedInInventory;
+    private long lastTickClickedInInventory;
 
     private static final Texture menuButtonTexture = new Texture(Gdx.files.internal("menu_button.png"));
 
@@ -156,6 +162,29 @@ public class GuiPlayState extends Gui {
 
         spriteBatch.enableBlending();
 
+        Collision2D iP = getInventoryPos();
+        float squareLength = getInventorySquareLength();
+        y = iP.y2 - squareLength;
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+            shapeRenderer.begin();
+            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(Color.GRAY);
+            shapeRenderer.rect(iP.x, y, squareLength, squareLength);
+            shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.rect(iP.x, y, squareLength, squareLength);
+            shapeRenderer.end();
+
+            EntityPlayer p = postMortemMode ? watchingPlayer : player;
+
+            ItemStack e = p.getEquipment(slot);
+            if (e != null) {
+                dg.getItemRendererRegistry().getRenderer(e.getItem()).renderItemInScrollTool(e, e.getItem(), shapeRenderer, spriteBatch, camera, iP.x, y, squareLength, squareLength, 0, partialTicks, null);
+            }
+
+            y -= squareLength;
+        }
+
         super.renderGui(mouseX, mouseY, camera, partialTicks);
     }
 
@@ -174,9 +203,11 @@ public class GuiPlayState extends Gui {
 
         if (!menuShown) {
             if (input.isTouched() && !touchMode) {
-                MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
-                if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null && (mP.x != lastAttackPosX || mP.y != lastAttackPosY)) {
-                    dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.UPDATE));
+                if (!getInventoryPos().isPointInside(mouseX, mouseY)) {
+                    MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
+                    if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null && (mP.x != lastAttackPosX || mP.y != lastAttackPosY)) {
+                        dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.UPDATE));
+                    }
                 }
             }
 
@@ -198,6 +229,9 @@ public class GuiPlayState extends Gui {
             case Keys.D:
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(true, EnumDirection.RIGHT));
                 dg.thePlayer.move(EnumDirection.RIGHT, true);
+                break;
+            case Keys.S:
+                dg.sendPacketToServer(new CrouchingPacketToServer(true));
                 break;
             case Keys.SPACE:
                 dg.sendPacketToServer(new JumpPacketToServer(true));
@@ -237,6 +271,9 @@ public class GuiPlayState extends Gui {
                 dg.sendPacketToServer(new PlayerMovementPacketToServer(false, EnumDirection.RIGHT));
                 dg.thePlayer.move(EnumDirection.RIGHT, false);
                 break;
+            case Keys.S:
+                dg.sendPacketToServer(new CrouchingPacketToServer(false));
+                break;
             case Keys.SPACE:
                 dg.sendPacketToServer(new JumpPacketToServer(false));
                 dg.thePlayer.setJumping(false);
@@ -261,21 +298,40 @@ public class GuiPlayState extends Gui {
             int i = world.getPlayerList().indexOf(currentlySpectating) + 1;
             i = i == world.getPlayerList().size() ? 0 : i;
             currentlySpectating = world.getPlayerList().get(i);
+            isInventoryShown = !currentlySpectating.isDead;
         }
 
-        if (!touchMode) {
-            MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
-            switch (button) {
-                case 0:
-                    if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null) {
-                        dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.START));
-                        lastAttackPosX = mP.x;
-                        lastAttackPosY = mP.y;
-                    }
-                    break;
-                case 1:
+        Collision2D pos = getInventoryPos();
+        if (!isInventoryShown || !pos.isPointInside(mouseX, mouseY)) {
+            if (!touchMode) {
+                MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
+                switch (button) {
+                    case 0:
+                        if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null) {
+                            dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.START));
+                            lastAttackPosX = mP.x;
+                            lastAttackPosY = mP.y;
+                        }
+                        break;
+                    case 1:
 
-                    break;
+                        break;
+                }
+            }
+        } else {
+            if (!player.isDead) {
+                float squareLength = getInventorySquareLength();
+                float y = pos.y2 - squareLength;
+                for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+                    if (GuiUtils.isPointInRegion(pos.x, y, pos.getWidth(), squareLength, mouseX, mouseY)) {
+                        lastClickedInInventory = slot;
+                        if (world.getWorldTime() - lastTickClickedInInventory <= 5 && player.getEquipment(slot) != null) {
+                            dg.sendPacketToServer(new PlayerDropItemPacketToServer(slot));
+                        }
+                        lastTickClickedInInventory = world.getWorldTime();
+                    }
+                    y -= squareLength;
+                }
             }
         }
     }
@@ -324,9 +380,25 @@ public class GuiPlayState extends Gui {
         winningProfile = packet.winner;
     }
 
+    public void newRound(NewRoundPacketToClient packet) {
+        postMortemMode = false;
+        isInventoryShown = true;
+    }
+
     @Override
     protected void scrolledWheel(int mouseX, int mouseY, int amount) {
         super.scrolledWheel(mouseX, mouseY, amount);
+    }
+
+    private Collision2D getInventoryPos() {
+        float squareLength = getInventorySquareLength();
+        float y = height / 2 + EntityEquipmentSlot.values().length / 2 * squareLength - squareLength / 2;
+        float x = width - squareLength - 35;
+        return new Collision2D(x, y, squareLength, squareLength * EntityEquipmentSlot.values().length);
+    }
+
+    private float getInventorySquareLength() {
+        return 150;
     }
 
     @Override

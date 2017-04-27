@@ -1,4 +1,4 @@
-package de.intektor.duckgames.tag;
+package de.intektor.duckgames.data_storage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,17 +7,17 @@ import java.io.IOException;
 /**
  * @author Intektor
  */
-public abstract class TagBase<T> {
+public abstract class StorageBase<K, T> {
 
-    public final String key;
+    public final K key;
 
     protected T value;
 
-    protected TagBase(String key) {
+    protected StorageBase(K key) {
         this.key = key;
     }
 
-    public abstract void writeToFile(DataOutputStream out) throws IOException;
+    public abstract void writeToStream(DataOutputStream out) throws IOException;
 
     public abstract void readFromFile(DataInputStream in) throws IOException;
 

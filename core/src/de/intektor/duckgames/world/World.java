@@ -160,7 +160,7 @@ public abstract class World {
         List<ENTITY> list = new ArrayList<ENTITY>();
         for (Entity entity : getCombinedEntityList()) {
             if (clazz.isAssignableFrom(entity.getClass())) {
-                if (entity.getCollision().collidesWith(collision)) list.add((ENTITY) entity);
+                if (entity.getHitbox().collidesWith(collision)) list.add((ENTITY) entity);
             }
         }
         return list;

@@ -1,7 +1,7 @@
-package de.intektor.duckgames.tag.tags;
+package de.intektor.duckgames.data_storage.storages;
 
-import de.intektor.duckgames.tag.TagBase;
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.data_storage.StorageBase;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,15 +10,15 @@ import java.io.IOException;
 /**
  * @author Intektor
  */
-public class TagTagCompound extends TagBase<TagCompound> {
+public class StorageTagCompound<K> extends StorageBase<K, TagCompound> {
 
-    public TagTagCompound(String key) {
+    public StorageTagCompound(K key) {
         super(key);
         value = new TagCompound();
     }
 
     @Override
-    public void writeToFile(DataOutputStream out) throws IOException {
+    public void writeToStream(DataOutputStream out) throws IOException {
         value.writeToStream(out);
     }
 

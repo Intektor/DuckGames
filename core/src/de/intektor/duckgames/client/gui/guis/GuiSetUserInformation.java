@@ -9,7 +9,7 @@ import de.intektor.duckgames.client.gui.components.GuiButton;
 import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
 import de.intektor.duckgames.client.gui.components.GuiTextField;
 import de.intektor.duckgames.util.charlist.CharList;
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;

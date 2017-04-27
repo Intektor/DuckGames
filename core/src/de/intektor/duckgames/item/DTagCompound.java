@@ -1,6 +1,6 @@
 package de.intektor.duckgames.item;
 
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 
 /**
  * @author Intektor

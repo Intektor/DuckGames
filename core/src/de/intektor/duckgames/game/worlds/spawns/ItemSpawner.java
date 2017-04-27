@@ -11,7 +11,7 @@ import de.intektor.duckgames.item.Item;
 import de.intektor.duckgames.item.ItemStack;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.WorldServer;
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 
 import java.util.ArrayList;
 import java.util.List;

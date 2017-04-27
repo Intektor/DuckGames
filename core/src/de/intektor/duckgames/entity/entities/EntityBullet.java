@@ -40,7 +40,7 @@ public class EntityBullet extends Entity {
     @Override
     protected void updateEntity() {
         if (!world.isRemote) {
-            List<Entity> entitiesInRegion = world.getEntitiesInRegion(Entity.class, getCollision());
+            List<Entity> entitiesInRegion = world.getEntitiesInRegion(Entity.class, getHitbox());
             for (Entity entity : entitiesInRegion) {
                 if (!entity.uuid.equals(ownerUUID)) {
                     HitRegister hitRegister = registeredHits.get(entity);

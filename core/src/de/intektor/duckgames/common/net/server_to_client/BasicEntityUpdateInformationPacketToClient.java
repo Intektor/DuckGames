@@ -2,11 +2,12 @@ package de.intektor.duckgames.common.net.server_to_client;
 
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.net.AbstractSocket;
-import de.intektor.duckgames.common.net.NetworkUtils;
-import de.intektor.duckgames.entity.Entity;
-import de.intektor.duckgames.entity.EntityDirection;
 import de.intektor.duckgames.common.net.IPacket;
 import de.intektor.duckgames.common.net.IPacketHandler;
+import de.intektor.duckgames.common.net.NetworkUtils;
+import de.intektor.duckgames.data_storage.box.DataBox;
+import de.intektor.duckgames.entity.Entity;
+import de.intektor.duckgames.entity.EntityDirection;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,6 +23,8 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
 
     public float posX, posY, motionX, motionY, motionMultiplier, health;
     public EntityDirection direction;
+    private Entity entity;
+    public DataBox additionalUpdateData;
 
     public BasicEntityUpdateInformationPacketToClient(Entity entity) {
         this.entityUUID = entity.uuid;
@@ -32,6 +35,7 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         this.motionMultiplier = entity.motionMultiplier;
         this.direction = entity.getDirection();
         this.health = entity.getHealth();
+        this.entity = entity;
     }
 
     public BasicEntityUpdateInformationPacketToClient() {
@@ -47,6 +51,9 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         out.writeFloat(motionMultiplier);
         out.writeInt(direction.ordinal());
         out.writeFloat(health);
+        DataBox box = new DataBox();
+        entity.writeAdditionalUpdateData(box);
+        box.writeToStream(out);
     }
 
     @Override
@@ -59,6 +66,8 @@ public class BasicEntityUpdateInformationPacketToClient implements IPacket {
         motionMultiplier = in.readFloat();
         direction = EntityDirection.values()[in.readInt()];
         health = in.readFloat();
+        additionalUpdateData = new DataBox();
+        additionalUpdateData.readFromStream(in);
     }
 
     public static class Handler implements IPacketHandler<BasicEntityUpdateInformationPacketToClient> {

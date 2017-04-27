@@ -1,6 +1,6 @@
-package de.intektor.duckgames.tag.tags;
+package de.intektor.duckgames.data_storage.storages;
 
-import de.intektor.duckgames.tag.TagBase;
+import de.intektor.duckgames.data_storage.StorageBase;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,15 +9,15 @@ import java.io.IOException;
 /**
  * @author Intektor
  */
-public class TagInteger extends TagBase<Integer> {
+public class StorageInteger<K> extends StorageBase<K, Integer> {
 
-    public TagInteger(String key) {
+    public StorageInteger(K key) {
         super(key);
         value = 0;
     }
 
     @Override
-    public void writeToFile(DataOutputStream out) throws IOException {
+    public void writeToStream(DataOutputStream out) throws IOException {
         out.writeInt(value);
     }
 

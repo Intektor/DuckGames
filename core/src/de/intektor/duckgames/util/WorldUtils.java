@@ -3,7 +3,7 @@ package de.intektor.duckgames.util;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import de.intektor.duckgames.client.editor.EditableGameMap;
-import de.intektor.duckgames.tag.TagCompound;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;

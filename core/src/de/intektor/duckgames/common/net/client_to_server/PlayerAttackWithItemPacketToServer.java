@@ -61,6 +61,7 @@ public class PlayerAttackWithItemPacketToServer implements IPacket {
                     if (mainHand != null) {
                         float angle = (float) Math.atan2(packet.ingameClickY - (player.posY + player.getEyeHeight()), packet.ingameClickX - (player.posX + (player.getWidth() / 2)));
                         player.setAim(angle, 1);
+                        System.out.println(angle);
                         switch (packet.status) {
                             case START:
                                 mainHand.getItem().onAttackWithItemBegin(mainHand, player, player.world, packet.ingameClickX, packet.ingameClickY);
