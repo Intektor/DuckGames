@@ -1,11 +1,13 @@
 package de.intektor.duckgames.common.net.client_to_server;
 
+import de.intektor.duckgames.client.editor.EditableGameMap;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.IPacket;
 import de.intektor.duckgames.common.net.IPacketHandler;
 import de.intektor.duckgames.common.net.server_to_client.LobbyChangeMapPacketToClient;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,10 +18,10 @@ import java.io.IOException;
  */
 public class LobbyChangeMapPacketToServer implements IPacket {
 
-    private String mapName;
+    private EditableGameMap map;
 
-    public LobbyChangeMapPacketToServer(String mapName) {
-        this.mapName = mapName;
+    public LobbyChangeMapPacketToServer(EditableGameMap map) {
+        this.map = map;
     }
 
     public LobbyChangeMapPacketToServer() {
@@ -27,12 +29,16 @@ public class LobbyChangeMapPacketToServer implements IPacket {
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        out.writeUTF(mapName);
+        TagCompound tag = new TagCompound();
+        map.writeToTag(tag);
+        tag.writeToStream(out);
     }
 
     @Override
     public void read(DataInputStream in) throws IOException {
-        mapName = in.readUTF();
+        TagCompound tag = new TagCompound();
+        tag.readFromStream(in);
+        map = EditableGameMap.readMapFromCompound(tag);
     }
 
     public static class Handler implements IPacketHandler<LobbyChangeMapPacketToServer> {
@@ -40,12 +46,13 @@ public class LobbyChangeMapPacketToServer implements IPacket {
         @Override
         public void handlePacket(final LobbyChangeMapPacketToServer packet, final AbstractSocket socketFrom) {
             final DuckGamesServer server = CommonCode.getDuckGamesServer();
-            DuckGamesServer.MainServerThread mainThread = server.getMainServerThread();
+            final DuckGamesServer.MainServerThread mainThread = server.getMainServerThread();
             mainThread.addScheduledTask(new Runnable() {
                 @Override
                 public void run() {
                     if (socketFrom == server.getHost()) {
-                        server.broadcast(new LobbyChangeMapPacketToClient(packet.mapName));
+                        mainThread.changeMap(packet.map);
+                        server.broadcast(new LobbyChangeMapPacketToClient(packet.map.getSaveName()));
                     }
                 }
             });

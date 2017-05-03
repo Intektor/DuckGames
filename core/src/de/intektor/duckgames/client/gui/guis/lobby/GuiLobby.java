@@ -113,7 +113,7 @@ public class GuiLobby extends Gui {
             RenderUtils.drawString("Connected Players:", font, 0, dg.getPreferredScreenHeight(), spriteBatch, Color.WHITE);
             float y = dg.getPreferredScreenHeight() - font.getLineHeight() * 1;
             for (GameProfile profile : dg.getClientConnection().getPlayerProfiles().values()) {
-                RenderUtils.drawString(profile.username, font, 0, y, spriteBatch, isHost ? Color.RED : Color.WHITE);
+                RenderUtils.drawString(profile.username, font, 0, y, spriteBatch, profile.isHost ? Color.RED : Color.WHITE);
                 y -= font.getLineHeight();
             }
             spriteBatch.end();
@@ -200,7 +200,7 @@ public class GuiLobby extends Gui {
     public void setSelectedMap(EditableGameMap selectedMap) {
         this.selectedMap = selectedMap;
         this.selectedMapName = selectedMap.getSaveName();
-        if (isHost) dg.sendPacketToServer(new LobbyChangeMapPacketToServer(selectedMapName));
+        if (isHost) dg.sendPacketToServer(new LobbyChangeMapPacketToServer(selectedMap));
     }
 
     public void setSelectedMapName(String selectedMapName) {

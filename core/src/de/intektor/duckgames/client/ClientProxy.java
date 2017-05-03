@@ -35,6 +35,7 @@ public class ClientProxy implements IProxy {
 
     @Override
     public void handlePacket(IPacket packet, AbstractSocket socketFrom) {
+        if (!(packet instanceof BasicEntityUpdateInformationPacketToClient)) System.out.println(packet);
         if (packet instanceof BasicEntityUpdateInformationPacketToClient) {
             handleBasicEntityUpdateInformationPacketToClient((BasicEntityUpdateInformationPacketToClient) packet);
         } else if (packet instanceof DamageEntityPacketToClient) {

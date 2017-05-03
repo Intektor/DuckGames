@@ -21,6 +21,7 @@ public class Blocks {
     public static final Block CLAY_BRICK;
     public static final Block AIR;
     public static final Block WOODEN_PLANKS;
+    public static final Block LEAVES;
 
     static {
         DIRT = new Block("dirt");
@@ -30,6 +31,7 @@ public class Blocks {
         CLAY_BRICK = new Block("clay_brick");
         AIR = new BlockAir("air");
         WOODEN_PLANKS = new Block("wooden_planks");
+        LEAVES = new Block("leaves");
     }
 
     public static void initCommon() {
@@ -41,6 +43,7 @@ public class Blocks {
         registry.registerBlock(CLAY_BRICK);
         registry.registerBlock(AIR);
         registry.registerBlock(WOODEN_PLANKS);
+        registry.registerBlock(LEAVES);
     }
 
     public static void initClient() {
@@ -52,5 +55,6 @@ public class Blocks {
         registry.registerRenderer(CLAY_BRICK, new DefaultTextureBlockRenderer("clay_bricks"));
         registry.registerRenderer(AIR, new AirBlockBlockRenderer());
         registry.registerRenderer(WOODEN_PLANKS, new DefaultTextureBlockRenderer("wooden_planks"));
+        registry.registerRenderer(LEAVES, new DefaultTextureBlockRenderer("leaves"));
     }
 }

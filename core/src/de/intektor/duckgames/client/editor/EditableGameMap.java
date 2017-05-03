@@ -178,6 +178,8 @@ public class EditableGameMap implements Serializable {
     @Override
     public void writeToTag(TagCompound tag) {
         GameRegistry gameRegistry = CommonCode.gameRegistry;
+        tag.setString("name", saveName);
+
         tag.setInteger("w", width);
         tag.setInteger("h", height);
 
@@ -212,6 +214,7 @@ public class EditableGameMap implements Serializable {
     @Override
     public void readFromTag(TagCompound tag) {
         try {
+            saveName = tag.getString("name");
             width = tag.getInteger("w");
             height = tag.getInteger("h");
             saveName = tag.getString("mN");

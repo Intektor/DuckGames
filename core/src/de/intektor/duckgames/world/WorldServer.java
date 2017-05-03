@@ -94,6 +94,8 @@ public class WorldServer extends World {
 
         List<PlayerProfile> remainingProfiles = new ArrayList<PlayerProfile>(server.getMainServerThread().getProfileMap().values());
 
+        System.out.println(remainingProfiles);
+
         for (PlayerSpawn playerSpawn : playerSpawnList) {
             if (remainingProfiles.size() == 0) return;
             PlayerProfile profile = remainingProfiles.get(r.nextInt(remainingProfiles.size()));

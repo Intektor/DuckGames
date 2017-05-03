@@ -233,6 +233,8 @@ public class DuckGamesServer implements Closeable {
         WorldServer world;
         EditableGameMap backup;
 
+        private EditableGameMap currentSelectedMap;
+
         private long ticksAtRoundEnd;
         private boolean startNextRound;
 
@@ -295,6 +297,9 @@ public class DuckGamesServer implements Closeable {
                     host = socket;
                     broadcast(new ChatMessagePacketToClient(new ServerInfoMessage("This server is running on port: " + port, Color.CYAN)));
                 }
+                if (currentSelectedMap != null)
+                    packetHelper.sendPacket(new LobbyChangeMapPacketToClient(currentSelectedMap.getSaveName()), socket);
+
                 broadcast(new ChatMessagePacketToClient(new ServerInfoMessage(username + " joined the server.", Color.GREEN)));
             } else {
                 packetHelper.sendPacket(new KickClientFromServerPacketToClient("Can't join while game is running!"), socket);
@@ -340,6 +345,10 @@ public class DuckGamesServer implements Closeable {
                 ticksAtRoundEnd = world.getWorldTime();
                 startNextRound = true;
             }
+        }
+
+        public void changeMap(EditableGameMap map) {
+            currentSelectedMap = map;
         }
 
         public EditableGameMap getBackup() {
