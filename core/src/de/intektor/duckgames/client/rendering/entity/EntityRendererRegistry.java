@@ -3,6 +3,7 @@ package de.intektor.duckgames.client.rendering.entity;
 import de.intektor.duckgames.client.entity.EntityPlayerSP;
 import de.intektor.duckgames.entity.Entity;
 import de.intektor.duckgames.entity.entities.EntityBullet;
+import de.intektor.duckgames.entity.entities.EntityGrapplingHook;
 import de.intektor.duckgames.entity.entities.EntityItem;
 import de.intektor.duckgames.entity.entities.EntityRail;
 
@@ -29,6 +30,7 @@ public class EntityRendererRegistry {
         register(EntityItem.class, new EntityItemRenderer());
         register(EntityBullet.class, new EntityBulletRenderer());
         register(EntityRail.class, new EntityRailRenderer());
+        register(EntityGrapplingHook.class, new EntityGrapplingHookRenderer());
     }
 
 }

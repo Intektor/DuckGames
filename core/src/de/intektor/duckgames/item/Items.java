@@ -6,6 +6,7 @@ import de.intektor.duckgames.client.rendering.item.DefaultTextureItemRenderer;
 import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
 import de.intektor.duckgames.common.GameRegistry;
 import de.intektor.duckgames.common.CommonCode;
+import de.intektor.duckgames.item.items.ItemGrappleHook;
 import de.intektor.duckgames.item.items.ItemSword;
 import de.intektor.duckgames.item.items.gun.ItemPistol;
 import de.intektor.duckgames.item.items.gun.ItemRailGun;
@@ -22,11 +23,14 @@ public class Items {
     public static final ItemTommyGun TOMMY_GUN;
     public static final ItemRailGun RAIL_GUN;
 
+    public static final ItemGrappleHook GRAPPLE_HOOK;
+
     static {
         SWORD = new ItemSword();
         PISTOL = new ItemPistol();
         TOMMY_GUN = new ItemTommyGun();
         RAIL_GUN = new ItemRailGun();
+        GRAPPLE_HOOK = new ItemGrappleHook("grapple_hook", 1);
     }
 
     public static void initCommon() {
@@ -35,6 +39,7 @@ public class Items {
         gameRegistry.registerItem(PISTOL);
         gameRegistry.registerItem(TOMMY_GUN);
         gameRegistry.registerItem(RAIL_GUN);
+        gameRegistry.registerItem(GRAPPLE_HOOK);
     }
 
     public static void initClient() {
@@ -63,6 +68,12 @@ public class Items {
             }
         });
         registry.registerRenderer(RAIL_GUN, new DefaultTextureItemRenderer("rail_guns") {
+            @Override
+            protected float getTextureSizeForPlayerRendering(EntityPlayerSP player, WorldClient world) {
+                return 1;
+            }
+        });
+        registry.registerRenderer(GRAPPLE_HOOK, new DefaultTextureItemRenderer("grapple_hook") {
             @Override
             protected float getTextureSizeForPlayerRendering(EntityPlayerSP player, WorldClient world) {
                 return 1;

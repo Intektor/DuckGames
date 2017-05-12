@@ -8,17 +8,17 @@ import com.google.common.collect.HashBiMap;
  */
 public class ChatMessageRegistry {
 
-    private BiMap<Integer, Class<? extends ChatMessage>> registry = HashBiMap.create();
+    private BiMap<Integer, Class<? extends IChatMessage>> registry = HashBiMap.create();
 
-    public void register(Class<? extends ChatMessage> clazz) {
+    public void register(Class<? extends IChatMessage> clazz) {
         registry.put(registry.size(), clazz);
     }
 
-    public int getIdentifier(Class<? extends ChatMessage> clazz) {
+    public int getIdentifier(Class<? extends IChatMessage> clazz) {
         return registry.inverse().get(clazz);
     }
 
-    public ChatMessage createMessage(int identifier) throws IllegalAccessException, InstantiationException {
+    public IChatMessage createMessage(int identifier) throws IllegalAccessException, InstantiationException {
         return registry.get(identifier).newInstance();
     }
 }

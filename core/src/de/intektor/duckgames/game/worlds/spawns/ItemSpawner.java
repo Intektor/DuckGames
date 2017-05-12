@@ -28,7 +28,7 @@ public class ItemSpawner extends EntitySpawn {
 
     public ItemSpawner(float x, float y) {
         super(x, y);
-        this.spawnList.add(new ItemSpawn(Items.SWORD));
+        this.spawnList.add(new ItemSpawn(Items.GRAPPLE_HOOK));
     }
 
     @Override

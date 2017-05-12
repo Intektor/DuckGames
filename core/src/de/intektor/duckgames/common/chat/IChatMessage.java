@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * @author Intektor
  */
-public interface ChatMessage {
+public interface IChatMessage {
 
     Color getMessageColor();
 

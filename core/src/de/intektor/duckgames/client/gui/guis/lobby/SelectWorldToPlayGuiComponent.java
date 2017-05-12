@@ -31,7 +31,7 @@ public class SelectWorldToPlayGuiComponent extends GuiFrame {
     public SelectWorldToPlayGuiComponent(int x, int y, int width, int height, GuiLobby lobby) {
         super(x, y, width, height, "Select World!");
         try {
-            List<EditableGameMap> worldList = WorldUtils.getWorldList("Saves/user");
+            List<EditableGameMap> worldList = WorldUtils.getWorldList("saves/user");
             for (EditableGameMap map : worldList) {
                 GuiTextBasedButton button = new GuiTextBasedButton(0, 0, width, 80, map.getSaveName(), true);
                 buttonMap.put(button, map);

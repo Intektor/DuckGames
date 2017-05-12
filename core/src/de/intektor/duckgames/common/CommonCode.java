@@ -12,10 +12,7 @@ import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.*;
 import de.intektor.duckgames.common.server.DuckGamesServer;
 import de.intektor.duckgames.entity.Entity;
-import de.intektor.duckgames.entity.entities.EntityBullet;
-import de.intektor.duckgames.entity.entities.EntityItem;
-import de.intektor.duckgames.entity.entities.EntityPlayer;
-import de.intektor.duckgames.entity.entities.EntityRail;
+import de.intektor.duckgames.entity.entities.*;
 import de.intektor.duckgames.item.Items;
 import de.intektor.duckgames.world.World;
 
@@ -75,6 +72,7 @@ public class CommonCode {
         packetRegistry.registerPacket(RemoveProfilePacketToClient.class, RemoveProfilePacketToClient.Handler.class, 31, Side.CLIENT);
         packetRegistry.registerPacket(CrouchingPacketToServer.class, CrouchingPacketToServer.Handler.class, 32, Side.SERVER);
         packetRegistry.registerPacket(NewRoundPacketToClient.class, NewRoundPacketToClient.Handler.class, 33, Side.CLIENT);
+        packetRegistry.registerPacket(ChangeSelectedEquipmentPacketToServer.class, ChangeSelectedEquipmentPacketToServer.Handler.class, 34, Side.SERVER);
 
         chatMessageRegistry = new ChatMessageRegistry();
         chatMessageRegistry.register(PlayerChatMessage.class);
@@ -90,6 +88,7 @@ public class CommonCode {
         gameRegistry.registerEntity(EntityItem.class, 1);
         gameRegistry.registerEntity(EntityBullet.class, 2);
         gameRegistry.registerEntity(EntityRail.class, 3);
+        gameRegistry.registerEntity(EntityGrapplingHook.class, 4);
 
         proxy = new ClientProxy();
 

@@ -24,7 +24,7 @@ import de.intektor.duckgames.client.rendering.WorldRenderer;
 import de.intektor.duckgames.collision.Collision2D;
 import de.intektor.duckgames.common.CommonCode;
 import de.intektor.duckgames.common.Status;
-import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.chat.IChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.*;
 import de.intektor.duckgames.common.net.server_to_client.NewRoundPacketToClient;
 import de.intektor.duckgames.common.net.server_to_client.RoundEndedPacketToClient;
@@ -67,6 +67,7 @@ public class GuiPlayState extends Gui {
     private GuiThumbPad aimingPad;
 
     private GuiChat chat;
+    private GuiComponentMessagePreview messagePreview;
 
     private GameProfile winningProfile;
     private long timeShowingWinner;
@@ -121,13 +122,16 @@ public class GuiPlayState extends Gui {
             registerComponent(aimingPad);
         }
 
-        if (dg.theWorld.getGameMode() == DuckGamesServer.GameMode.TEST_WORLD) {
+        if (dg.theWorld.getGameMode() != DuckGamesServer.GameMode.TEST_WORLD || true) {
             buttonShowChat = new GuiTextBasedButton(width - 200, height - 90, 80, 60, "Chat", true);
             registerComponent(buttonShowChat);
 
             chat = new GuiChat(width / 2 - width / 6, height - 320, width / 3, 300);
             registerComponent(chat);
             chat.setShown(false);
+
+            messagePreview = new GuiComponentMessagePreview(0, height, 0, 0);
+            registerComponent(messagePreview);
         }
     }
 
@@ -186,7 +190,7 @@ public class GuiPlayState extends Gui {
             shapeRenderer.setColor(Color.GRAY);
             shapeRenderer.rect(iP.x, y, squareLength, squareLength);
             shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.setColor(player.getCurrentSelectedEquipment() == slot ? Color.GOLD : Color.WHITE);
             shapeRenderer.rect(iP.x, y, squareLength, squareLength);
             shapeRenderer.end();
 
@@ -306,7 +310,14 @@ public class GuiPlayState extends Gui {
         super.pointerDown(mouseX, mouseY, pointer, button);
         EntityPlayer player = dg.thePlayer;
         World world = dg.theWorld;
-        if (menuShown || chatShown) return;
+        if (menuShown) return;
+        if (chatShown) {
+            if (!chat.isHovered(mouseX, mouseY)) {
+                chatShown = false;
+                chat.setShown(false);
+            }
+            return;
+        }
         if (player == null || world == null) return;
 
         if (postMortemMode) {
@@ -322,7 +333,7 @@ public class GuiPlayState extends Gui {
                 MousePos mP = GuiUtils.unprojectMousePosition(worldCamera);
                 switch (button) {
                     case 0:
-                        if (player.getEquipment(EntityEquipmentSlot.MAIN_HAND) != null) {
+                        if (player.getCurrentSelectedEquipment() != null) {
                             dg.sendPacketToServer(new PlayerAttackWithItemPacketToServer(mP.x, mP.y, Status.START));
                             lastAttackPosX = mP.x;
                             lastAttackPosY = mP.y;
@@ -340,10 +351,12 @@ public class GuiPlayState extends Gui {
                 for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
                     if (GuiUtils.isPointInRegion(pos.x, y, pos.getWidth(), squareLength, mouseX, mouseY)) {
                         lastClickedInInventory = slot;
+                        dg.sendPacketToServer(new ChangeSelectedEquipmentPacketToServer(slot));
                         if (world.getWorldTime() - lastTickClickedInInventory <= 5 && player.getEquipment(slot) != null) {
                             dg.sendPacketToServer(new PlayerDropItemPacketToServer(slot));
                         }
                         lastTickClickedInInventory = world.getWorldTime();
+                        break;
                     }
                     y -= squareLength;
                 }
@@ -407,7 +420,7 @@ public class GuiPlayState extends Gui {
 
     private Collision2D getInventoryPos() {
         float squareLength = getInventorySquareLength();
-        float y = height / 2 + EntityEquipmentSlot.values().length / 2 * squareLength - squareLength / 2;
+        float y = height / 2 - EntityEquipmentSlot.values().length / 2f * squareLength;
         float x = width - squareLength - 35;
         return new Collision2D(x, y, squareLength, squareLength * EntityEquipmentSlot.values().length);
     }
@@ -457,7 +470,8 @@ public class GuiPlayState extends Gui {
         buttonMenuExit.setShown(show);
     }
 
-    public void addChatMessage(ChatMessage message) {
+    public void addChatMessage(IChatMessage message) {
         chat.addMessage(message);
+        messagePreview.addMessage(message);
     }
 }

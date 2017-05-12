@@ -12,6 +12,8 @@ import de.intektor.duckgames.util.EnumAxis;
 import de.intektor.duckgames.world.World;
 import de.intektor.duckgames.world.WorldServer;
 
+import javax.vecmath.Point2f;
+import javax.vecmath.Vector2f;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -240,6 +242,14 @@ public abstract class Entity {
         float dX = posX - x;
         float dY = posY - y;
         return dX * dX + dY * dY;
+    }
+
+    public Vector2f getPositionVector() {
+        return new Vector2f(posX, posY);
+    }
+
+    public Point2f getMiddle() {
+        return new Point2f(posX + getWidth() / 2, posY + getHeight() / 2);
     }
 
     public float getDistance(float x, float y) {

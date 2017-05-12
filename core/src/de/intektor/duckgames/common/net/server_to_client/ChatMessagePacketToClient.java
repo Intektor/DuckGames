@@ -1,7 +1,7 @@
 package de.intektor.duckgames.common.net.server_to_client;
 
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.chat.IChatMessage;
 import de.intektor.duckgames.common.net.AbstractSocket;
 import de.intektor.duckgames.common.net.IPacket;
 import de.intektor.duckgames.common.net.IPacketHandler;
@@ -14,9 +14,9 @@ import java.io.IOException;
  */
 public class ChatMessagePacketToClient implements IPacket {
 
-    public ChatMessage message;
+    public IChatMessage message;
 
-    public ChatMessagePacketToClient(ChatMessage message) {
+    public ChatMessagePacketToClient(IChatMessage message) {
         this.message = message;
     }
 

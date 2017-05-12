@@ -17,6 +17,5 @@ public class PlayerInputHandler {
         player.isJumping = shouldJump;
 
         player.setAim(aimingAngle, aimingStrength);
-
     }
 }

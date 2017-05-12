@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * @author Intektor
  */
-public class ServerInfoMessage implements ChatMessage {
+public class ServerInfoMessage implements IChatMessage {
 
     private String message;
     private Color chatColor;

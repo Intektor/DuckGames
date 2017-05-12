@@ -26,13 +26,13 @@ import de.intektor.duckgames.client.rendering.entity.EntityRendererRegistry;
 import de.intektor.duckgames.client.rendering.item.ItemRendererRegistry;
 import de.intektor.duckgames.client.rendering.utils.FutureTextureRegistry;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.server.DuckGamesServer;
-import de.intektor.duckgames.common.server.HostingType;
 import de.intektor.duckgames.common.Networking;
 import de.intektor.duckgames.common.net.IPacket;
+import de.intektor.duckgames.common.server.DuckGamesServer;
+import de.intektor.duckgames.common.server.HostingType;
+import de.intektor.duckgames.data_storage.tag.TagCompound;
 import de.intektor.duckgames.entity.entities.EntityPlayer;
 import de.intektor.duckgames.item.Items;
-import de.intektor.duckgames.data_storage.tag.TagCompound;
 import de.intektor.duckgames.world.WorldClient;
 
 import java.io.DataInputStream;
@@ -48,6 +48,7 @@ public class DuckGamesClient extends ApplicationAdapter {
     private Queue<Runnable> scheduledTasks = new LinkedBlockingQueue<Runnable>();
 
     private long lastTickTime;
+    private long totalTickCount;
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -158,6 +159,7 @@ public class DuckGamesClient extends ApplicationAdapter {
         camera.update();
         if (System.nanoTime() - lastTickTime >= 50000000D) {
             lastTickTime = System.nanoTime();
+            totalTickCount++;
             updateGame();
         }
         renderGame();
@@ -187,8 +189,7 @@ public class DuckGamesClient extends ApplicationAdapter {
         partialTicks = (System.nanoTime() - lastTickTime) / (50000000f);
         SpriteBatch spriteBatch = new SpriteBatch();
         spriteBatch.begin();
-        RenderUtils.drawString("fps: " + Gdx.graphics.getFramesPerSecond(), defaultFont12, 0, Gdx.graphics.getHeight(), spriteBatch, Color.WHITE);
-        RenderUtils.drawString("p-ticks: " + partialTicks, defaultFont12, 0, Gdx.graphics.getHeight() - 12, spriteBatch, Color.WHITE);
+        RenderUtils.drawString("fps: " + Gdx.graphics.getFramesPerSecond(), defaultFont12, Gdx.graphics.getWidth() - 50, Gdx.graphics.getHeight(), spriteBatch, Color.WHITE);
         spriteBatch.end();
         spriteBatch.dispose();
         if (currentGui != null) currentGui.render(Gdx.input.getX(), Gdx.input.getY(), camera, partialTicks);
@@ -313,5 +314,9 @@ public class DuckGamesClient extends ApplicationAdapter {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public long getTotalTickCount() {
+        return totalTickCount;
     }
 }

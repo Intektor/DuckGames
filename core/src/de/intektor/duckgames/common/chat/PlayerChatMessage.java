@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * @author Intektor
  */
-public class PlayerChatMessage implements ChatMessage {
+public class PlayerChatMessage implements IChatMessage {
 
     private GameProfile playerProfile;
     private String message;

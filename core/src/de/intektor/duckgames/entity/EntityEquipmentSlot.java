@@ -5,4 +5,5 @@ package de.intektor.duckgames.entity;
  */
 public enum EntityEquipmentSlot {
     MAIN_HAND,
+    SUPPORT_SLOT
 }

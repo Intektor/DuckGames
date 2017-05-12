@@ -14,7 +14,7 @@ import de.intektor.duckgames.client.gui.guis.GuiMainMenu;
 import de.intektor.duckgames.client.rendering.FontUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
 import de.intektor.duckgames.common.CommonCode;
-import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.chat.IChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.DisconnectPacketToServer;
 import de.intektor.duckgames.common.net.client_to_server.LobbyChangeMapPacketToServer;
 import de.intektor.duckgames.common.server.DuckGamesServer;
@@ -189,7 +189,7 @@ public class GuiLobby extends Gui {
         }
     }
 
-    public void addMessage(ChatMessage message) {
+    public void addMessage(IChatMessage message) {
         chatComponent.addMessage(message);
     }
 

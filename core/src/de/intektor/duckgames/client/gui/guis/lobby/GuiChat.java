@@ -15,7 +15,7 @@ import de.intektor.duckgames.client.gui.components.GuiTextBasedButton;
 import de.intektor.duckgames.client.gui.components.GuiTextField;
 import de.intektor.duckgames.client.gui.util.GuiUtils;
 import de.intektor.duckgames.client.rendering.RenderUtils;
-import de.intektor.duckgames.common.chat.ChatMessage;
+import de.intektor.duckgames.common.chat.IChatMessage;
 import de.intektor.duckgames.common.net.client_to_server.ChatMessagePacketToServer;
 import de.intektor.duckgames.util.charlist.CharList;
 
@@ -35,7 +35,7 @@ public class GuiChat extends GuiMultiComponent {
 
     private BitmapFont font = dg.defaultFont28;
 
-    private List<ChatMessage> messages = new ArrayList<ChatMessage>();
+    private List<IChatMessage> messages = new ArrayList<IChatMessage>();
 
     public GuiChat(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -64,7 +64,7 @@ public class GuiChat extends GuiMultiComponent {
             y -= (font.getLineHeight() * messages.size() - height + font.getLineHeight()) * (1 - messageScrollBar.getScrollPercent());
         }
         for (int i = messages.size() - 1; i >= 0; i--) {
-            ChatMessage message = messages.get(i);
+            IChatMessage message = messages.get(i);
             String text = message.getMessage();
             RenderUtils.drawString(text, font, drawX, y, sB, message.getMessageColor());
             y += font.getLineHeight();
@@ -112,7 +112,7 @@ public class GuiChat extends GuiMultiComponent {
         }
     }
 
-    public void addMessage(ChatMessage message) {
+    public void addMessage(IChatMessage message) {
         messages.add(message);
         messageScrollBar.addAllWindowSize((int) font.getLineHeight() + 1);
     }

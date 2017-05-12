@@ -165,6 +165,7 @@ public class EditableGameMap implements Serializable {
             handle = Gdx.files.local(String.format("saves/user/%s", mapName));
             DataOutputStream out = new DataOutputStream(new FileOutputStream(handle.file()));
             TagCompound tag = new TagCompound();
+            this.saveName = mapName;
             tag.setString("mN", mapName);
             writeToTag(tag);
             tag.writeToStream(out);
